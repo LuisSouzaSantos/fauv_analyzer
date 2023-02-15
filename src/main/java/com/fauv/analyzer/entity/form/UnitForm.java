@@ -1,4 +1,4 @@
-package com.fauv.analyzer.form;
+package com.fauv.analyzer.entity.form;
 
 import javax.validation.constraints.NotBlank;
 

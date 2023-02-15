@@ -4,16 +4,19 @@ import java.util.List;
 
 import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.entity.dto.UnitDTO;
+import com.fauv.analyzer.entity.form.UnitForm;
+import com.fauv.analyzer.exception.EntityValidatorException;
 import com.fauv.analyzer.exception.UnitException;
-import com.fauv.analyzer.form.UnitForm;
 
 public interface UnitService {
 
-	public Unit create(UnitForm form) throws UnitException;
+	public Unit create(UnitForm form) throws UnitException, EntityValidatorException;
 	
-	public Unit edit(Unit unit) throws UnitException;
+	public Unit edit(Unit unit) throws UnitException, EntityValidatorException;
 	
 	public Unit getById(Long id);
+	
+	public Unit getByIdValidateIt(Long id) throws UnitException;
 	
 	public List<Unit> getAll(); 
 	

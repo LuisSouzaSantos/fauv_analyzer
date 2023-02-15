@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.entity.dto.UnitDTO;
+import com.fauv.analyzer.entity.form.UnitForm;
 import com.fauv.analyzer.exception.UnitException;
-import com.fauv.analyzer.form.UnitForm;
 import com.fauv.analyzer.service.UnitService;
 
 @CrossOrigin

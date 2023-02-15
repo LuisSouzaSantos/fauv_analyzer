@@ -9,12 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.entity.dto.UnitDTO;
+import com.fauv.analyzer.entity.form.UnitForm;
+import com.fauv.analyzer.exception.EntityValidatorException;
 import com.fauv.analyzer.exception.UnitException;
-import com.fauv.analyzer.form.UnitForm;
 import com.fauv.analyzer.message.UnitMessage;
 import com.fauv.analyzer.repository.UnitRepository;
 import com.fauv.analyzer.service.UnitService;
-import com.fauv.analyzer.validator.UnitValidator;
+import com.fauv.analyzer.validator.EntityValidator;
 
 @Service
 public class UnitServiceImpl implements UnitService {
@@ -23,14 +24,18 @@ public class UnitServiceImpl implements UnitService {
 	private UnitRepository unitRepository;
 	
 	@Autowired
-	private UnitValidator unitValidator;
+	private EntityValidator<Unit> unitValidator;
+	
+	@Autowired
+	private EntityValidator<UnitForm> unitFormValidator;
 	
 	@Autowired
 	private ModelMapper modelMapper;
 	
+	
 	@Override
-	public Unit create(UnitForm form) throws UnitException {
-		unitValidator.validateAuthenticationFormFields(form);
+	public Unit create(UnitForm form) throws UnitException, EntityValidatorException {
+		unitFormValidator.validateFields(form);
 		
 		Unit duplicatedUnit = getByName(form.getName());
 		
@@ -44,8 +49,8 @@ public class UnitServiceImpl implements UnitService {
 	}
 
 	@Override
-	public Unit edit(Unit unit) throws UnitException {
-		unitValidator.validateUnitFields(unit);
+	public Unit edit(Unit unit) throws UnitException, EntityValidatorException {
+		unitValidator.validateFields(unit);
 		
 		Unit duplicatedUnit = getByName(unit.getName());
 		
@@ -57,6 +62,11 @@ public class UnitServiceImpl implements UnitService {
 	@Override
 	public Unit getById(Long id) {		
 		return unitRepository.findById(id).orElse(null);
+	}
+	
+	@Override
+	public Unit getByIdValidateIt(Long id) throws UnitException {
+		return unitRepository.findById(id).orElseThrow(() -> new UnitException(UnitMessage.ERROR_NOT_FOUND));
 	}
 	
 	@Override
@@ -88,7 +98,5 @@ public class UnitServiceImpl implements UnitService {
 		
 		return list.stream().map(unit -> toUnitDTO(unit)).collect(Collectors.toList());
 	}
-
-
 
 }
