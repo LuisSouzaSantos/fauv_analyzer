@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.entity.dto.UnitDTO;
 import com.fauv.analyzer.entity.form.UnitForm;
+import com.fauv.analyzer.exception.EntityValidatorException;
 import com.fauv.analyzer.exception.UnitException;
 import com.fauv.analyzer.service.UnitService;
 
@@ -28,14 +29,14 @@ public class UnitController {
 	private UnitService unitService;
 	
 	@PostMapping
-	public ResponseEntity<UnitDTO> create(@RequestBody UnitForm form) throws UnitException {
+	public ResponseEntity<UnitDTO> create(@RequestBody UnitForm form) throws UnitException, EntityValidatorException {
 		Unit createdUnit = unitService.create(form);
 		
 		return ResponseEntity.ok(unitService.toUnitDTO(createdUnit));
 	}
 	
 	@PutMapping
-	public ResponseEntity<UnitDTO> update(@RequestBody UnitDTO unitDTO) throws UnitException {
+	public ResponseEntity<UnitDTO> update(@RequestBody UnitDTO unitDTO) throws UnitException, EntityValidatorException {
 		Unit unitToBeUpdate = unitService.edit(unitService.toUnit(unitDTO));
 		
 		return ResponseEntity.ok(unitService.toUnitDTO(unitToBeUpdate));
