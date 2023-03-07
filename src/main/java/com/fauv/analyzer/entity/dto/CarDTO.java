@@ -3,6 +3,7 @@ package com.fauv.analyzer.entity.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.message.CarMessage;
 
 public class CarDTO {
@@ -12,6 +13,8 @@ public class CarDTO {
 	@NotBlank(message = CarMessage.FORM_NAME)
 	private String name;
 	private boolean active = false;
+	@NotNull(message = CarMessage.FORM_UNIT_ID)
+	private Unit unit;
 	
 	public Long getId() {
 		return id;
@@ -35,6 +38,14 @@ public class CarDTO {
 	
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 	
 }

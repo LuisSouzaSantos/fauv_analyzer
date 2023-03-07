@@ -8,17 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fauv.analyzer.entity.Car;
-import com.fauv.analyzer.entity.Equipment;
 import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.entity.dto.CarDTO;
 import com.fauv.analyzer.entity.form.CarForm;
 import com.fauv.analyzer.entity.form.update.UpdateCarForm;
 import com.fauv.analyzer.exception.CarException;
 import com.fauv.analyzer.exception.EntityValidatorException;
-import com.fauv.analyzer.exception.EquipmentException;
 import com.fauv.analyzer.exception.UnitException;
 import com.fauv.analyzer.message.CarMessage;
-import com.fauv.analyzer.message.EquipmentMessage;
 import com.fauv.analyzer.repository.CarRepository;
 import com.fauv.analyzer.service.CarService;
 import com.fauv.analyzer.service.UnitService;

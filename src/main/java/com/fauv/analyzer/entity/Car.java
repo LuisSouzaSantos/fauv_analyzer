@@ -19,7 +19,6 @@ public class Car {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotNull(message = EquipmentMessage.FORM_ID)
 	private Long id;
 	@NotBlank(message = EquipmentMessage.FORM_NAME)
 	@Size(max = 255, min = 0, message = EquipmentMessage.FORM_NAME_SIZE)
