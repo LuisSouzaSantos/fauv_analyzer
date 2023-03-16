@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import com.fauv.analyzer.entity.dto.NominalAxisCoordinateDTO;
 import com.fauv.analyzer.entity.dto.PmpDTO;
 import com.fauv.analyzer.entity.form.FmForm;
+import com.fauv.analyzer.entity.form.FmImpactForm;
 import com.fauv.analyzer.entity.form.NominalAxisCoordinateForm;
 import com.fauv.analyzer.entity.form.PmpForm;
 import com.fauv.analyzer.entity.helper.FmHelper;
+import com.fauv.analyzer.entity.helper.FmImpactHelper;
 import com.fauv.analyzer.entity.helper.NominalAxisCoordinateHelper;
 import com.fauv.analyzer.entity.helper.PmpHelper;
 import com.fauv.analyzer.service.ParserHandleService;
@@ -111,5 +113,21 @@ public class ParserHandleImpl implements ParserHandleService {
 			List<NominalAxisCoordinateHelper> helperList) {
 		return helperList.stream().map(helper -> buildNominalAxisCoordinateDTOBasedOnHelper(helper)).collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<FmImpactForm> buildFmImpactFormBasedOnHelper(FmImpactHelper fmImpactHelper) {
+		return fmImpactHelper.getInformationList().stream()
+				.map(fmImpact -> buildFmImpactFormBasedOnHelper(fmImpact)).collect(Collectors.toList());
+	}
+
+	@Override
+	public FmImpactForm buildFmImpactFormBasedOnHelper(String info) {
+		FmImpactForm fmImpactForm = new FmImpactForm();
+		fmImpactForm.setInfo(info);
+	
+		return fmImpactForm;
+	}
+
+
 
 }

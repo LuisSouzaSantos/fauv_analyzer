@@ -95,4 +95,20 @@ public class Model {
 		this.fmList = fmList;
 	}
 	
+	public NominalPmp getPmpByName(String name) {
+		return this.getPmpList().stream().filter(pmp -> pmp.getName().equals(name)).findFirst().orElse(null);
+	}
+	
+	public NominalPmp getPmpById(Long id) {
+		return this.getPmpList().stream().filter(pmp -> pmp.getId().equals(id)).findFirst().orElse(null);
+	}
+	
+	public NominalFm getFmByName(String name) {
+		return this.getFmList().stream().filter(fm -> fm.getName().equals(name)).findFirst().orElse(null);
+	}
+	
+	public NominalFm getFmById(Long id) {
+		return this.getFmList().stream().filter(fm -> fm.getId().equals(id)).findFirst().orElse(null);
+	}
+	
 }

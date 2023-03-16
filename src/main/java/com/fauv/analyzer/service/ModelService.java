@@ -12,9 +12,9 @@ import com.fauv.analyzer.exception.ModelException;
 
 public interface ModelService {
 
-	public ModelPreview preview(MultipartFile dmoFile, MultipartFile csvFile);
+	public ModelPreview preview(MultipartFile dmoFile, MultipartFile csvFile) throws Exception;
 	
-	public Model create(ModelForm form) throws EntityValidatorException;
+	public Model create(ModelForm form) throws EntityValidatorException, ModelException;
 	
 	public Model edit(Model model) throws EntityValidatorException, ModelException;
 	

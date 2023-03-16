@@ -2,6 +2,7 @@ package com.fauv.analyzer.entity.helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FmHelper {
 
@@ -49,6 +50,10 @@ public class FmHelper {
 	
 	public void setMeasurementAxisCoordinates(MeasurementAxisCoordinateHelper measurementAxisCoordinates) {
 		this.measurementAxisCoordinates = measurementAxisCoordinates;
+	}
+	
+	public List<String> getPmpNameList() {
+		return getNominalCoordinates().stream().map(nominalCoordinate -> nominalCoordinate.getName()).collect(Collectors.toList());
 	}
 
 }

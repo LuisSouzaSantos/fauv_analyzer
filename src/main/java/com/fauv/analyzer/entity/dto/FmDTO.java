@@ -17,6 +17,7 @@ public class FmDTO {
 	@JsonIgnoreProperties(value = {"pmpList", "fmList", "car"})
 	private ModelDTO model;
 	private List<PmpDTO> pointsUsingToMap = new ArrayList<>();
+	private List<FmImpactDTO> fmImpactList = new ArrayList<>();
 	
 	public Long getId() {
 		return id;
@@ -80,6 +81,14 @@ public class FmDTO {
 	
 	public void setPointsUsingToMap(List<PmpDTO> pointsUsingToMap) {
 		this.pointsUsingToMap = pointsUsingToMap;
+	}
+
+	public List<FmImpactDTO> getFmImpactList() {
+		return fmImpactList;
+	}
+
+	public void setFmImpactList(List<FmImpactDTO> fmImpactList) {
+		this.fmImpactList = fmImpactList;
 	}
 	
 }

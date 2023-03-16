@@ -17,11 +17,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fauv.analyzer.entity.form.FmForm;
 import com.fauv.analyzer.enums.AxisType;
 import com.fauv.analyzer.enums.CatalogType;
 import com.fauv.analyzer.enums.FmLevel;
+import com.fauv.analyzer.message.ModelMessage;
 
 @Entity
 @Table(name = "nominal_fm", schema = "analyzer")
@@ -30,14 +33,28 @@ public class NominalFm {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotBlank(message = ModelMessage.NOMINAL_FM_NAME)
 	private String name;
+	
+	@NotNull(message = ModelMessage.NOMINAL_FM_HIGHER_VALUE_TOLERANCE)
 	private BigDecimal higherTolerance;
+	
+	@NotNull(message = ModelMessage.NOMINAL_FM_LOWER_VALUE_TOLERANCE)
 	private BigDecimal lowerTolerance;
+	
+	@NotNull(message = ModelMessage.NOMINAL_FM_DEFAULT_VALUE)
 	private BigDecimal defaultValue;
+	
+	@NotNull(message = ModelMessage.NOMINAL_FM_CATALOG)
 	@Enumerated(EnumType.STRING)
 	private CatalogType catalogType = CatalogType.DICHTIGKEIT;
+	
+	@NotNull(message = ModelMessage.NOMINAL_FM_AXIS)
 	@Enumerated(EnumType.STRING)
 	private AxisType axis = AxisType.X;
+	
+	@NotNull(message = ModelMessage.NOMINAL_FM_LEVEL)
 	@Enumerated(EnumType.STRING)
 	private FmLevel level = FmLevel.MEDIUM;
 	private boolean active = true;
@@ -161,6 +178,20 @@ public class NominalFm {
 		nominalFm.setLowerTolerance(new BigDecimal(fmForm.getLowerTolerance()));
 		nominalFm.setHigherTolerance(new BigDecimal(fmForm.getHigherTolerance()));
 		nominalFm.setLevel(fmForm.getLevel());
+			
+		return nominalFm;
+	}
+
+	public static NominalFm buildNominalFm(NominalFm previousNominalFm, Model model) {
+		NominalFm nominalFm = new NominalFm();
+		nominalFm.setName(previousNominalFm.getName());
+		nominalFm.setActive(previousNominalFm.isActive());
+		nominalFm.setAxis(previousNominalFm.getAxis());
+		nominalFm.setDefaultValue(previousNominalFm.getDefaultValue());
+		nominalFm.setLowerTolerance(previousNominalFm.getLowerTolerance());
+		nominalFm.setHigherTolerance(previousNominalFm.getHigherTolerance());
+		nominalFm.setLevel(previousNominalFm.getLevel());
+		nominalFm.setModel(model);
 			
 		return nominalFm;
 	}

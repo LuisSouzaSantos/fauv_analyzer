@@ -5,9 +5,11 @@ import java.util.List;
 import com.fauv.analyzer.entity.dto.NominalAxisCoordinateDTO;
 import com.fauv.analyzer.entity.dto.PmpDTO;
 import com.fauv.analyzer.entity.form.FmForm;
+import com.fauv.analyzer.entity.form.FmImpactForm;
 import com.fauv.analyzer.entity.form.NominalAxisCoordinateForm;
 import com.fauv.analyzer.entity.form.PmpForm;
 import com.fauv.analyzer.entity.helper.FmHelper;
+import com.fauv.analyzer.entity.helper.FmImpactHelper;
 import com.fauv.analyzer.entity.helper.NominalAxisCoordinateHelper;
 import com.fauv.analyzer.entity.helper.PmpHelper;
 
@@ -33,4 +35,7 @@ public interface ParserHandleService {
 	
 	public List<NominalAxisCoordinateDTO> buildNominalAxisCoordinateDTOBasedOnHelper(List<NominalAxisCoordinateHelper> helperList);
 	
+	public FmImpactForm buildFmImpactFormBasedOnHelper(String info);
+	
+	public List<FmImpactForm> buildFmImpactFormBasedOnHelper(FmImpactHelper fmImpactHelper);
 }

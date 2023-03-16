@@ -50,6 +50,15 @@ public class FmImpact {
 		fmImpact.setInfo(form.getInfo());
 		
 		return fmImpact;
+	}
+
+	public static FmImpact buildFmImpact(FmImpact previousfmImpact, NominalFm nominalFm) {
+		FmImpact fmImpact = new FmImpact();
+		
+		fmImpact.setInfo(previousfmImpact.getInfo());
+		fmImpact.setNominalFm(nominalFm);
+		
+		return fmImpact;
 	}	
 	
 	

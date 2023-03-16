@@ -15,9 +15,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
+import com.fauv.analyzer.entity.dto.PmpDTO;
 import com.fauv.analyzer.entity.form.PmpForm;
 import com.fauv.analyzer.enums.AxisType;
+import com.fauv.analyzer.message.ModelMessage;
 
 @Entity
 @Table(name = "nominal_pmp", schema = "analyzer")
@@ -27,12 +31,22 @@ public class NominalPmp {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotBlank(message = ModelMessage.NOMINAL_PMP_NAME)
 	private String name;
+	
+	@NotNull(message = ModelMessage.NOMINAL_PMP_AXIS)
 	@Enumerated(EnumType.STRING)
-	private AxisType axis;
+	private AxisType axis = AxisType.X;
+	
+	@NotNull(message = ModelMessage.NOMINAL_PMP_X)
 	private BigDecimal x;
+	
+	@NotNull(message = ModelMessage.NOMINAL_PMP_Y)
 	private BigDecimal y;
+	
+	@NotNull(message = ModelMessage.NOMINAL_PMP_Z)
 	private BigDecimal z;
+	
 	private boolean active = true;
 	
 	@ManyToOne
@@ -118,12 +132,45 @@ public class NominalPmp {
 		NominalPmp nominalPmp = new NominalPmp();
 		nominalPmp.setActive(pmpForm.isActive());
 		nominalPmp.setName(pmpForm.getName());
-		nominalPmp.setAxis(pmpForm.getAxis());
+		nominalPmp.setAxis(AxisType.X);
 		nominalPmp.setX(new BigDecimal(pmpForm.getX()));
 		nominalPmp.setY(new BigDecimal(pmpForm.getY()));
 		nominalPmp.setZ(new BigDecimal(pmpForm.getZ()));
 		
 		nominalPmp.setAxisCoordinateList(pmpForm.getAxisCoordinateList().stream()
+				.map(axisCoordinate -> NominalAxisCoordinate.build(axisCoordinate, nominalPmp))
+				.collect(Collectors.toList()));
+		
+		return nominalPmp;
+	}
+	
+	public static NominalPmp buildNominalPmp(PmpDTO pmpDTO) {
+		NominalPmp nominalPmp = new NominalPmp();
+		nominalPmp.setActive(pmpDTO.isActive());
+		nominalPmp.setName(pmpDTO.getName());
+		nominalPmp.setAxis(pmpDTO.getAxis());
+		nominalPmp.setX(new BigDecimal(pmpDTO.getX()));
+		nominalPmp.setY(new BigDecimal(pmpDTO.getY()));
+		nominalPmp.setZ(new BigDecimal(pmpDTO.getZ()));
+		
+		nominalPmp.setAxisCoordinateList(pmpDTO.getAxisCoordinateList().stream()
+				.map(axisCoordinate -> NominalAxisCoordinate.build(axisCoordinate, nominalPmp))
+				.collect(Collectors.toList()));
+		
+		return nominalPmp;
+	}
+	
+	public static NominalPmp buildNominalPmp(NominalPmp previousNominalPmp, Model model) {
+		NominalPmp nominalPmp = new NominalPmp();
+		nominalPmp.setActive(previousNominalPmp.isActive());
+		nominalPmp.setName(previousNominalPmp.getName());
+		nominalPmp.setAxis(previousNominalPmp.getAxis());
+		nominalPmp.setX(previousNominalPmp.getX());
+		nominalPmp.setY(previousNominalPmp.getY());
+		nominalPmp.setZ(previousNominalPmp.getZ());
+		nominalPmp.setModel(model);
+		
+		nominalPmp.setAxisCoordinateList(previousNominalPmp.getAxisCoordinateList().stream()
 				.map(axisCoordinate -> NominalAxisCoordinate.build(axisCoordinate, nominalPmp))
 				.collect(Collectors.toList()));
 		
