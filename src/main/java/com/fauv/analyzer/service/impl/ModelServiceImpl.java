@@ -15,6 +15,7 @@ import com.fauv.analyzer.entity.Model;
 import com.fauv.analyzer.entity.NominalAxisCoordinate;
 import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.NominalPmp;
+import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.entity.dto.PmpDTO;
 import com.fauv.analyzer.entity.form.FmForm;
 import com.fauv.analyzer.entity.form.FmImpactForm;
@@ -198,6 +199,16 @@ public class ModelServiceImpl implements ModelService {
 	public List<Model> getAll() {
 		return modelRepository.findAll();
 	}
+	
+	@Override
+	public Model getByPartNumberAndCar(String partNumber, Car car) {
+		return modelRepository.findByPartNumberAndCar(partNumber, car);
+	}
+	
+	@Override
+	public Model getByPartNumberAndUnit(String partNumber, Unit unit) {
+		return modelRepository.findByPartNumberAndCarUnit(partNumber, unit);
+	}
 
 	private ModelPreview createModelPreviewUsignSampleHelperAsReference(SampleHelper sampleHelper, Set<FmImpactHelper> extractedFmImpactList) {
 		ModelPreview modelForm = new ModelPreview();
@@ -262,6 +273,6 @@ public class ModelServiceImpl implements ModelService {
 		}
 		
 		return axisCoordinateListToBeUpdate;
-	} 
+	}
 		
 }

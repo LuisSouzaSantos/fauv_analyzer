@@ -45,7 +45,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 		
 		Unit unit = unitService.getByIdValidateIt(form.getUnitId());
 		
-		Equipment equipmentDuplicate = getEquipmentByNameAndUnit(form.getName(), unit);
+		Equipment equipmentDuplicate = getByNameAndUnit(form.getName(), unit);
 		
 		if (equipmentDuplicate != null) { throw new EquipmentException(EquipmentMessage.ERROR_DUPLICATE_BY_NAME); }
 		
@@ -64,7 +64,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 		Unit unit = unitService.getByIdValidateIt(equipment.getUnit().getId());
 		
 		Equipment equipmentById = getByIdValidateIt(equipment.getId());
-		Equipment equipmentDuplicate = getEquipmentByNameAndUnit(equipment.getName(), unit);
+		Equipment equipmentDuplicate = getByNameAndUnit(equipment.getName(), unit);
 		
 		if ((equipmentDuplicate != null) && !(equipmentById.getId().equals(equipmentDuplicate.getId()))) { throw new EquipmentException(EquipmentMessage.ERROR_DUPLICATE_BY_NAME); }
 
@@ -125,7 +125,8 @@ public class EquipmentServiceImpl implements EquipmentService {
 		return equipment;
 	}
 	
-	private Equipment getEquipmentByNameAndUnit(String name, Unit unit) {
+	@Override
+	public Equipment getByNameAndUnit(String name, Unit unit) {
 		return equipmentRepository.findByNameAndUnit(name, unit);
 	}
  

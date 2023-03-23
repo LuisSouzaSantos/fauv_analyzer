@@ -1,6 +1,7 @@
 package com.fauv.analyzer.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ public class NominalPmp {
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "nominal_pmp_id")
-	private List<NominalAxisCoordinate> axisCoordinateList;
+	private List<NominalAxisCoordinate> axisCoordinateList = new ArrayList<>();
 	
 	public Long getId() {
 		return id;
@@ -126,6 +127,10 @@ public class NominalPmp {
 	
 	public void setAxisCoordinateList(List<NominalAxisCoordinate> axisCoordinateList) {
 		this.axisCoordinateList = axisCoordinateList;
+	}
+	
+	public NominalAxisCoordinate getAxisCoordinateByName(String name) {
+		return getAxisCoordinateList().stream().filter(axisCoordinate -> axisCoordinate.getName().equals(name)).findFirst().orElse(null);
 	}
 
 	public static NominalPmp buildNominalPmp(PmpForm pmpForm) {

@@ -15,7 +15,7 @@ public class ModelMessage {
 	public static final String NOMINAL_PMP_AXIS = "NOMINAL_PMP_AXIS_CANNOT_BE_NULL";
 	public static final String NOMINAL_PMP_X = "NOMINAL_PMP_AXIS_X_CANNOT_BE_NULL";
 	public static final String NOMINAL_PMP_Y = "NOMINAL_PMP_AXIS_Y_CANNOT_BE_NULL";
-	public static final String NOMINAL_PMP_Z = "NOMINAL_PMP_AXIS_Z_BE_NULL";
+	public static final String NOMINAL_PMP_Z = "NOMINAL_PMP_AXIS_Z_CANNOT_BE_NULL";
 	public static final String NOMINAL_PMP_AXIS_COORDINATE_LIST = "NOMINAL_PMP_AXIS_COORDINATE_LIST_CANNOT_BE_NULL_OR_EMPTLY";
 	
 	public static final String NOMINAL_AXIS_COORDINATE_NAME = "NOMINAL_AXIS_COORDINATE_NAME_CANNOT_BE_NULL_OR_EMPTLY";
