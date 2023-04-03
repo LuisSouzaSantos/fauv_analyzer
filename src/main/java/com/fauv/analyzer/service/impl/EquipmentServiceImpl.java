@@ -129,5 +129,14 @@ public class EquipmentServiceImpl implements EquipmentService {
 	public Equipment getByNameAndUnit(String name, Unit unit) {
 		return equipmentRepository.findByNameAndUnit(name, unit);
 	}
+
+	@Override
+	public Equipment getByNameAndUnitValidateIt(String name, Unit unit) throws EquipmentException {
+		Equipment equipment = getByNameAndUnit(name, unit);
+		
+		if (equipment == null) { throw new EquipmentException(EquipmentMessage.ERROR_NOT_FOUND); }
+		
+		return equipment;
+	}
  
 }

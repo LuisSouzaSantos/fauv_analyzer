@@ -66,7 +66,7 @@ public class NominalFm {
 	@JoinColumn(name = "nominal_fm_id")
 	private List<FmImpact> fmImpactList = new ArrayList<>();
 	
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany
 	@JoinTable(
 	  name = "nominal_pmp_fm", 
 	  joinColumns = @JoinColumn(name = "nominal_fm_id"), 

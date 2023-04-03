@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +20,7 @@ import com.fauv.analyzer.entity.MeasurementFm;
 import com.fauv.analyzer.entity.MeasurementPmp;
 import com.fauv.analyzer.entity.Model;
 import com.fauv.analyzer.entity.NominalAxisCoordinate;
+import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.NominalPmp;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.Unit;
@@ -33,10 +34,16 @@ import com.fauv.analyzer.entity.helper.MeasurementAxisCoordinateHelper;
 import com.fauv.analyzer.entity.helper.PmpHelper;
 import com.fauv.analyzer.entity.helper.SampleHelper;
 import com.fauv.analyzer.enums.AxisType;
+import com.fauv.analyzer.enums.StatusType;
 import com.fauv.analyzer.enums.ToleranceType;
+import com.fauv.analyzer.exception.EquipmentException;
+import com.fauv.analyzer.exception.ModelException;
+import com.fauv.analyzer.exception.SampleException;
 import com.fauv.analyzer.exception.UnitException;
+import com.fauv.analyzer.message.SampleMessage;
 import com.fauv.analyzer.repository.SampleRepository;
 import com.fauv.analyzer.service.EquipmentService;
+import com.fauv.analyzer.service.ModelHelperService;
 import com.fauv.analyzer.service.ModelService;
 import com.fauv.analyzer.service.SampleService;
 import com.fauv.analyzer.service.UnitService;
@@ -45,6 +52,8 @@ import com.fauv.analyzer.service.http.ParserHttp;
 @Service
 public class SampleServiceImpl implements SampleService {
 
+	private static Logger logger = LoggerFactory.getLogger(SampleServiceImpl.class);
+	
 	@Autowired
 	private SampleRepository sampleRepository;
 	
@@ -58,34 +67,56 @@ public class SampleServiceImpl implements SampleService {
 	private ModelService modelService;
 	
 	@Autowired
-	private ParserHttp parserHttp;
+	private ModelHelperService modelHelperService;
 	
 	@Autowired
-	private ModelMapper modelMapper;
+	private ParserHttp parserHttp;
 	
 	@Override
-	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException {
+	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException {
+		logger.info("--------------- Sample ---------------");
+		
 		SampleHelper sampleHelper = parserHttp.readDmoFileAndBuildASample(dmoFile);
 		
 		Unit unit = unitService.getByIdValidateIt(unitId);
-		Equipment equipment = equipmentService.getByNameAndUnit(sampleHelper.getHeader().getEquipmentName(), unit);
-		Model model = modelService.getByPartNumberAndUnit(sampleHelper.getHeader().getPartNumber(), unit);
-	
+		logger.info("Unit: "+unit.getName());
+		Equipment equipment = equipmentService.getByNameAndUnitValidateIt(sampleHelper.getHeader().getEquipmentName(), unit);
+		logger.info("Equipment: "+equipment.getName());
+		Model model = modelService.getByPartNumberAndUnitValidateIt(sampleHelper.getHeader().getPartNumber(), unit);
+		logger.info("Model (PartNumber): "+model.getPartNumber()+" (Car Name)"+model.getCar().getName());
+		
+		Sample duplicateSample = getByPinAndModel(sampleHelper.getHeader().getSampleId(), model);
+		
+		if (duplicateSample != null) { throw new SampleException(SampleMessage.DUPLICATE); }
+		 
 		Sample sample = new Sample();
 		sample.setFileName("not_include");
 		sample.setModel(model);
 		sample.setPin(sampleHelper.getHeader().getSampleId());
+		logger.info("Pin: "+sample.getPin());
 		sample.setEquipment(equipment);
 		sample.setUploadedUser(sampleHelper.getHeader().getInspectorName());
+		logger.info("Upload User: "+sample.getUploadedUser());
 		sample.setScanInitDate(sampleHelper.getHeader().getStartDate(), sampleHelper.getHeader().getStartTime());
+		logger.info("Scan Init Date: "+sample.getScanInitDate());
 		sample.setScanEndDate(sampleHelper.getHeader().getEndDate(), sampleHelper.getHeader().getEndTime());
+		logger.info("Scan End Date: "+sample.getScanEndDate());
 		sample.setUploadedDate(LocalDateTime.now());
+		logger.info("Uploaded Date: "+sample.getUploadedDate());
+		sample.setStatus(StatusType.SUCCESS);
 		
+		logger.info("PMP List: ");
 		sample.getMeasurementPmpList().addAll(buildMeasurementPmp(sampleHelper.getPmpList(), sample, model));
+		logger.info("FM List: ");
 		sample.getMeasurementFmList().addAll(buildMeasurementFm(sampleHelper.getFmList(),sample.getMeasurementPmpList(), sample, model));
 		
-		
-		return sample;
+		logger.info("--------------- End Sample ---------------");
+		return sampleRepository.save(sample);
+	}
+	
+	@Override
+	public void delete(Long id) {
+		sampleRepository.deleteById(id);		
 	}
 
 	@Override
@@ -99,6 +130,15 @@ public class SampleServiceImpl implements SampleService {
 	}
 	
 	@Override
+	public Sample getByIdValidateIt(Long id) throws SampleException {
+		Sample sample = getById(id);
+		
+		if (sample == null) { throw new SampleException(SampleMessage.NOT_FOUND); }
+		
+		return sample;
+	}
+	
+	@Override
 	public List<SampleDTO> toSampleDTO(List<Sample> list) {
 		if (list == null) { return new ArrayList<>(); }
 		
@@ -109,11 +149,31 @@ public class SampleServiceImpl implements SampleService {
 	public SampleDTO toSampleDTO(Sample sample) {
 		if (sample == null) { return null; }
 		
-		SampleDTO sampleDTO = modelMapper.map(sample, SampleDTO.class);
+		SampleDTO sampleDTO = new SampleDTO();
+		
+		sampleDTO.setId(sample.getId());
+		sampleDTO.setFileName(sample.getFileName());
+		sampleDTO.setPin(sample.getPin());
+		sampleDTO.setUploadedUser(sample.getUploadedUser());
+		sampleDTO.setUploadedDate(sample.getUploadedDate());
+		sampleDTO.setStatus(sample.getStatus());
+		sampleDTO.setScanInitDate(sample.getScanInitDate());
+		sampleDTO.setScanEndDate(sample.getScanEndDate());
+		sampleDTO.setModel(modelHelperService.toModelDTO(sample.getModel()));
+		sampleDTO.setEquipment(equipmentService.toEquipmentDTO(sample.getEquipment()));
+		
 		sampleDTO.getMeasurementPmpList().addAll(buildMeasurementPmpDTO(sample.getMeasurementPmpList()));
 		sampleDTO.getMeasurementFmList().addAll(buildMeasurementFmDTO(sample.getMeasurementFmList()));
 		
+		sampleDTO.setAk(sample.numberOfFmsOutOfBounds());
+		sampleDTO.setBk(0L);
+		sampleDTO.setIo(sample.numberOfFmsWithinLimits());
+		
 		return sampleDTO;
+	}
+	
+	private Sample getByPinAndModel(String pin, Model model) {
+		return sampleRepository.findByPinAndModel(pin, model);
 	}
 	
 	private Set<MeasurementPmpDTO> buildMeasurementPmpDTO(Set<MeasurementPmp> measurementPmpList) {
@@ -179,21 +239,35 @@ public class SampleServiceImpl implements SampleService {
 		return measurementFmDTOList;
 	}
 	
-	private Set<MeasurementFm> buildMeasurementFm(List<FmHelper> fmListHelper, Set<MeasurementPmp> measurementPmpList, Sample sample, Model model) {
+	private Set<MeasurementFm> buildMeasurementFm(List<FmHelper> fmListHelper, Set<MeasurementPmp> measurementPmpList, Sample sample, Model model) throws SampleException {
 		Set<MeasurementFm> measurementFmList = new HashSet<>();
 		
 		for (FmHelper fmHelper : fmListHelper) {
+			
+			NominalFm nominalFm = model.getFmByName(fmHelper.getName());
+			
+			if (nominalFm == null) { throw new SampleException(SampleMessage.FM_NOT_FOUND+":"+fmHelper.getName()); }
+			
 			MeasurementFm measurementFm = new MeasurementFm();
+			measurementFm.setNominalFm(nominalFm);
+			logger.info("Measurement Fm Name: "+measurementFm.getNominalFm().getName());
 			measurementFm.setSample(sample);
 			measurementFm.setToleranceType(ToleranceType.valueOf(fmHelper.getMeasurementAxisCoordinates().getType().name()));
+			logger.info("Measurement Fm Tolarance Type: "+measurementFm.getToleranceType());
 			measurementFm.setValue(new BigDecimal(fmHelper.getMeasurementAxisCoordinates().getCalculated()));
-			measurementFm.setNominalFm(model.getFmByName(fmHelper.getName()));
+			logger.info("Measurement Fm Value: "+measurementFm.getValue());
 			
+			logger.info("Fm_Pmp List : ");
 			for (String pmpName : fmHelper.getPmpNameList()) {
 				MeasurementPmp measurementPmpFound = measurementPmpList.stream()
 						.filter(measurementPmp -> measurementPmp.getNominalPmp().getName().equals(pmpName)).findFirst().orElse(null);
 				
-				if (measurementPmpFound == null) { continue; }
+				if (measurementPmpFound == null) { 
+					logger.info(SampleMessage.PMP_NOT_FOUND+":"+pmpName);
+					continue;
+				}
+				
+				logger.info("Pmp name: "+measurementPmpFound.getNominalPmp().getName());
 				
 				measurementFm.getMeasurementPmpList().add(measurementPmpFound);
 			}
@@ -204,10 +278,15 @@ public class SampleServiceImpl implements SampleService {
 		return measurementFmList;
 	}
 	
-	private Set<MeasurementPmp> buildMeasurementPmp(List<PmpHelper> pmpListHelper, Sample sample, Model model) {
+	private Set<MeasurementPmp> buildMeasurementPmp(List<PmpHelper> pmpListHelper, Sample sample, Model model) throws SampleException {
 		Set<MeasurementPmp> measurementPmpList = new HashSet<>();
 		
 		for (PmpHelper pmpHelper : pmpListHelper) {
+			
+			NominalPmp nominalPmp = model.getPmpByName(pmpHelper.getName());
+			
+			if (nominalPmp == null) { throw new SampleException(SampleMessage.PMP_NOT_FOUND+":"+pmpHelper.getName()); }
+			
 			MeasurementPmp measurementPmp = new MeasurementPmp();
 			
 			for (CoordinateValueHelper coordinateValueHelper : pmpHelper.getMeasurementCoordinate().getValues()) {
@@ -223,9 +302,11 @@ public class SampleServiceImpl implements SampleService {
 					measurementPmp.setZ(new BigDecimal(coordinateValueHelper.getValue()));
 				}
 			}
-			
-			measurementPmp.setNominalPmp(model.getPmpByName(pmpHelper.getName()));
+
+			measurementPmp.setNominalPmp(nominalPmp);
+			logger.info("Measurement Pmp Name: "+measurementPmp.getNominalPmp().getName());
 			measurementPmp.setSample(sample);
+			logger.info("Measurement Axis Coordinate List:");
 			measurementPmp.setMeasurementAxisCoordinateList(
 					buildMeasurementAxisCoordiante(pmpHelper.getMeasurementAxisCoordinates(), measurementPmp));
 
@@ -236,7 +317,7 @@ public class SampleServiceImpl implements SampleService {
 	}
 	
 	private Set<MeasurementAxisCoordinate> buildMeasurementAxisCoordiante(
-			List<MeasurementAxisCoordinateHelper> measurementAxisCoordinateListHelper, MeasurementPmp measurementPmp) {
+			List<MeasurementAxisCoordinateHelper> measurementAxisCoordinateListHelper, MeasurementPmp measurementPmp) throws SampleException {
 		Set<MeasurementAxisCoordinate> measurementAxisCoordinateList = new HashSet<>();
 			
 		NominalPmp nominalPmp = measurementPmp.getNominalPmp();
@@ -244,11 +325,16 @@ public class SampleServiceImpl implements SampleService {
 		for (MeasurementAxisCoordinateHelper measurementAxisCoordinateHelper : measurementAxisCoordinateListHelper) {
 			
 			NominalAxisCoordinate nominalAxisCoordinate = nominalPmp.getAxisCoordinateByName(measurementAxisCoordinateHelper.getName());
+			if (nominalAxisCoordinate == null) { throw new SampleException(SampleMessage.AXIS_COORDINATE_NOT_FOUND+":"+measurementAxisCoordinateHelper.getName()); }
+			
+			logger.info("Measurement Axis Coordinate Name: "+nominalAxisCoordinate.getName());
 			
 			MeasurementAxisCoordinate measurementAxisCoordinate = new MeasurementAxisCoordinate();
 			measurementAxisCoordinate.setMeasurementPmp(measurementPmp);
 			measurementAxisCoordinate.setToleranceType(ToleranceType.valueOf(measurementAxisCoordinateHelper.getType().name()));
+			logger.info("Measurement Axis Coordinate Tolerance Type: "+measurementAxisCoordinate.getToleranceType());
 			measurementAxisCoordinate.setValue(new BigDecimal(measurementAxisCoordinateHelper.getCalculated()));
+			logger.info("Measurement Axis Coordinate Value: "+measurementAxisCoordinate.getValue());
 			measurementAxisCoordinate.setNominalAxisCoordinate(nominalAxisCoordinate);
 			
 			measurementAxisCoordinateList.add(measurementAxisCoordinate);
@@ -256,7 +342,5 @@ public class SampleServiceImpl implements SampleService {
 		
 		return measurementAxisCoordinateList;
 	}
-
-
 
 }

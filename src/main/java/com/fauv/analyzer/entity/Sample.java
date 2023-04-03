@@ -24,6 +24,7 @@ import javax.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fauv.analyzer.enums.StatusType;
+import com.fauv.analyzer.enums.ToleranceType;
 import com.fauv.analyzer.message.SampleMessage;
 
 @Entity
@@ -190,6 +191,14 @@ public class Sample {
 
 	public void setMeasurementFmList(Set<MeasurementFm> measurementFmList) {
 		this.measurementFmList = measurementFmList;
+	}
+	
+	public long numberOfFmsOutOfBounds() {
+		return getMeasurementFmList().stream().filter(fm -> fm.getToleranceType().equals(ToleranceType.OUTOL)).count();
+	}
+	
+	public long numberOfFmsWithinLimits() {
+		return getMeasurementFmList().stream().filter(fm -> fm.getToleranceType().equals(ToleranceType.INTOL)).count();
 	}
 	
 	

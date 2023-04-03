@@ -22,6 +22,9 @@ public class SampleDTO {
 	private String fileName;
 	private Set<MeasurementPmpDTO> measurementPmpList = new HashSet<>(); 
 	private Set<MeasurementFmDTO> measurementFmList = new HashSet<>();
+	private long ak;
+	private long bk;
+	private long io;
 	
 	public Long getId() {
 		return id;
@@ -117,6 +120,30 @@ public class SampleDTO {
 	
 	public void setMeasurementFmList(Set<MeasurementFmDTO> measurementFmList) {
 		this.measurementFmList = measurementFmList;
+	}
+
+	public long getAk() {
+		return ak;
+	}
+
+	public void setAk(long ak) {
+		this.ak = ak;
+	}
+
+	public long getBk() {
+		return bk;
+	}
+
+	public void setBk(long bk) {
+		this.bk = bk;
+	}
+
+	public long getIo() {
+		return io;
+	}
+
+	public void setIo(long io) {
+		this.io = io;
 	}
 
 }

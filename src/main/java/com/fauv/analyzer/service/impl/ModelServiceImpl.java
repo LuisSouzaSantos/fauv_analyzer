@@ -26,6 +26,7 @@ import com.fauv.analyzer.entity.helper.FmHelper;
 import com.fauv.analyzer.entity.helper.FmImpactHelper;
 import com.fauv.analyzer.entity.helper.PmpHelper;
 import com.fauv.analyzer.entity.helper.SampleHelper;
+import com.fauv.analyzer.exception.CarException;
 import com.fauv.analyzer.exception.EntityValidatorException;
 import com.fauv.analyzer.exception.ModelException;
 import com.fauv.analyzer.message.ModelMessage;
@@ -67,15 +68,17 @@ public class ModelServiceImpl implements ModelService {
 	}
 
 	@Override
-	public Model create(ModelForm form) throws EntityValidatorException, ModelException {
+	public Model create(ModelForm form) throws EntityValidatorException, ModelException, CarException {
 		modelValidator.validateModelForm(form);
 		
-		Car car = carService.getById(form.getCar().getId());
+		Car car = carService.getByIdValidateIt(form.getCar().getId());
 		
 		Model model = new Model();
 		model.setPartNumber(form.getPartNumber());
 		model.setStepDescription(form.getStepDescription());
 		model.setCar(car);
+		
+		if (getByPartNumberAndCar(model.getPartNumber(), car) != null) { throw new ModelException(ModelMessage.DUPLICATE); }
 		
 		for (PmpForm pmpForm : form.getPmpList()) {
 			NominalPmp nominalPmp = NominalPmp.buildNominalPmp(pmpForm);
@@ -85,11 +88,7 @@ public class ModelServiceImpl implements ModelService {
 			model.getPmpList().add(nominalPmp);
 		}
 		
-		for (FmForm fmForm: form.getFmList()) {
-			if (fmForm.getName().equals("DNA006")) {
-				System.out.println("PARA");
-			}
-			
+		for (FmForm fmForm: form.getFmList()) {			
 			NominalFm nominalFm = NominalFm.buildNominalFm(fmForm);
 			
 			for (PmpDTO pmpDTO : fmForm.getPointsUsingToMap()) {
@@ -122,12 +121,19 @@ public class ModelServiceImpl implements ModelService {
 	}
 
 	@Override
-	public Model edit(Model model) throws EntityValidatorException, ModelException {
+	public Model edit(Model model) throws EntityValidatorException, ModelException, CarException {
 		Model modelById = getByIdValidateIt(model.getId());
 
+		Car car = carService.getByIdValidateIt(model.getCar().getId());
+
+		
 		modelById.setPartNumber(model.getPartNumber());
 		modelById.setStepDescription(model.getStepDescription());
-		modelById.setCar(model.getCar());
+		modelById.setCar(car);
+		
+		Model duplicateModel = getByPartNumberAndCar(model.getPartNumber(), model.getCar());
+		
+		if (duplicateModel != null && !modelById.getId().equals(duplicateModel.getId())) { throw new ModelException(ModelMessage.DUPLICATE); }
 		
 		for (NominalPmp previousNominalPmp : model.getPmpList()) {			
 			NominalPmp nominalPmp = previousNominalPmp.getId() == null ? NominalPmp.buildNominalPmp(previousNominalPmp, model):previousNominalPmp;
@@ -209,6 +215,20 @@ public class ModelServiceImpl implements ModelService {
 	public Model getByPartNumberAndUnit(String partNumber, Unit unit) {
 		return modelRepository.findByPartNumberAndCarUnit(partNumber, unit);
 	}
+	
+	@Override
+	public Model getByPartNumberAndUnitValidateIt(String partNumber, Unit unit) throws ModelException {
+		Model model = getByPartNumberAndUnit(partNumber, unit);
+		
+		if (model == null) { throw new ModelException(ModelMessage.NOT_FOUND); }
+		
+		return model;
+	}
+	
+	@Override
+	public void delete(Long id) {
+		modelRepository.deleteById(id);
+	}
 
 	private ModelPreview createModelPreviewUsignSampleHelperAsReference(SampleHelper sampleHelper, Set<FmImpactHelper> extractedFmImpactList) {
 		ModelPreview modelForm = new ModelPreview();
@@ -231,7 +251,7 @@ public class ModelServiceImpl implements ModelService {
 	private Set<FmForm> buildFmFormSet(List<FmHelper> helperList, List<PmpDTO> pmpDTOList, Set<FmImpactHelper> extractedFmImpactList) {
 		Set<FmForm> setFmForm = new HashSet<>();
 		
-		for (FmHelper fmHelper : helperList) {
+		for (FmHelper fmHelper : helperList) {			
 			List<String> pointsNameToBeFound = fmHelper.getPmpNameList();			
 			
 			List<PmpDTO> pointsFound = pmpDTOList.stream()

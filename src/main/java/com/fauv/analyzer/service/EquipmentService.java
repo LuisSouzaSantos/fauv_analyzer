@@ -21,6 +21,8 @@ public interface EquipmentService {
 	
 	public Equipment getByNameAndUnit(String name, Unit unit);
 	
+	public Equipment getByNameAndUnitValidateIt(String name, Unit unit) throws EquipmentException;
+	
 	public Equipment getByIdValidateIt(Long id) throws EquipmentException;
 	
 	public List<Equipment> getAll(); 

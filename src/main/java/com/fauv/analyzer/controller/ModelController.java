@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,12 +54,16 @@ public class ModelController {
 		return ResponseEntity.ok(modelHelperService.toModelDTO(models)); 
 	}
 	
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<ModelDTO> getById(@PathVariable Long id) throws ModelException {
 		Model model = modelService.getByIdValidateIt(id);
 		
 		return ResponseEntity.ok(modelHelperService.toModelDTO(model)); 
+	}
+	
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable Long id) {
+		modelService.delete(id);
 	}
 	
 	

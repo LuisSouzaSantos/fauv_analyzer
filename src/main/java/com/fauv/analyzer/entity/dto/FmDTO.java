@@ -14,8 +14,7 @@ public class FmDTO {
 	private double lowerTolerance;
 	private double defaultValue;
 	private AxisType axis;
-	@JsonIgnoreProperties(value = {"pmpList", "fmList", "car"})
-	private ModelDTO model;
+	@JsonIgnoreProperties(value = {"axisCoordinateList"})
 	private List<PmpDTO> pointsUsingToMap = new ArrayList<>();
 	private List<FmImpactDTO> fmImpactList = new ArrayList<>();
 	
@@ -65,14 +64,6 @@ public class FmDTO {
 	
 	public void setAxis(AxisType axis) {
 		this.axis = axis;
-	}
-	
-	public ModelDTO getModel() {
-		return model;
-	}
-
-	public void setModel(ModelDTO model) {
-		this.model = model;
 	}
 
 	public List<PmpDTO> getPointsUsingToMap() {

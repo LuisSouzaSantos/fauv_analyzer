@@ -2,7 +2,6 @@ package com.fauv.analyzer.entity.dto;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fauv.analyzer.enums.AxisType;
 
 public class PmpDTO {
@@ -14,8 +13,6 @@ public class PmpDTO {
 	private double y;
 	private double z;
 	private boolean active;
-	@JsonIgnoreProperties(value = {"pmpList", "fmList", "car"})
-	private ModelDTO model;
 	private List<NominalAxisCoordinateDTO> axisCoordinateList;
 	
 	public Long getId() {
@@ -72,12 +69,6 @@ public class PmpDTO {
 		this.active = active;
 	}
 	
-	public ModelDTO getModel() {
-		return model;
-	}
-	public void setModel(ModelDTO model) {
-		this.model = model;
-	}
 	public List<NominalAxisCoordinateDTO> getAxisCoordinateList() {
 		return axisCoordinateList;
 	}

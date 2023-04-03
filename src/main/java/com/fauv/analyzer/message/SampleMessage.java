@@ -13,6 +13,12 @@ public class SampleMessage {
 	public static final String SCAN_END_DATE = "SCAN_END_DATE_CANNOT_BE_NULL";
 	public static final String STATUS = "STATUS_CANNOT_BE_NULL";
 	
+	public static final String NOT_FOUND = "SAMPLE_NOT_FOUND";
+	public static final String DUPLICATE = "DUPLICATE_SAMPLE_FOR_THIS_MODEL";
+	public static final String PMP_NOT_FOUND = "PMP_NOT_FOUND";
+	public static final String FM_NOT_FOUND = "FM_NOT_FOUND";
+	public static final String AXIS_COORDINATE_NOT_FOUND = "AXIS_COORDINATE_NOT_FOUND";
+	
 	public static final String MEASUREMENT_PMP_X = "MEASUREMENT_PMP_AXIS_X_CANNOT_BE_NULL";
 	public static final String MEASUREMENT_PMP_Y = "MEASUREMENT_PMP_AXIS_Y_CANNOT_BE_NULL";
 	public static final String MEASUREMENT_PMP_Z = "MEASUREMENT_PMP_AXIS_Z_CANNOT_BE_NULL";

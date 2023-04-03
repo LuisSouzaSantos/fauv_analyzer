@@ -43,7 +43,7 @@ create table analyzer.nominal_pmp (
 	x numeric(9,3) NOT NULL,
 	y numeric(9,3) NOT NULL,
 	z numeric(9,3) NOT null,
-	model_id BIGINT not null,
+	model_id BIGINT,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_NominalPmp_Model FOREIGN KEY(model_id) REFERENCES analyzer.model(id)
 );
@@ -54,7 +54,7 @@ create table analyzer.nominal_axis_coordinate (
 	axis VARCHAR(1) not null,
 	lower_tolerance numeric(9,3) not null,
 	higher_tolerance numeric(9,3) not null,
-	nominal_pmp_id BIGINT not null,
+	nominal_pmp_id BIGINT,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_NominalAxisCoordinate_NominalPmp FOREIGN KEY(nominal_pmp_id) REFERENCES analyzer.nominal_pmp(id)
 );
@@ -69,7 +69,7 @@ create table analyzer.nominal_fm (
 	catalog_type VARCHAR(255) not null,
 	level VARCHAR(255) not null,
 	active BOOLEAN not null,
-	model_id BIGINT not null,
+	model_id BIGINT,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_NominalFm_Model FOREIGN KEY(model_id) REFERENCES analyzer.model(id)
 );
@@ -77,7 +77,7 @@ create table analyzer.nominal_fm (
 create table analyzer.fm_impact ( 
 	id BIGSERIAL,
 	info VARCHAR(255) not null,
-	nominal_fm_id BIGINT not null,
+	nominal_fm_id BIGINT,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_FmImpact_NominalFm FOREIGN KEY(nominal_fm_id) REFERENCES analyzer.nominal_fm(id)
 );
@@ -91,8 +91,8 @@ create table analyzer.sample (
 	id BIGSERIAL,
 	uploaded_date TIMESTAMP not null,
 	uploaded_user VARCHAR(45) not null,
-	model_id BIGINT not null,
-	equipment_id BIGINT not null,
+	model_id BIGINT,
+	equipment_id BIGINT,
 	pin VARCHAR(10) not null,
 	scan_init_date TIMESTAMP not null,
 	scan_end_date TIMESTAMP not null,
@@ -105,11 +105,11 @@ create table analyzer.sample (
 
 create table analyzer.measurement_pmp (
 	id BIGSERIAL,
-	nominal_pmp_id BIGINT NOT NULL,
+	nominal_pmp_id BIGINT,
 	x numeric(9,3) NOT NULL,
 	y numeric(9,3) NOT NULL,
 	z numeric(9,3) NOT null,
-	sample_id BIGINT not null,
+	sample_id BIGINT,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_MeasurementPmp_NominalPmp FOREIGN KEY(nominal_pmp_id) REFERENCES analyzer.nominal_pmp(id),
 	CONSTRAINT FK_MeasurementPmp_Sample FOREIGN KEY(sample_id) REFERENCES analyzer.sample(id)
@@ -117,7 +117,7 @@ create table analyzer.measurement_pmp (
 
 create table analyzer.measurement_axis_coordinate (
 	id BIGSERIAL,
-	measurement_pmp_id BIGINT NOT NULL,
+	measurement_pmp_id BIGINT,
 	value numeric(9,3) NOT null,
 	tolerance_type VARCHAR(20) NOT NULL,
 	PRIMARY KEY(id),
@@ -127,10 +127,10 @@ create table analyzer.measurement_axis_coordinate (
 
 create table analyzer.measurement_fm (
 	id BIGSERIAL,
-	nominal_fm_id BIGINT NOT NULL,
+	nominal_fm_id BIGINT,
 	value numeric(9,3) NOT null, 
 	tolerance_type VARCHAR(20) NOT NULL,
-	sample_id BIGINT not null,
+	sample_id BIGINT,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_MeasurementFm_Sample FOREIGN KEY(sample_id) REFERENCES analyzer.sample(id),
 	CONSTRAINT FK_MeasurementFm_NominalFm FOREIGN KEY(nominal_fm_id) REFERENCES analyzer.nominal_fm(id)
