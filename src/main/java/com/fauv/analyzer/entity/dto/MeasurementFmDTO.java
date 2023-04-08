@@ -1,6 +1,5 @@
 package com.fauv.analyzer.entity.dto;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +17,7 @@ public class MeasurementFmDTO {
 	private CatalogType catalogType = CatalogType.DICHTIGKEIT;
 	private AxisType axis;
 	private FmLevel level;
-	private BigDecimal value;
+	private double value;
 	private ToleranceType toleranceType = ToleranceType.OUTOL;
 	private Set<String> measurementPmpList = new HashSet<>();
 	
@@ -78,14 +77,14 @@ public class MeasurementFmDTO {
 		this.level = level;
 	}
 
-	public BigDecimal getValue() {
+	public double getValue() {
 		return value;
 	}
-	
-	public void setValue(BigDecimal value) {
+
+	public void setValue(double value) {
 		this.value = value;
 	}
-	
+
 	public ToleranceType getToleranceType() {
 		return toleranceType;
 	}

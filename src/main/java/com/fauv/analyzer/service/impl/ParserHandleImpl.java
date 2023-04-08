@@ -26,6 +26,7 @@ public class ParserHandleImpl implements ParserHandleService {
 		
 		form.setName(helper.getName());
 		form.setAxis(helper.getNominalAxisCoodinates().getAxisType());
+		form.setDefaultValue(helper.getNominalAxisCoodinates().getDefaultValue());
 		form.setHigherTolerance(helper.getNominalAxisCoodinates().getSuperiorTolerance());
 		form.setLowerTolerance(helper.getNominalAxisCoodinates().getLowerTolerance());
 

@@ -22,9 +22,8 @@ public class SampleDTO {
 	private String fileName;
 	private Set<MeasurementPmpDTO> measurementPmpList = new HashSet<>(); 
 	private Set<MeasurementFmDTO> measurementFmList = new HashSet<>();
-	private long ak;
-	private long bk;
-	private long io;
+	private FmIndicatorDTO fmIndicator;
+	private PmpIndicatorDTO pmpIndicator;
 	
 	public Long getId() {
 		return id;
@@ -122,28 +121,20 @@ public class SampleDTO {
 		this.measurementFmList = measurementFmList;
 	}
 
-	public long getAk() {
-		return ak;
+	public FmIndicatorDTO getFmIndicator() {
+		return fmIndicator;
 	}
 
-	public void setAk(long ak) {
-		this.ak = ak;
+	public void setFmIndicator(FmIndicatorDTO fmIndicator) {
+		this.fmIndicator = fmIndicator;
 	}
 
-	public long getBk() {
-		return bk;
+	public PmpIndicatorDTO getPmpIndicator() {
+		return pmpIndicator;
 	}
 
-	public void setBk(long bk) {
-		this.bk = bk;
-	}
-
-	public long getIo() {
-		return io;
-	}
-
-	public void setIo(long io) {
-		this.io = io;
+	public void setPmpIndicator(PmpIndicatorDTO pmpIndicator) {
+		this.pmpIndicator = pmpIndicator;
 	}
 
 }

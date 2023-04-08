@@ -1,6 +1,7 @@
 package com.fauv.analyzer.service.impl;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,9 +25,11 @@ import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.NominalPmp;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.Unit;
+import com.fauv.analyzer.entity.dto.FmIndicatorDTO;
 import com.fauv.analyzer.entity.dto.MeasurementAxisCoordinateDTO;
 import com.fauv.analyzer.entity.dto.MeasurementFmDTO;
 import com.fauv.analyzer.entity.dto.MeasurementPmpDTO;
+import com.fauv.analyzer.entity.dto.PmpIndicatorDTO;
 import com.fauv.analyzer.entity.dto.SampleDTO;
 import com.fauv.analyzer.entity.helper.CoordinateValueHelper;
 import com.fauv.analyzer.entity.helper.FmHelper;
@@ -53,6 +56,9 @@ import com.fauv.analyzer.service.http.ParserHttp;
 public class SampleServiceImpl implements SampleService {
 
 	private static Logger logger = LoggerFactory.getLogger(SampleServiceImpl.class);
+    private static final DecimalFormat FM_FORMAT_CALCULATE = new DecimalFormat("#.#");
+    private static final DecimalFormat PMP_FORMAT_CALCULATE = new DecimalFormat("#.##");
+	private static final double BK_PERCENT = 75.0;
 	
 	@Autowired
 	private SampleRepository sampleRepository;
@@ -83,7 +89,7 @@ public class SampleServiceImpl implements SampleService {
 		Equipment equipment = equipmentService.getByNameAndUnitValidateIt(sampleHelper.getHeader().getEquipmentName(), unit);
 		logger.info("Equipment: "+equipment.getName());
 		Model model = modelService.getByPartNumberAndUnitValidateIt(sampleHelper.getHeader().getPartNumber(), unit);
-		logger.info("Model (PartNumber): "+model.getPartNumber()+" (Car Name)"+model.getCar().getName());
+		logger.info("Model (PartNumber): "+model.getPartNumber()+" - (Car Name)"+model.getCar().getName());
 		
 		Sample duplicateSample = getByPinAndModel(sampleHelper.getHeader().getSampleId(), model);
 		
@@ -164,14 +170,82 @@ public class SampleServiceImpl implements SampleService {
 		
 		sampleDTO.getMeasurementPmpList().addAll(buildMeasurementPmpDTO(sample.getMeasurementPmpList()));
 		sampleDTO.getMeasurementFmList().addAll(buildMeasurementFmDTO(sample.getMeasurementFmList()));
-		
-		sampleDTO.setAk(sample.numberOfFmsOutOfBounds());
-		sampleDTO.setBk(0L);
-		sampleDTO.setIo(sample.numberOfFmsWithinLimits());
-		
+		sampleDTO.setFmIndicator(buildFmIndicator(sampleDTO.getMeasurementFmList()));
+		sampleDTO.setPmpIndicator(buildPmpIndicator(sampleDTO.getMeasurementPmpList()));
+				
 		return sampleDTO;
 	}
 	
+	private	FmIndicatorDTO buildFmIndicator(Set<MeasurementFmDTO> fmMeasurementDTOList) {
+		FmIndicatorDTO fmIndicatorDTO = new FmIndicatorDTO();
+		
+		for (MeasurementFmDTO fmMeasurement : fmMeasurementDTOList) {
+			double defaultHigherToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getHigherTolerance()));
+			double defaultlowerToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getLowerTolerance()));
+
+			double defaultLimitedHigherToleranceValueRounded = BK_PERCENT*defaultHigherToleranceValueRounded;
+			double defaultLimitedLlowerToleranceValueRounded = BK_PERCENT*defaultlowerToleranceValueRounded;
+
+			double value = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getValue()-fmMeasurement.getDefaultValue()));
+			
+			boolean isAk = value > defaultHigherToleranceValueRounded || value < defaultlowerToleranceValueRounded;
+			boolean isBk = !isAk && ((value <= defaultHigherToleranceValueRounded && value>=defaultLimitedHigherToleranceValueRounded) || 
+					(value <= defaultlowerToleranceValueRounded && value <= defaultLimitedLlowerToleranceValueRounded));
+			
+			if (isAk) { fmIndicatorDTO.setAk(fmIndicatorDTO.getAk()+1); }
+			else if (isBk) { fmIndicatorDTO.setBk(fmIndicatorDTO.getBk()+1); }
+			else { fmIndicatorDTO.setIo(fmIndicatorDTO.getIo()+1); }
+		}
+		
+		return fmIndicatorDTO;
+	}
+	
+	private PmpIndicatorDTO buildPmpIndicator(Set<MeasurementPmpDTO> measurementPmpDTOList) {		
+		PmpIndicatorDTO pmpIndicator = new PmpIndicatorDTO();
+		
+		for (MeasurementPmpDTO pmpMeasurement : measurementPmpDTOList) {
+			
+			for (MeasurementAxisCoordinateDTO measurementAxisCoordinate : pmpMeasurement.getMeasurementAxisCoordinateList()) {					
+				double defaultHigherToleranceValueRounded = Double.parseDouble(PMP_FORMAT_CALCULATE.format(measurementAxisCoordinate.getHigherTolerance()));
+				double defaultlowerToleranceValueRounded = Double.parseDouble(PMP_FORMAT_CALCULATE.format(measurementAxisCoordinate.getLowerTolerance()));
+
+				double defaultLimitedHigherToleranceValueRounded = BK_PERCENT*defaultHigherToleranceValueRounded;
+				double defaultLimitedLlowerToleranceValueRounded = BK_PERCENT*defaultlowerToleranceValueRounded;
+				
+				double value = Double.parseDouble(PMP_FORMAT_CALCULATE.format(measurementAxisCoordinate.getValue().doubleValue()));
+				
+				boolean isAk = value > defaultHigherToleranceValueRounded || value < defaultlowerToleranceValueRounded;
+				boolean isBk = !isAk && ((value <= defaultHigherToleranceValueRounded && value>=defaultLimitedHigherToleranceValueRounded) || 
+						(value <= defaultlowerToleranceValueRounded && value <= defaultLimitedLlowerToleranceValueRounded));
+								
+				if (measurementAxisCoordinate.getAxis().equals(AxisType.T)) {
+					if (isAk) { pmpIndicator.setAkT(pmpIndicator.getAkT()+1);}
+					else if(isBk) { pmpIndicator.setBkT(pmpIndicator.getBkT()+1); }
+					else { pmpIndicator.setIoT(pmpIndicator.getIoT()+1); }
+				}else if(measurementAxisCoordinate.getAxis().equals(AxisType.D)) {
+					if (isAk) { pmpIndicator.setAkD(pmpIndicator.getAkD()+1);}
+					else if(isBk) { pmpIndicator.setBkD(pmpIndicator.getBkD()+1); }
+					else { pmpIndicator.setIoD(pmpIndicator.getIoD()+1); }
+				}else if (measurementAxisCoordinate.getAxis().equals(AxisType.Z)) {
+					if (isAk) { pmpIndicator.setAkZ(pmpIndicator.getAkZ()+1);}
+					else if(isBk) { pmpIndicator.setBkZ(pmpIndicator.getBkZ()+1); }
+					else { pmpIndicator.setIoZ(pmpIndicator.getIoZ()+1); }
+				}else if (measurementAxisCoordinate.getAxis().equals(AxisType.Y)) {
+					if (isAk) { pmpIndicator.setAkY(pmpIndicator.getAkY()+1);}
+					else if(isBk) { pmpIndicator.setBkY(pmpIndicator.getBkY()+1); }
+					else { pmpIndicator.setIoY(pmpIndicator.getIoY()+1); }
+				}else {
+					if (isAk) { pmpIndicator.setAkX(pmpIndicator.getAkX()+1);}
+					else if(isBk) { pmpIndicator.setBkX(pmpIndicator.getBkX()+1); }
+					else { pmpIndicator.setIoX(pmpIndicator.getIoX()+1); }
+				}
+					
+			}
+		}
+		
+		return pmpIndicator;
+	}
+		
 	private Sample getByPinAndModel(String pin, Model model) {
 		return sampleRepository.findByPinAndModel(pin, model);
 	}
@@ -187,7 +261,7 @@ public class SampleServiceImpl implements SampleService {
 			measurementPmpDTO.setDefaultX(measurementPmp.getNominalPmp().getX().doubleValue());
 			measurementPmpDTO.setDefaultY(measurementPmp.getNominalPmp().getY().doubleValue());
 			measurementPmpDTO.setDefaultZ(measurementPmp.getNominalPmp().getZ().doubleValue());
-			measurementPmpDTO.setName(measurementPmpDTO.getName());
+			measurementPmpDTO.setName(measurementPmp.getNominalPmp().getName());
 			measurementPmpDTO.setAxis(measurementPmp.getNominalPmp().getAxis());
 			measurementPmpDTO.getMeasurementAxisCoordinateList().addAll(buildMeasurementAxisCoordinateDTO(measurementPmp.getMeasurementAxisCoordinateList()));
 			
@@ -226,7 +300,7 @@ public class SampleServiceImpl implements SampleService {
 			measurementFmDTO.setHigherTolerance(measurementFm.getNominalFm().getHigherTolerance().doubleValue());
 			measurementFmDTO.setLowerTolerance(measurementFm.getNominalFm().getLowerTolerance().doubleValue());
 			measurementFmDTO.setToleranceType(measurementFm.getToleranceType());
-			measurementFmDTO.setValue(measurementFm.getValue());
+			measurementFmDTO.setValue(measurementFm.getValue().doubleValue());
 			measurementFmDTO.setAxis(measurementFm.getNominalFm().getAxis());
 			measurementFmDTO.setDefaultValue(measurementFm.getNominalFm().getDefaultValue().doubleValue());
 			measurementFmDTO.setLevel(measurementFm.getNominalFm().getLevel());
@@ -341,6 +415,6 @@ public class SampleServiceImpl implements SampleService {
 		}
 		
 		return measurementAxisCoordinateList;
-	}
+	}	
 
 }

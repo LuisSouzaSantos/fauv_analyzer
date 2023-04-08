@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -193,12 +194,14 @@ public class Sample {
 		this.measurementFmList = measurementFmList;
 	}
 	
-	public long numberOfFmsOutOfBounds() {
-		return getMeasurementFmList().stream().filter(fm -> fm.getToleranceType().equals(ToleranceType.OUTOL)).count();
+	public Set<String> fmsOutTol() {
+		return getMeasurementFmList().stream().filter(fm -> fm.getToleranceType().equals(ToleranceType.OUTOL))
+				.map(fm -> fm.getNominalFm().getName()).collect(Collectors.toSet());
 	}
 	
-	public long numberOfFmsWithinLimits() {
-		return getMeasurementFmList().stream().filter(fm -> fm.getToleranceType().equals(ToleranceType.INTOL)).count();
+	public Set<String> fmsIntTol() {
+		return getMeasurementFmList().stream().filter(fm -> fm.getToleranceType().equals(ToleranceType.INTOL))
+				.map(fm -> fm.getNominalFm().getName()).collect(Collectors.toSet());
 	}
 	
 	
