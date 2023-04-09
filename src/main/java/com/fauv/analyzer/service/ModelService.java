@@ -1,6 +1,7 @@
 package com.fauv.analyzer.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,8 @@ public interface ModelService {
 	public Model getByPartNumberAndUnit(String partNumber,Unit unit);
 	
 	public Model getByPartNumberAndUnitValidateIt(String partNumber,Unit unit) throws ModelException;
+	
+	public Set<Model> getAllModelsByUnitId(Long unitId);
 	
 	public List<Model> getAll(); 
 	

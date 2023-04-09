@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fauv.analyzer.entity.indicators.FmIndicator;
+import com.fauv.analyzer.entity.indicators.PmpIndicator;
 import com.fauv.analyzer.enums.StatusType;
 
 public class SampleDTO {
@@ -22,8 +24,8 @@ public class SampleDTO {
 	private String fileName;
 	private Set<MeasurementPmpDTO> measurementPmpList = new HashSet<>(); 
 	private Set<MeasurementFmDTO> measurementFmList = new HashSet<>();
-	private FmIndicatorDTO fmIndicator;
-	private PmpIndicatorDTO pmpIndicator;
+	private FmIndicator fmIndicator;
+	private PmpIndicator pmpIndicator;
 	
 	public Long getId() {
 		return id;
@@ -121,19 +123,19 @@ public class SampleDTO {
 		this.measurementFmList = measurementFmList;
 	}
 
-	public FmIndicatorDTO getFmIndicator() {
+	public FmIndicator getFmIndicator() {
 		return fmIndicator;
 	}
 
-	public void setFmIndicator(FmIndicatorDTO fmIndicator) {
+	public void setFmIndicator(FmIndicator fmIndicator) {
 		this.fmIndicator = fmIndicator;
 	}
 
-	public PmpIndicatorDTO getPmpIndicator() {
+	public PmpIndicator getPmpIndicator() {
 		return pmpIndicator;
 	}
 
-	public void setPmpIndicator(PmpIndicatorDTO pmpIndicator) {
+	public void setPmpIndicator(PmpIndicator pmpIndicator) {
 		this.pmpIndicator = pmpIndicator;
 	}
 

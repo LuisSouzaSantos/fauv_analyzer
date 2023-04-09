@@ -1,9 +1,11 @@
 package com.fauv.analyzer.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fauv.analyzer.entity.Model;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.dto.SampleDTO;
 import com.fauv.analyzer.exception.EquipmentException;
@@ -26,5 +28,7 @@ public interface SampleService {
 	public SampleDTO toSampleDTO(Sample sample);
 	
 	public List<SampleDTO> toSampleDTO(List<Sample> list);
-		
+	
+	public Set<SampleDTO> getByModels(Set<Model> models);
+	
 }

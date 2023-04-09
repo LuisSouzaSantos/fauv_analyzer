@@ -63,6 +63,4 @@ public enum Z {
 		return this.constant.get(constantIndex);
 	}
 	
-	
-	
 }

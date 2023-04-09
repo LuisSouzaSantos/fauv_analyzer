@@ -118,8 +118,8 @@ public class NominalAxisCoordinate {
 	public static NominalAxisCoordinate build(NominalAxisCoordinate axisCoordinate, NominalPmp nominalPmp) {
 		NominalAxisCoordinate nominalAxisCoordinate = new NominalAxisCoordinate();
 		
-		nominalAxisCoordinate.setName(nominalPmp.getName());
-		nominalAxisCoordinate.setAxis(nominalPmp.getAxis());
+		nominalAxisCoordinate.setName(axisCoordinate.getName());
+		nominalAxisCoordinate.setAxis(axisCoordinate.getAxis());
 		nominalAxisCoordinate.setLowerTolerance(axisCoordinate.getLowerTolerance());
 		nominalAxisCoordinate.setHigherTolerance(axisCoordinate.getHigherTolerance());
 		nominalAxisCoordinate.setNominalPmp(nominalPmp);

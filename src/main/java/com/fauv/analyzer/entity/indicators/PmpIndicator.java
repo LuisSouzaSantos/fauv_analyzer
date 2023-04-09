@@ -1,6 +1,6 @@
-package com.fauv.analyzer.entity.dto;
+package com.fauv.analyzer.entity.indicators;
 
-public class PmpIndicatorDTO {
+public class PmpIndicator {
 
 	private int akX;
 	private int akY;

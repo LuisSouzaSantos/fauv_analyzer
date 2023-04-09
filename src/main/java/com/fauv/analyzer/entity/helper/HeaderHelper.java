@@ -4,16 +4,28 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
-public class HeaderHelper {
+import javax.validation.constraints.NotNull;
 
+import com.fauv.analyzer.message.DMOMessage;
+
+public class HeaderHelper {
+	
 	private String fileName;
+	@NotNull(message = DMOMessage.HEADER_START_DATE_FIELD)
 	private LocalDate startDate;
+	@NotNull(message = DMOMessage.HEADER_START_TIME_FIELD)
 	private LocalTime startTime;
+	@NotNull(message = DMOMessage.HEADER_END_DATE_FIELD)
 	private LocalDate endDate;
+	@NotNull(message = DMOMessage.HEADER_END_TIME_FIELD)
 	private LocalTime endTime;
+	@NotNull(message = DMOMessage.HEADER_PART_NUMBER_FIELD)
 	private String partNumber;
+	@NotNull(message = DMOMessage.HEADER_EQUIPMENT_NAME_FIELD)
 	private String equipmentName;
+	@NotNull(message = DMOMessage.HEADER_SAMPLE_ID_FIELD)
 	private String sampleId;
+	@NotNull(message = DMOMessage.HEADER_INSPECTOR_FIELD)
 	private String inspectorName;
 	private ZoneId zoneId;
 	
@@ -96,5 +108,5 @@ public class HeaderHelper {
 	public void setZoneId(ZoneId zoneId) {
 		this.zoneId = zoneId;
 	}
-	
+
 }

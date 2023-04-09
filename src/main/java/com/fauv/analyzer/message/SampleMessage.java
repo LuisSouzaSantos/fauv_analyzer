@@ -13,6 +13,7 @@ public class SampleMessage {
 	public static final String SCAN_END_DATE = "SCAN_END_DATE_CANNOT_BE_NULL";
 	public static final String STATUS = "STATUS_CANNOT_BE_NULL";
 	
+	public static final String NOT_RECOGNIZED = "DMO_FILE_NOT_RECOGNIZED";
 	public static final String NOT_FOUND = "SAMPLE_NOT_FOUND";
 	public static final String DUPLICATE = "DUPLICATE_SAMPLE_FOR_THIS_MODEL";
 	public static final String PMP_NOT_FOUND = "PMP_NOT_FOUND";

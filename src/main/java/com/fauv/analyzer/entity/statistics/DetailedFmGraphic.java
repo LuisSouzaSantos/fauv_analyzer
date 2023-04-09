@@ -1,4 +1,4 @@
-package com.fauv.analyzer.entity.dto;
+package com.fauv.analyzer.entity.statistics;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.fauv.analyzer.enums.StatisticCriteria;
 
-public class SampleFmDetailedStatisticDTO {
+public class DetailedFmGraphic {
 
 	private Long sampleId;
 	private String pin;

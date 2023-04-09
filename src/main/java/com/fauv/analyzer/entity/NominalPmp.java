@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +19,6 @@ import javax.validation.constraints.NotNull;
 
 import com.fauv.analyzer.entity.dto.PmpDTO;
 import com.fauv.analyzer.entity.form.PmpForm;
-import com.fauv.analyzer.enums.AxisType;
 import com.fauv.analyzer.message.ModelMessage;
 
 @Entity
@@ -34,10 +31,6 @@ public class NominalPmp {
 	
 	@NotBlank(message = ModelMessage.NOMINAL_PMP_NAME)
 	private String name;
-	
-	@NotNull(message = ModelMessage.NOMINAL_PMP_AXIS)
-	@Enumerated(EnumType.STRING)
-	private AxisType axis = AxisType.X;
 	
 	@NotNull(message = ModelMessage.NOMINAL_PMP_X)
 	private BigDecimal x;
@@ -71,14 +64,6 @@ public class NominalPmp {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public AxisType getAxis() {
-		return axis;
-	}
-
-	public void setAxis(AxisType axis) {
-		this.axis = axis;
 	}
 
 	public BigDecimal getX() {
@@ -137,7 +122,6 @@ public class NominalPmp {
 		NominalPmp nominalPmp = new NominalPmp();
 		nominalPmp.setActive(pmpForm.isActive());
 		nominalPmp.setName(pmpForm.getName());
-		nominalPmp.setAxis(AxisType.X);
 		nominalPmp.setX(new BigDecimal(pmpForm.getX()));
 		nominalPmp.setY(new BigDecimal(pmpForm.getY()));
 		nominalPmp.setZ(new BigDecimal(pmpForm.getZ()));
@@ -153,7 +137,6 @@ public class NominalPmp {
 		NominalPmp nominalPmp = new NominalPmp();
 		nominalPmp.setActive(pmpDTO.isActive());
 		nominalPmp.setName(pmpDTO.getName());
-		nominalPmp.setAxis(pmpDTO.getAxis());
 		nominalPmp.setX(new BigDecimal(pmpDTO.getX()));
 		nominalPmp.setY(new BigDecimal(pmpDTO.getY()));
 		nominalPmp.setZ(new BigDecimal(pmpDTO.getZ()));
@@ -169,7 +152,6 @@ public class NominalPmp {
 		NominalPmp nominalPmp = new NominalPmp();
 		nominalPmp.setActive(previousNominalPmp.isActive());
 		nominalPmp.setName(previousNominalPmp.getName());
-		nominalPmp.setAxis(previousNominalPmp.getAxis());
 		nominalPmp.setX(previousNominalPmp.getX());
 		nominalPmp.setY(previousNominalPmp.getY());
 		nominalPmp.setZ(previousNominalPmp.getZ());

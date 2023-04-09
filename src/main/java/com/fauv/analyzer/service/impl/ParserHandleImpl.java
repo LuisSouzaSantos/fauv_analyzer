@@ -38,7 +38,6 @@ public class ParserHandleImpl implements ParserHandleService {
 		PmpForm pmpForm = new PmpForm();
 		pmpForm.setActive(true);
 		pmpForm.setName(helper.getName());
-		pmpForm.setAxis(helper.getWorkingOn());
 		pmpForm.setX(helper.getNominalCoordinate().getValues().get(0).getValue());
 		pmpForm.setY(helper.getNominalCoordinate().getValues().get(1).getValue());
 		pmpForm.setZ(helper.getNominalCoordinate().getValues().get(2).getValue());
@@ -128,7 +127,5 @@ public class ParserHandleImpl implements ParserHandleService {
 	
 		return fmImpactForm;
 	}
-
-
 
 }

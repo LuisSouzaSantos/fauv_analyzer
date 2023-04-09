@@ -2,6 +2,7 @@ package com.fauv.analyzer.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -109,6 +110,23 @@ public class Model {
 	
 	public NominalFm getFmById(Long id) {
 		return this.getFmList().stream().filter(fm -> fm.getId().equals(id)).findFirst().orElse(null);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(car, partNumber);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Model other = (Model) obj;
+		return Objects.equals(car, other.car) && Objects.equals(partNumber, other.partNumber);
 	}
 	
 }

@@ -3,13 +3,15 @@ package com.fauv.analyzer.entity.helper;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fauv.analyzer.enums.AxisType;
+import javax.validation.constraints.NotBlank;
+
+import com.fauv.analyzer.message.DMOMessage;
 
 //This entity define a Car PMP
 public class PmpHelper {
 
+	@NotBlank(message = DMOMessage.PMP_NAME)
 	private String name;
-	private AxisType workingOn;
 	private CoordinateHelper nominalCoordinate;
 	private List<NominalAxisCoordinateHelper> nominalAxisCoordinates = new ArrayList<>();
 	private CoordinateHelper measurementCoordinate;
@@ -21,14 +23,6 @@ public class PmpHelper {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public AxisType getWorkingOn() {
-		return workingOn;
-	}
-
-	public void setWorkingOn(AxisType workingOn) {
-		this.workingOn = workingOn;
 	}
 
 	public CoordinateHelper getNominalCoordinate() {

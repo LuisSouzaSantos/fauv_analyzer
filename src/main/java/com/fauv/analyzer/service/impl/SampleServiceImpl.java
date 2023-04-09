@@ -25,17 +25,17 @@ import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.NominalPmp;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.Unit;
-import com.fauv.analyzer.entity.dto.FmIndicatorDTO;
 import com.fauv.analyzer.entity.dto.MeasurementAxisCoordinateDTO;
 import com.fauv.analyzer.entity.dto.MeasurementFmDTO;
 import com.fauv.analyzer.entity.dto.MeasurementPmpDTO;
-import com.fauv.analyzer.entity.dto.PmpIndicatorDTO;
 import com.fauv.analyzer.entity.dto.SampleDTO;
 import com.fauv.analyzer.entity.helper.CoordinateValueHelper;
 import com.fauv.analyzer.entity.helper.FmHelper;
 import com.fauv.analyzer.entity.helper.MeasurementAxisCoordinateHelper;
 import com.fauv.analyzer.entity.helper.PmpHelper;
 import com.fauv.analyzer.entity.helper.SampleHelper;
+import com.fauv.analyzer.entity.indicators.FmIndicator;
+import com.fauv.analyzer.entity.indicators.PmpIndicator;
 import com.fauv.analyzer.enums.AxisType;
 import com.fauv.analyzer.enums.StatusType;
 import com.fauv.analyzer.enums.ToleranceType;
@@ -79,44 +79,33 @@ public class SampleServiceImpl implements SampleService {
 	private ParserHttp parserHttp;
 	
 	@Override
-	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException {
-		logger.info("--------------- Sample ---------------");
-		
+	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException {		
 		SampleHelper sampleHelper = parserHttp.readDmoFileAndBuildASample(dmoFile);
 		
+		if (sampleHelper == null || !sampleHelper.isValid()) { throw new SampleException(SampleMessage.NOT_RECOGNIZED); }
+		
 		Unit unit = unitService.getByIdValidateIt(unitId);
-		logger.info("Unit: "+unit.getName());
 		Equipment equipment = equipmentService.getByNameAndUnitValidateIt(sampleHelper.getHeader().getEquipmentName(), unit);
-		logger.info("Equipment: "+equipment.getName());
 		Model model = modelService.getByPartNumberAndUnitValidateIt(sampleHelper.getHeader().getPartNumber(), unit);
-		logger.info("Model (PartNumber): "+model.getPartNumber()+" - (Car Name)"+model.getCar().getName());
 		
 		Sample duplicateSample = getByPinAndModel(sampleHelper.getHeader().getSampleId(), model);
 		
 		if (duplicateSample != null) { throw new SampleException(SampleMessage.DUPLICATE); }
 		 
 		Sample sample = new Sample();
-		sample.setFileName("not_include");
+		sample.setFileName(dmoFile.getOriginalFilename());
 		sample.setModel(model);
 		sample.setPin(sampleHelper.getHeader().getSampleId());
-		logger.info("Pin: "+sample.getPin());
 		sample.setEquipment(equipment);
 		sample.setUploadedUser(sampleHelper.getHeader().getInspectorName());
-		logger.info("Upload User: "+sample.getUploadedUser());
 		sample.setScanInitDate(sampleHelper.getHeader().getStartDate(), sampleHelper.getHeader().getStartTime());
-		logger.info("Scan Init Date: "+sample.getScanInitDate());
 		sample.setScanEndDate(sampleHelper.getHeader().getEndDate(), sampleHelper.getHeader().getEndTime());
-		logger.info("Scan End Date: "+sample.getScanEndDate());
 		sample.setUploadedDate(LocalDateTime.now());
-		logger.info("Uploaded Date: "+sample.getUploadedDate());
 		sample.setStatus(StatusType.SUCCESS);
 		
-		logger.info("PMP List: ");
 		sample.getMeasurementPmpList().addAll(buildMeasurementPmp(sampleHelper.getPmpList(), sample, model));
-		logger.info("FM List: ");
 		sample.getMeasurementFmList().addAll(buildMeasurementFm(sampleHelper.getFmList(),sample.getMeasurementPmpList(), sample, model));
 		
-		logger.info("--------------- End Sample ---------------");
 		return sampleRepository.save(sample);
 	}
 	
@@ -176,8 +165,15 @@ public class SampleServiceImpl implements SampleService {
 		return sampleDTO;
 	}
 	
-	private	FmIndicatorDTO buildFmIndicator(Set<MeasurementFmDTO> fmMeasurementDTOList) {
-		FmIndicatorDTO fmIndicatorDTO = new FmIndicatorDTO();
+	@Override
+	public Set<SampleDTO> getByModels(Set<Model> models) {
+		Set<Sample> samples = sampleRepository.findByModelIn(models);
+
+		return samples.stream().map(sample -> toSampleDTO(sample)).collect(Collectors.toSet());
+	}	
+	
+	private	FmIndicator buildFmIndicator(Set<MeasurementFmDTO> fmMeasurementDTOList) {
+		FmIndicator fmIndicatorDTO = new FmIndicator();
 		
 		for (MeasurementFmDTO fmMeasurement : fmMeasurementDTOList) {
 			double defaultHigherToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getHigherTolerance()));
@@ -200,8 +196,8 @@ public class SampleServiceImpl implements SampleService {
 		return fmIndicatorDTO;
 	}
 	
-	private PmpIndicatorDTO buildPmpIndicator(Set<MeasurementPmpDTO> measurementPmpDTOList) {		
-		PmpIndicatorDTO pmpIndicator = new PmpIndicatorDTO();
+	private PmpIndicator buildPmpIndicator(Set<MeasurementPmpDTO> measurementPmpDTOList) {		
+		PmpIndicator pmpIndicator = new PmpIndicator();
 		
 		for (MeasurementPmpDTO pmpMeasurement : measurementPmpDTOList) {
 			
@@ -262,7 +258,6 @@ public class SampleServiceImpl implements SampleService {
 			measurementPmpDTO.setDefaultY(measurementPmp.getNominalPmp().getY().doubleValue());
 			measurementPmpDTO.setDefaultZ(measurementPmp.getNominalPmp().getZ().doubleValue());
 			measurementPmpDTO.setName(measurementPmp.getNominalPmp().getName());
-			measurementPmpDTO.setAxis(measurementPmp.getNominalPmp().getAxis());
 			measurementPmpDTO.getMeasurementAxisCoordinateList().addAll(buildMeasurementAxisCoordinateDTO(measurementPmp.getMeasurementAxisCoordinateList()));
 			
 			measurementPmpDTOList.add(measurementPmpDTO);
@@ -378,11 +373,8 @@ public class SampleServiceImpl implements SampleService {
 			}
 
 			measurementPmp.setNominalPmp(nominalPmp);
-			logger.info("Measurement Pmp Name: "+measurementPmp.getNominalPmp().getName());
 			measurementPmp.setSample(sample);
-			logger.info("Measurement Axis Coordinate List:");
-			measurementPmp.setMeasurementAxisCoordinateList(
-					buildMeasurementAxisCoordiante(pmpHelper.getMeasurementAxisCoordinates(), measurementPmp));
+			measurementPmp.setMeasurementAxisCoordinateList(buildMeasurementAxisCoordiante(pmpHelper.getMeasurementAxisCoordinates(), measurementPmp));
 
 			measurementPmpList.add(measurementPmp);
 		}
@@ -400,21 +392,17 @@ public class SampleServiceImpl implements SampleService {
 			
 			NominalAxisCoordinate nominalAxisCoordinate = nominalPmp.getAxisCoordinateByName(measurementAxisCoordinateHelper.getName());
 			if (nominalAxisCoordinate == null) { throw new SampleException(SampleMessage.AXIS_COORDINATE_NOT_FOUND+":"+measurementAxisCoordinateHelper.getName()); }
-			
-			logger.info("Measurement Axis Coordinate Name: "+nominalAxisCoordinate.getName());
-			
+						
 			MeasurementAxisCoordinate measurementAxisCoordinate = new MeasurementAxisCoordinate();
 			measurementAxisCoordinate.setMeasurementPmp(measurementPmp);
 			measurementAxisCoordinate.setToleranceType(ToleranceType.valueOf(measurementAxisCoordinateHelper.getType().name()));
-			logger.info("Measurement Axis Coordinate Tolerance Type: "+measurementAxisCoordinate.getToleranceType());
 			measurementAxisCoordinate.setValue(new BigDecimal(measurementAxisCoordinateHelper.getCalculated()));
-			logger.info("Measurement Axis Coordinate Value: "+measurementAxisCoordinate.getValue());
 			measurementAxisCoordinate.setNominalAxisCoordinate(nominalAxisCoordinate);
 			
 			measurementAxisCoordinateList.add(measurementAxisCoordinate);
 		}
 		
 		return measurementAxisCoordinateList;
-	}	
+	}
 
 }

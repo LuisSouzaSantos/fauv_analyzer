@@ -38,7 +38,6 @@ create table analyzer.model (
 create table analyzer.nominal_pmp (
 	id BIGSERIAL,
 	name VARCHAR(255) not null,
-	axis VARCHAR(1) not null,
 	active BOOLEAN not null,
 	x numeric(9,3) NOT NULL,
 	y numeric(9,3) NOT NULL,

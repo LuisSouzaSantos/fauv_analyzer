@@ -37,20 +37,4 @@ public class CoordinateHelper {
 		this.workingOnAxis = workingOnAxis;
 	}
 	
-	public void addNewCoordinate(CoordinateValueHelper coordinateValue) {
-		coordinateValue.setAxisType(defineNewAxisTypeAccordingIndex());
-		this.getValues().add(coordinateValue);
-		
-	}
-	
-	private AxisType defineNewAxisTypeAccordingIndex() {
-		if (values.size() == 0) { return AxisType.X; }
-		if (values.size() == 1) { return AxisType.Y; }
-		if (values.size() == 2) { return AxisType.Z; }
-		if (values.size() == 3) { return AxisType.D; }
-		if (values.size() == 4) { return AxisType.T; }
-		
-		return null;
-	}
-	
 }

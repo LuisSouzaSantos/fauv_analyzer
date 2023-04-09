@@ -3,12 +3,9 @@ package com.fauv.analyzer.entity.dto;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fauv.analyzer.enums.AxisType;
-
 public class MeasurementPmpDTO {
 	
 	private String name;
-	private AxisType axis;
 	private double defaultX;
 	private double x;
 	private double defaultY;
@@ -23,14 +20,6 @@ public class MeasurementPmpDTO {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public AxisType getAxis() {
-		return axis;
-	}
-	
-	public void setAxis(AxisType axis) {
-		this.axis = axis;
 	}
 	
 	public double getDefaultX() {

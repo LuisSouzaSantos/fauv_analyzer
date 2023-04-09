@@ -33,4 +33,8 @@ public class SampleHelper {
 		this.fmList = fmList;
 	}
 	
+	public boolean isValid() {
+		return this.getHeader() != null;
+	}
+		
 }

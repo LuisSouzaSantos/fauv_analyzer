@@ -3,12 +3,9 @@ package com.fauv.analyzer.entity.form;
 import java.util.List;
 import java.util.Objects;
 
-import com.fauv.analyzer.enums.AxisType;
-
 public class PmpForm {
 	
 	private String name;
-	private AxisType axis;
 	private double x;
 	private double y;
 	private double z;
@@ -21,14 +18,6 @@ public class PmpForm {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public AxisType getAxis() {
-		return axis;
-	}
-
-	public void setAxis(AxisType axis) {
-		this.axis = axis;
 	}
 
 	public double getX() {

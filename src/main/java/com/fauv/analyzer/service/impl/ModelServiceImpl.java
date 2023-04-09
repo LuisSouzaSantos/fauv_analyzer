@@ -140,7 +140,6 @@ public class ModelServiceImpl implements ModelService {
 			
 			if (nominalPmp.getId() != null) {
 				nominalPmp.setName(previousNominalPmp.getName());
-				nominalPmp.setAxis(previousNominalPmp.getAxis());
 				nominalPmp.setActive(previousNominalPmp.isActive());
 				nominalPmp.setX(previousNominalPmp.getX());
 				nominalPmp.setY(previousNominalPmp.getY());
@@ -228,6 +227,11 @@ public class ModelServiceImpl implements ModelService {
 	@Override
 	public void delete(Long id) {
 		modelRepository.deleteById(id);
+	}
+	
+	@Override
+	public Set<Model> getAllModelsByUnitId(Long unitId) {
+		return modelRepository.findAllPartNumbersByUnitId(unitId);
 	}
 
 	private ModelPreview createModelPreviewUsignSampleHelperAsReference(SampleHelper sampleHelper, Set<FmImpactHelper> extractedFmImpactList) {

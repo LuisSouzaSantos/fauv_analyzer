@@ -1,135 +1,124 @@
-package com.fauv.analyzer.entity.dto;
+package com.fauv.analyzer.entity.statistics;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailedFmStatisticDTO {
+import com.fauv.analyzer.enums.CatalogType;
+
+public class FmStatistic {
 
 	private String fmName;
-	private double totalOfIo;
-	private double totalOfBk;
-	private double totalOfAk;
-	private List<String> pmpList = new ArrayList<>();
+	private CatalogType catalogType;
+	private double totalIo;
+	private double totalBk;
+	private double totalAk;
 	private double cp;
 	private double cpk;
 	private double pp;
 	private double ppk;
+	private double standardDeviation;
 	private double sigmaLevel;
 	private double average;
 	private double nominalDistribution;
+	private List<String> mappedPmpList = new ArrayList<>();
 	private List<String> impactList = new ArrayList<>();
-	private List<SampleFmDetailedStatisticDTO> sampleFmDetailedStatisticDTOList = new ArrayList<>();
+	private FmGraphic fmGraphic;
 	
 	public String getFmName() {
 		return fmName;
 	}
-	
 	public void setFmName(String fmName) {
 		this.fmName = fmName;
 	}
-	
-	public double getTotalOfIo() {
-		return totalOfIo;
+	public CatalogType getCatalogType() {
+		return catalogType;
 	}
-	
-	public void setTotalOfIo(double totalOfIo) {
-		this.totalOfIo = totalOfIo;
+	public void setCatalogType(CatalogType catalogType) {
+		this.catalogType = catalogType;
 	}
-	
-	public double getTotalOfBk() {
-		return totalOfBk;
+	public double getTotalIo() {
+		return totalIo;
 	}
-	
-	public void setTotalOfBk(double totalOfBk) {
-		this.totalOfBk = totalOfBk;
+	public void setTotalIo(double totalIo) {
+		this.totalIo = totalIo;
 	}
-	
-	public double getTotalOfAk() {
-		return totalOfAk;
+	public double getTotalBk() {
+		return totalBk;
 	}
-	
-	public void setTotalOfAk(double totalOfAk) {
-		this.totalOfAk = totalOfAk;
+	public void setTotalBk(double totalBk) {
+		this.totalBk = totalBk;
 	}
-	
-	public List<String> getPmpList() {
-		return pmpList;
+	public double getTotalAk() {
+		return totalAk;
 	}
-	
-	public void setPmpList(List<String> pmpList) {
-		this.pmpList = pmpList;
+	public void setTotalAk(double totalAk) {
+		this.totalAk = totalAk;
 	}
-	
 	public double getCp() {
 		return cp;
 	}
-	
 	public void setCp(double cp) {
 		this.cp = cp;
 	}
-	
 	public double getCpk() {
 		return cpk;
 	}
-	
 	public void setCpk(double cpk) {
 		this.cpk = cpk;
 	}
-	
 	public double getPp() {
 		return pp;
 	}
-	
 	public void setPp(double pp) {
 		this.pp = pp;
 	}
-	
 	public double getPpk() {
 		return ppk;
 	}
-	
 	public void setPpk(double ppk) {
 		this.ppk = ppk;
 	}
-	
+	public double getStandardDeviation() {
+		return standardDeviation;
+	}
+	public void setStandardDeviation(double standardDeviation) {
+		this.standardDeviation = standardDeviation;
+	}
 	public double getSigmaLevel() {
 		return sigmaLevel;
 	}
-	
 	public void setSigmaLevel(double sigmaLevel) {
 		this.sigmaLevel = sigmaLevel;
 	}
-	
 	public double getAverage() {
 		return average;
 	}
-	
 	public void setAverage(double average) {
 		this.average = average;
 	}
-	
 	public double getNominalDistribution() {
 		return nominalDistribution;
 	}
-	
 	public void setNominalDistribution(double nominalDistribution) {
 		this.nominalDistribution = nominalDistribution;
 	}
-	
+	public List<String> getMappedPmpList() {
+		return mappedPmpList;
+	}
+	public void setMappedPmpList(List<String> mappedPmpList) {
+		this.mappedPmpList = mappedPmpList;
+	}
 	public List<String> getImpactList() {
 		return impactList;
 	}
-	
 	public void setImpactList(List<String> impactList) {
 		this.impactList = impactList;
 	}
-	
-	public List<SampleFmDetailedStatisticDTO> getSampleFmDetailedStatisticDTOList() {
-		return sampleFmDetailedStatisticDTOList;
+	public FmGraphic getFmGraphic() {
+		return fmGraphic;
 	}
-	
-	public void setSampleFmDetailedStatisticDTOList(List<SampleFmDetailedStatisticDTO> sampleFmDetailedStatisticDTOList) {
-		this.sampleFmDetailedStatisticDTOList = sampleFmDetailedStatisticDTOList;
+	public void setFmGraphic(FmGraphic fmGraphic) {
+		this.fmGraphic = fmGraphic;
 	}
 	
 }

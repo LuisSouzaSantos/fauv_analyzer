@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -202,6 +203,23 @@ public class Sample {
 	public Set<String> fmsIntTol() {
 		return getMeasurementFmList().stream().filter(fm -> fm.getToleranceType().equals(ToleranceType.INTOL))
 				.map(fm -> fm.getNominalFm().getName()).collect(Collectors.toSet());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(model, pin);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Sample other = (Sample) obj;
+		return Objects.equals(model, other.model) && Objects.equals(pin, other.pin);
 	}
 	
 	

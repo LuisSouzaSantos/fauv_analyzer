@@ -1,9 +1,10 @@
-package com.fauv.analyzer.entity.dto;
+package com.fauv.analyzer.entity.statistics;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-public class StatisticDTO {
+public class Statistic {
 
 	private String carName;
 	private String partNumber;
@@ -15,7 +16,7 @@ public class StatisticDTO {
 	private long totalAk;
 	private long totalBk;
 	private long totalIo;
-	private List<Long> samplesIds;
+	private List<Long> samplesIds = new ArrayList<>();
 	
 	public String getCarName() {
 		return carName;
@@ -46,6 +47,8 @@ public class StatisticDTO {
 	}
 	
 	public void setInitDate(LocalDate initDate) {
+		if  (this.getInitDate() != null && this.getInitDate().isBefore(initDate)) { return; }
+		
 		this.initDate = initDate;
 	}
 	
@@ -54,6 +57,8 @@ public class StatisticDTO {
 	}
 	
 	public void setEndDate(LocalDate endDate) {
+		if  (this.getEndDate() != null && this.getEndDate().isAfter(endDate)) { return; }
+		
 		this.endDate = endDate;
 	}
 	
