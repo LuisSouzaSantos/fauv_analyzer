@@ -103,4 +103,8 @@ public class MeasurementFm {
 		this.sample = sample;
 	}
 	
+	public double getDefaultValue() {
+		return getNominalFm().getDefaultValue().doubleValue();
+	}
+	
 }

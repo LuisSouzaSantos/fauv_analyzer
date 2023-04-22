@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fauv.analyzer.entity.statistics.FmStatistic;
 import com.fauv.analyzer.entity.statistics.Statistic;
 import com.fauv.analyzer.exception.SampleException;
 import com.fauv.analyzer.service.StatisticService;
@@ -25,6 +26,13 @@ public class StatisticController {
 	@GetMapping("/{unitId}")
 	public ResponseEntity<List<Statistic>> getByUnitId(@PathVariable Long unitId) throws SampleException {		
 		return ResponseEntity.ok(statisticService.getAll(unitId)); 
+	}
+	
+	@GetMapping("/{modelId}/{fmName}")
+	public ResponseEntity<FmStatistic> generateFmStatistic(@PathVariable Long modelId, @PathVariable String fmName) {
+		FmStatistic fmStatistic = statisticService.generateFmStatistic(modelId, fmName);
+		
+		return ResponseEntity.ok(fmStatistic); 
 	}
 	
 }

@@ -14,6 +14,13 @@ public class DetailedFmGraphic {
 	private double value;
 	private List<StatisticCriteria> statisticCriteriaList = new ArrayList<StatisticCriteria>();
 	
+	public DetailedFmGraphic(Long sampleId, String pin, LocalDateTime updatedDate, double value) {
+		this.sampleId = sampleId;
+		this.pin = pin;
+		this.updatedDate = updatedDate;
+		this.value = value;
+	}
+
 	public Long getSampleId() {
 		return sampleId;
 	}

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fauv.analyzer.entity.MeasurementFm;
 import com.fauv.analyzer.entity.Model;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.dto.SampleDTO;
@@ -30,5 +31,7 @@ public interface SampleService {
 	public List<SampleDTO> toSampleDTO(List<Sample> list);
 	
 	public Set<SampleDTO> getByModels(Set<Model> models);
+	
+	public List<MeasurementFm> getMeasurementFmBasedOnModelAndFmName(Model model, String fmName);
 	
 }

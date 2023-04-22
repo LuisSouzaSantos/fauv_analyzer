@@ -3,13 +3,23 @@ package com.fauv.analyzer.entity.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FmGraphic {
+import com.fauv.analyzer.enums.GraphicType;
 
-	private double higherTolerance;
-	private double lowerTolerance;
-	private double nominalTolerance;
-	private double zoneDivision;
-	private List<DetailedFmGraphic> detailedFmGraphicsList = new ArrayList<>();
+public abstract class Graphic {
+
+	protected GraphicType graphicType;
+	protected double higherTolerance;
+	protected double lowerTolerance;
+	protected double mediumLine;
+	protected List<DetailedFmGraphic> detailedFmGraphicsList = new ArrayList<>();
+	
+	public GraphicType getGraphicType() {
+		return graphicType;
+	}
+	
+	public void setGraphicType(GraphicType graphicType) {
+		this.graphicType = graphicType;
+	}
 	
 	public double getHigherTolerance() {
 		return higherTolerance;
@@ -27,22 +37,14 @@ public class FmGraphic {
 		this.lowerTolerance = lowerTolerance;
 	}
 	
-	public double getNominalTolerance() {
-		return nominalTolerance;
+	public double getMediumLine() {
+		return mediumLine;
 	}
-	
-	public void setNominalTolerance(double nominalTolerance) {
-		this.nominalTolerance = nominalTolerance;
+
+	public void setMediumLine(double mediumLine) {
+		this.mediumLine = mediumLine;
 	}
-	
-	public double getZoneDivision() {
-		return zoneDivision;
-	}
-	
-	public void setZoneDivision(double zoneDivision) {
-		this.zoneDivision = zoneDivision;
-	}
-	
+
 	public List<DetailedFmGraphic> getDetailedFmGraphicsList() {
 		return detailedFmGraphicsList;
 	}

@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +80,9 @@ public class SampleServiceImpl implements SampleService {
 	
 	@Autowired
 	private ParserHttp parserHttp;
+	
+	@Autowired
+	private EntityManager entityManager;
 	
 	@Override
 	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException {		
@@ -171,6 +177,18 @@ public class SampleServiceImpl implements SampleService {
 
 		return samples.stream().map(sample -> toSampleDTO(sample)).collect(Collectors.toSet());
 	}	
+	
+	@Override
+	public List<MeasurementFm> getMeasurementFmBasedOnModelAndFmName(Model model, String fmName) {
+		String jpql = "SELECT mf FROM Sample s INNER JOIN s.measurementFmList mf WHERE mf.nominalFm.name = :fmName AND s.model.id = :modelId ORDER BY s.scanEndDate";
+		
+		TypedQuery<MeasurementFm> query = entityManager.createQuery(jpql, MeasurementFm.class);
+		query.setParameter("fmName", fmName);
+		query.setParameter("modelId", model.getId());
+		query.setMaxResults(25);
+		
+		return query.getResultList();
+	}
 	
 	private	FmIndicator buildFmIndicator(Set<MeasurementFmDTO> fmMeasurementDTOList) {
 		FmIndicator fmIndicatorDTO = new FmIndicator();
