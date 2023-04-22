@@ -124,10 +124,17 @@ public class StatisticServiceImpl implements StatisticService {
 		CepMovelAmplitudeGraphic cepMovelAmplitudeGraphic = buildCepMovelAmplitudeGraphic(lcsMovelAmplitude, licMovelAmplitude, averageLineMovelAmplitude, measurementFmList, movelRange);
 		CepIndividualValuesGraphic cepIndividualValuesGraphic = buildCepIndividualValuesGraphic(lscCep, licCep, averageLine, avgMat, valueToCalcateZone, measurementFmList);
 		
+		fmStatistic.setCatalogType(nominalFm.getCatalogType());
+		fmStatistic.setFmName(nominalFm.getName());
 		fmStatistic.setIndividualValuesGraphic(individualValuesGraphic);
 		fmStatistic.setMovelAmplitudeGraphic(movelAmplitudeGraphic);
 		fmStatistic.setCepIndividualValuesGraphic(cepIndividualValuesGraphic);
-		fmStatistic.setCepMovelAmplitudeGraphic(cepMovelAmplitudeGraphic);	
+		fmStatistic.setCepMovelAmplitudeGraphic(cepMovelAmplitudeGraphic);
+		fmStatistic.setStandardDeviation(startandDeviation);
+		fmStatistic.setAverage(avgMat);
+		fmStatistic.setCp(calcCp(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), avgMovelRange, D.D2.getConstant(numberOfSamples)));
+		fmStatistic.setCpk(calcCpk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), avgMat, avgMovelRange, D.D2.getConstant(numberOfSamples)));
+		fmStatistic.setSigmaLevel(calcSigmaLevel(fmStatistic.getCpk()));
 	}
 	
 	private IndividualValuesGraphic buildIndividualGraphic(double higherTolerance, double lowerTolerance, double nominalTolerance, List<MeasurementFm> measurementFmList, List<Double> mat) {
@@ -285,6 +292,21 @@ public class StatisticServiceImpl implements StatisticService {
 		}
 		
 		return movelRange;
+	}
+	
+	private double calcCp(double lsc, double lic, double avgMovelRange, double d2) {
+		return (lsc-lic)/(6*(avgMovelRange/d2));
+	}
+	
+	private double calcCpk(double lsc, double lic, double avgMat, double avgMovelRange, double d2) {
+		double cpi = (avgMat-lic)/(3*(avgMovelRange*d2));
+		double cps = (lsc-avgMat)/(3*(avgMovelRange*d2));
+		
+		return Double.min(cpi, cps);
+	}
+	
+	private double calcSigmaLevel(double cpk) {
+		return 3*cpk;
 	}
 	
 	private void includeOutsideControlLimitsIfNeeded(double higherTolerance, double lowerTolerance, List<DetailedFmGraphicHelper> detailedFmGraphicHelperList) {
