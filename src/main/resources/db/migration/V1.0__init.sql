@@ -116,13 +116,14 @@ create table analyzer.measurement_pmp (
 
 create table analyzer.measurement_axis_coordinate (
 	id BIGSERIAL,
+	nominal_axis_coordinate_id BIGINT,
 	measurement_pmp_id BIGINT,
 	value numeric(9,3) NOT null,
 	tolerance_type VARCHAR(20) NOT NULL,
 	PRIMARY KEY(id),
+	CONSTRAINT FK_MeasurementAxisCoordinate_NominalAxisCoordinate FOREIGN KEY(nominal_axis_coordinate_id) REFERENCES analyzer.nominal_axis_coordinate(id),
 	CONSTRAINT FK_MeasurementAxisCoordinate_MeasurementPmp FOREIGN KEY(measurement_pmp_id) REFERENCES analyzer.measurement_pmp(id)
 );
-
 
 create table analyzer.measurement_fm (
 	id BIGSERIAL,
