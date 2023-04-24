@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fauv.analyzer.enums.AxisType;
+import com.fauv.analyzer.enums.FmLevel;
 
 public class FmDTO {
 	
@@ -13,6 +14,7 @@ public class FmDTO {
 	private double higherTolerance;
 	private double lowerTolerance;
 	private double defaultValue;
+	private FmLevel level; 
 	private AxisType axis;
 	@JsonIgnoreProperties(value = {"axisCoordinateList"})
 	private List<PmpDTO> pointsUsingToMap = new ArrayList<>();
@@ -58,6 +60,14 @@ public class FmDTO {
 		this.defaultValue = defaultValue;
 	}
 	
+	public FmLevel getLevel() {
+		return level;
+	}
+
+	public void setLevel(FmLevel level) {
+		this.level = level;
+	}
+
 	public AxisType getAxis() {
 		return axis;
 	}

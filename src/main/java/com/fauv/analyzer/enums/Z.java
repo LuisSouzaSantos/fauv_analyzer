@@ -1,5 +1,6 @@
 package com.fauv.analyzer.enums;
 
+import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,7 +61,32 @@ public enum Z {
 		if (constantIndex <= 0) { constantIndex = 1; }
 		if (constantIndex >= 10) { constantIndex = 9; }
 		
-		return this.constant.get(constantIndex);
+		return this.constant.get((constantIndex+1));
+	}
+	
+	public static Double getByValue(double value) {
+		String valueInStringFormat = Double.toString(value);
+		
+		if (valueInStringFormat.length() != 5) { throw new InvalidParameterException("Parameters must have length equals 5");}
+		
+		String part1 = valueInStringFormat.substring(0, 4);
+		String part2 = valueInStringFormat.substring(4, 5);
+		
+		Double part1DoubleFormat = Double.parseDouble(part1);
+		Integer part2IntegerFormat = Integer.parseInt(part2);
+
+		Z selectedZ = null;
+		
+		for (Z z : Z.values()) {
+			if (z.getIdentifier() != part1DoubleFormat.doubleValue()) { continue; }
+	
+			selectedZ = z;
+			break;
+		}
+		
+		if (selectedZ == null) { return null; }
+		
+		return selectedZ.getConstant(part2IntegerFormat);
 	}
 	
 }

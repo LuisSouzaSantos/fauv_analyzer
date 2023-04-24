@@ -3,15 +3,12 @@ package com.fauv.analyzer.entity.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fauv.analyzer.enums.CatalogType;
-
-public class FmStatistic {
+public class PmpStatistic {
 
 	private String name;
-	private CatalogType catalogType;
-	private int totalIo;
-	private int totalBk;
-	private int totalAk;
+	private double totalIo;
+	private double totalBk;
+	private double totalAk;
 	private double cp;
 	private double cpk;
 	private double pp;
@@ -30,43 +27,34 @@ public class FmStatistic {
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public CatalogType getCatalogType() {
-		return catalogType;
-	}
 	
-	public void setCatalogType(CatalogType catalogType) {
-		this.catalogType = catalogType;
-	}
-	
-	public int getTotalIo() {
+	public double getTotalIo() {
 		return totalIo;
 	}
-
-	public void setTotalIo(int totalIo) {
+	
+	public void setTotalIo(double totalIo) {
 		this.totalIo = totalIo;
 	}
-
-	public int getTotalBk() {
+	
+	public double getTotalBk() {
 		return totalBk;
 	}
-
-	public void setTotalBk(int totalBk) {
+	
+	public void setTotalBk(double totalBk) {
 		this.totalBk = totalBk;
 	}
-
-	public int getTotalAk() {
+	
+	public double getTotalAk() {
 		return totalAk;
 	}
-
-	public void setTotalAk(int totalAk) {
+	
+	public void setTotalAk(double totalAk) {
 		this.totalAk = totalAk;
 	}
-
+	
 	public double getCp() {
 		return cp;
 	}

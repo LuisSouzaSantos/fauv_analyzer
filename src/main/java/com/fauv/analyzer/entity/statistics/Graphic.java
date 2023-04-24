@@ -10,7 +10,7 @@ public abstract class Graphic {
 	protected GraphicType graphicType;
 	protected double higherTolerance;
 	protected double lowerTolerance;
-	protected double mediumLine;
+	protected double midline;
 	protected List<DetailedFmGraphic> detailedFmGraphicsList = new ArrayList<>();
 	
 	public GraphicType getGraphicType() {
@@ -37,12 +37,12 @@ public abstract class Graphic {
 		this.lowerTolerance = lowerTolerance;
 	}
 	
-	public double getMediumLine() {
-		return mediumLine;
+	public double getMidline() {
+		return midline;
 	}
 
-	public void setMediumLine(double mediumLine) {
-		this.mediumLine = mediumLine;
+	public void setMidline(double midline) {
+		this.midline = midline;
 	}
 
 	public List<DetailedFmGraphic> getDetailedFmGraphicsList() {

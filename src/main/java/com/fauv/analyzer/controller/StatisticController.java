@@ -28,11 +28,18 @@ public class StatisticController {
 		return ResponseEntity.ok(statisticService.getAll(unitId)); 
 	}
 	
-	@GetMapping("/{modelId}/{fmName}")
+	@GetMapping("/fm/{modelId}/{fmName}")
 	public ResponseEntity<FmStatistic> generateFmStatistic(@PathVariable Long modelId, @PathVariable String fmName) {
 		FmStatistic fmStatistic = statisticService.generateFmStatistic(modelId, fmName);
 		
 		return ResponseEntity.ok(fmStatistic); 
 	}
+	
+	@GetMapping("/pmp/{modelId}/{pmpName}")
+	public ResponseEntity<FmStatistic> generatePmpStatistic(@PathVariable Long modelId, @PathVariable String pmpName) {
+		return ResponseEntity.ok(null); 
+	}
+	
+
 	
 }

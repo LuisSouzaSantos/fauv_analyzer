@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fauv.analyzer.entity.dto.FmDTO;
+import com.fauv.analyzer.entity.dto.PmpDTO;
+
 public class Statistic {
 
 	private String carName;
@@ -11,12 +14,15 @@ public class Statistic {
 	private String unitName;
 	private LocalDate initDate;
 	private LocalDate endDate;
+	private Long modelId;
 	private long numberOfSamples;
 	private long numberOfDefectiveSamples;
 	private long totalAk;
 	private long totalBk;
 	private long totalIo;
 	private List<Long> samplesIds = new ArrayList<>();
+	private List<FmDTO> defaultFmNames = new ArrayList<FmDTO>();
+	private List<PmpDTO> defaultPmpNames = new ArrayList<PmpDTO>();
 	
 	public String getCarName() {
 		return carName;
@@ -62,6 +68,14 @@ public class Statistic {
 		this.endDate = endDate;
 	}
 	
+	public Long getModelId() {
+		return modelId;
+	}
+
+	public void setModelId(Long modelId) {
+		this.modelId = modelId;
+	}
+
 	public long getNumberOfSamples() {
 		return numberOfSamples;
 	}
@@ -109,5 +123,21 @@ public class Statistic {
 	public void setSamplesIds(List<Long> samplesIds) {
 		this.samplesIds = samplesIds;
 	}
-	
+
+	public List<FmDTO> getDefaultFmNames() {
+		return defaultFmNames;
+	}
+
+	public void setDefaultFmNames(List<FmDTO> defaultFmNames) {
+		this.defaultFmNames = defaultFmNames;
+	}
+
+	public List<PmpDTO> getDefaultPmpNames() {
+		return defaultPmpNames;
+	}
+
+	public void setDefaultPmpNames(List<PmpDTO> defaultPmpNames) {
+		this.defaultPmpNames = defaultPmpNames;
+	}
+
 }
