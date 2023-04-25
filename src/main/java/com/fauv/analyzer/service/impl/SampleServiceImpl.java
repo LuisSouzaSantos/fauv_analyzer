@@ -284,8 +284,22 @@ public class SampleServiceImpl implements SampleService {
 			if (wasFound) { 
 				measurementFm.setToleranceType(ToleranceType.valueOf(fmHelper.getMeasurementAxisCoordinates().getType().name()));
 				measurementFm.setValue(new BigDecimal(fmHelper.getMeasurementAxisCoordinates().getCalculated()));
+				
+				for (String pmpName : fmHelper.getPmpNameList()) {
+					MeasurementPmp foundMeasurementPmp = measurementPmpList.stream()
+							.filter(measurementPmp -> measurementPmp.getNominalPmp().getName().equals(pmpName))
+							.findFirst().orElse(null);
+					
+					if (foundMeasurementPmp == null || !foundMeasurementPmp.getWasFound()) { 
+						throw new SampleException(SampleMessage.PMP_NOT_FOUND); 
+					}
+					
+					measurementFm.getMeasurementPmpList().add(foundMeasurementPmp);
+				}
+				
 			}
 			
+			measurementFmList.add(measurementFm);
 		}
 		
 		return measurementFmList;
