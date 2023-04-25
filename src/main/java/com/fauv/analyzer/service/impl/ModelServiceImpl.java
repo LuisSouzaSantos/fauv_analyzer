@@ -94,10 +94,7 @@ public class ModelServiceImpl implements ModelService {
 			for (PmpDTO pmpDTO : fmForm.getPointsUsingToMap()) {
 				NominalPmp nominalPmp = model.getPmpByName(pmpDTO.getName());
 				
-				if (nominalPmp == null) {
-					System.out.println("NOT FOUND THE PMP BY NAME");
-					continue;
-				}
+				if (nominalPmp == null) { continue; }
 				
 				nominalFm.getPointsUsingToMap().add(nominalPmp);
 			}

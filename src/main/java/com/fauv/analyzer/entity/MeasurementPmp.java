@@ -43,6 +43,8 @@ public class MeasurementPmp {
 	@JoinColumn(name = "measurement_pmp_id")
 	private Set<MeasurementAxisCoordinate> measurementAxisCoordinateList = new HashSet<>();
 	
+	private Boolean wasFound = false; 
+	
 	@ManyToOne
 	private Sample sample;
 
@@ -92,6 +94,14 @@ public class MeasurementPmp {
 
 	public void setMeasurementAxisCoordinateList(Set<MeasurementAxisCoordinate> measurementAxisCoordinateList) {
 		this.measurementAxisCoordinateList = measurementAxisCoordinateList;
+	}
+	
+	public Boolean getWasFound() {
+		return wasFound;
+	}
+
+	public void setWasFound(Boolean wasFound) {
+		this.wasFound = wasFound;
 	}
 
 	public Sample getSample() {

@@ -108,6 +108,7 @@ create table analyzer.measurement_pmp (
 	x numeric(9,3) NOT NULL,
 	y numeric(9,3) NOT NULL,
 	z numeric(9,3) NOT null,
+	was_found BOOLEAN not null,
 	sample_id BIGINT,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_MeasurementPmp_NominalPmp FOREIGN KEY(nominal_pmp_id) REFERENCES analyzer.nominal_pmp(id),
@@ -120,6 +121,7 @@ create table analyzer.measurement_axis_coordinate (
 	measurement_pmp_id BIGINT,
 	value numeric(9,3) NOT null,
 	tolerance_type VARCHAR(20) NOT NULL,
+	was_found BOOLEAN not null,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_MeasurementAxisCoordinate_NominalAxisCoordinate FOREIGN KEY(nominal_axis_coordinate_id) REFERENCES analyzer.nominal_axis_coordinate(id),
 	CONSTRAINT FK_MeasurementAxisCoordinate_MeasurementPmp FOREIGN KEY(measurement_pmp_id) REFERENCES analyzer.measurement_pmp(id)
@@ -131,6 +133,7 @@ create table analyzer.measurement_fm (
 	value numeric(9,3) NOT null, 
 	tolerance_type VARCHAR(20) NOT NULL,
 	sample_id BIGINT,
+	was_found BOOLEAN not null,
 	PRIMARY KEY(id),
 	CONSTRAINT FK_MeasurementFm_Sample FOREIGN KEY(sample_id) REFERENCES analyzer.sample(id),
 	CONSTRAINT FK_MeasurementFm_NominalFm FOREIGN KEY(nominal_fm_id) REFERENCES analyzer.nominal_fm(id)

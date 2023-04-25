@@ -36,7 +36,9 @@ public class MeasurementAxisCoordinate {
 	
 	@NotNull(message = SampleMessage.MEASUREMENT_AXIS_COORDINATE_TOLARANCE)
 	@Enumerated(EnumType.STRING)
-	private ToleranceType toleranceType;
+	private ToleranceType toleranceType = ToleranceType.INTOL;
+	
+	private Boolean wasFound = false; 
 
 	public Long getId() {
 		return id;
@@ -78,4 +80,12 @@ public class MeasurementAxisCoordinate {
 		this.toleranceType = toleranceType;
 	}
 
+	public Boolean getWasFound() {
+		return wasFound;
+	}
+
+	public void setWasFound(Boolean wasFound) {
+		this.wasFound = wasFound;
+	}
+	
 }

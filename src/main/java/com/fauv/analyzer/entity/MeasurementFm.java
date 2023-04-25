@@ -48,6 +48,8 @@ public class MeasurementFm {
 	  inverseJoinColumns = @JoinColumn(name = "measurement_pmp_id"))
 	private Set<MeasurementPmp> measurementPmpList = new HashSet<>();
 	
+	private Boolean wasFound = false;
+	
 	@ManyToOne
 	private Sample sample;
 
@@ -93,6 +95,14 @@ public class MeasurementFm {
 
 	public Set<String> getMeasurementPmpNameList() {
 		return getMeasurementPmpList().stream().map(measurementPmp -> measurementPmp.getNominalPmp().getName()).collect(Collectors.toSet());
+	}
+	
+	public Boolean getWasFound() {
+		return wasFound;
+	}
+
+	public void setWasFound(Boolean wasFound) {
+		this.wasFound = wasFound;
 	}
 
 	public Sample getSample() {
