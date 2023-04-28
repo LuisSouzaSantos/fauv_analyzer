@@ -2,13 +2,10 @@ package com.fauv.analyzer.entity.dto;
 
 import java.util.List;
 
-import com.fauv.analyzer.enums.AxisType;
-
 public class PmpDTO {
 
 	private Long id;
 	private String name;
-	private AxisType axis;
 	private double x;
 	private double y;
 	private double z;
@@ -31,12 +28,6 @@ public class PmpDTO {
 		this.name = name;
 	}
 	
-	public AxisType getAxis() {
-		return axis;
-	}
-	public void setAxis(AxisType axis) {
-		this.axis = axis;
-	}
 	public double getX() {
 		return x;
 	}

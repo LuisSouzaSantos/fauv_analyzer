@@ -47,9 +47,9 @@ public class GraphicServiceImpl implements GraphicService {
 		includeTwoOrMoreRunsOfThreeConsecutivePointsCauseIfNeeded(graphic.getPositiveZoneA(), graphic.getPositiveZoneB(), graphic.getNegativeZoneA(), graphic.getNegativeZoneB(), detailedFmGraphicHelper);
 		includeFifteenConsecutivePointsInZoneCCauseIfNeeded(graphic.getPosttiveZoneC(), graphic.getNegativeZoneC(), midline, detailedFmGraphicHelper);
 		includeFourOrMorePointsOfFiveConsecutivePointsOnSameSideOfMeanCauseIfNeeded(graphic.getPosttiveZoneC(), graphic.getPositiveZoneA(), graphic.getNegativeZoneC(), graphic.getNegativeZoneA(), detailedFmGraphicHelper);
-		includeIfFmIsNineConsecutivePointsInTheSameSideCauseIfNeeded(detailedFmGraphicHelper, midline);
-		includeSixConsecutivePointsInAscendingOrDescendingOrderCauseIfNeeded(detailedFmGraphicHelper);
-		includeForteenConsecutivePointsAlternatingAboveAndBelowMediumLineCauseIfNeeded(detailedFmGraphicHelper, midline);
+		includeIfFmIsNineConsecutivePointsInTheSameSideCauseIfNeeded(detailedFmGraphicHelper, higherTolerance, lowerTolerance, midline);
+		includeSixConsecutivePointsInAscendingOrDescendingOrderCauseIfNeeded(detailedFmGraphicHelper, higherTolerance, lowerTolerance);
+		includeForteenConsecutivePointsAlternatingAboveAndBelowMediumLineCauseIfNeeded(detailedFmGraphicHelper,higherTolerance, lowerTolerance, midline);
 		
 		graphic.setDetailedFmGraphicsList(detailedFmGraphicHelper.stream().map(detailedFmGraphic -> detailedFmGraphic.getDetailedFmGraphic()).collect(Collectors.toList()));
 		
@@ -149,11 +149,11 @@ public class GraphicServiceImpl implements GraphicService {
 	    for (DetailedFmGraphicHelper detailedFmGraphicHelper : detailedFmGraphicHelperList) {
 	    	double value = detailedFmGraphicHelper.getDetailedFmGraphic().getValue();
 	    	
-		    if (value > midline && value <= positiveZoneC) { 
+		    if (isInsideTwoLimitsValues(value, positiveZoneC, midline)) { 
 		    	positiveZone++;
 		    	negativeZone = 0;
 		    }
-		    else if (value < midline && value <= negativeZoneC) { 
+		    else if (isInsideTwoLimitsValues(value, midline, negativeZoneC)) { 
 		    	negativeZone++;
 		    	positiveZone = 0;
 		    }else {
@@ -177,12 +177,12 @@ public class GraphicServiceImpl implements GraphicService {
 	    
 	    for (DetailedFmGraphicHelper detailedFmGraphicHelper : detailedFmGraphicHelperList) {
 	    	double value = detailedFmGraphicHelper.getDetailedFmGraphic().getValue();
-	    	
-		    if (value > positiveZoneBUpper && value <= positiveZoneAUpper) { 
+	    		    	
+		    if (isInsideTwoLimitsValues(value, positiveZoneAUpper, positiveZoneBUpper)) { 
 		    	positiveZone++;
 		    	negativeZone = 0;
 		    }
-		    else if (value < negativeZoneBDown && value <= negativeZoneAUpper) { 
+		    else if (isInsideTwoLimitsValues(value, negativeZoneAUpper, negativeZoneBDown)) { 
 		    	negativeZone++; 
 		    	positiveZone = 0;
 		    }else {
@@ -208,11 +208,11 @@ public class GraphicServiceImpl implements GraphicService {
 	    for (DetailedFmGraphicHelper detailedFmGraphicHelper : detailedFmGraphicHelperList) {
 	    	double value = detailedFmGraphicHelper.getDetailedFmGraphic().getValue();
 	    	
-		    if (value > positiveZoneC && value <= positiveZoneA) { 
+	    	if (isInsideTwoLimitsValues(value, positiveZoneA, positiveZoneC)) { 
 		    	positiveZone++;
 		    	negativeZone = 0;
 		    }
-		    else if (value < negativeZoneC && value >= negativeZoneA) { 
+		    else if (isInsideTwoLimitsValues(value, negativeZoneC, negativeZoneA)) { 
 		    	negativeZone++;
 		    	positiveZone = 0;
 		    }else {
@@ -228,7 +228,7 @@ public class GraphicServiceImpl implements GraphicService {
 	    		
 	}
 	
-	private void includeIfFmIsNineConsecutivePointsInTheSameSideCauseIfNeeded(List<DetailedFmGraphicHelper> detailedFmGraphicHelperList, double midline) {
+	private void includeIfFmIsNineConsecutivePointsInTheSameSideCauseIfNeeded(List<DetailedFmGraphicHelper> detailedFmGraphicHelperList,  double lcs, double lic, double midline) {
 		if (detailedFmGraphicHelperList.size() <= 8) { return; }
 				
 		boolean isCountGreatherThanMediumValue = true;
@@ -240,7 +240,8 @@ public class GraphicServiceImpl implements GraphicService {
 			boolean valueIsGratherThanMediumLine = value > midline;
 			boolean valueIsSmallerThanMidline = value < midline;
 			
-			if (isCountGreatherThanMediumValue && valueIsSmallerThanMidline) { count = 0; }
+			if (!isInsideTwoLimitsValues(value, lcs, lic)) { count = 0; }
+			else if (isCountGreatherThanMediumValue && valueIsSmallerThanMidline) { count = 0; }
 			else if (!isCountGreatherThanMediumValue && valueIsGratherThanMediumLine) { count = 0; }
 			else if (!valueIsGratherThanMediumLine && !valueIsSmallerThanMidline) { count = 0; }
 			else { count++; }
@@ -252,7 +253,7 @@ public class GraphicServiceImpl implements GraphicService {
 		
 	}
 	
-	private void includeSixConsecutivePointsInAscendingOrDescendingOrderCauseIfNeeded(List<DetailedFmGraphicHelper> detailedFmGraphicHelperList) {
+	private void includeSixConsecutivePointsInAscendingOrDescendingOrderCauseIfNeeded(List<DetailedFmGraphicHelper> detailedFmGraphicHelperList, double lcs, double lic) {
 	    if (detailedFmGraphicHelperList.size() < 6) { return; }
 	    	    
 	    int consecutivePointsAsc = 0;
@@ -270,7 +271,7 @@ public class GraphicServiceImpl implements GraphicService {
 	        isAscending = currentValue > previousValue;
 	        isDescending = currentValue < previousValue;
 
-	        if (!isAscending && !isDescending) { 
+	        if ((!isInsideTwoLimitsValues(currentValue, lcs, lic)) || (!isAscending && !isDescending)) { 
 	        	consecutivePointsAsc = 0; 
 	        	consecutivePointsDes = 0; 
 	        	continue;
@@ -292,7 +293,7 @@ public class GraphicServiceImpl implements GraphicService {
 
 	}
 	
-	private void includeForteenConsecutivePointsAlternatingAboveAndBelowMediumLineCauseIfNeeded(List<DetailedFmGraphicHelper> detailedFmGraphicHelperList, double mediumLine) {
+	private void includeForteenConsecutivePointsAlternatingAboveAndBelowMediumLineCauseIfNeeded(List<DetailedFmGraphicHelper> detailedFmGraphicHelperList, double lcs, double lic, double mediumLine) {
 	    if (detailedFmGraphicHelperList.size() < 14) { return; }
 	    
 	    int consecutivePointsCount = 1;
@@ -307,9 +308,14 @@ public class GraphicServiceImpl implements GraphicService {
 	    	
 	    	double value = detailedFmGraphicHelper.getDetailedFmGraphic().getValue();
 	    	
+	        if (!isInsideTwoLimitsValues(value, lcs, lic)) {
+	        	consecutivePointsCount = 0;
+	        	continue;
+	        }
+	        
 	        boolean isCurrentAboveMean = value > mediumLine;
 	        boolean isCurrentBelowMean = value < mediumLine;
-
+	        
 	        if (isAboveMean && isCurrentBelowMean) { 
 	        	consecutivePointsCount++;
 	        	isBelowMean = true;
@@ -328,5 +334,43 @@ public class GraphicServiceImpl implements GraphicService {
 	       
 	    }
 	}
+	
+	public boolean isInsideTwoLimitsValues(double value, double zoneGratherValue, double zoneLowerValue) {
+		if (zoneGratherValue < 0.0 && zoneLowerValue < 0.0) {
+			return isInsideTwoNegativaZones(value, zoneGratherValue, zoneLowerValue);
+		}else if (zoneGratherValue > 0.0 && zoneLowerValue > 0.0) {
+			return isInsideTwoPositiveZones(value, zoneGratherValue, zoneLowerValue);
+		}else if (zoneGratherValue > 0.0 && zoneLowerValue < 0.0) {
+			return isInsideOnePositiveAndOneNegativeZone(value, zoneGratherValue, zoneLowerValue);
+		}else if (zoneGratherValue == 0.0 && zoneLowerValue < 0.0) {
+			return isInsideZeroAndNegativeZone(value, zoneGratherValue, zoneLowerValue);
+		}else if (zoneGratherValue > 0.0 && zoneLowerValue == 0.0) {
+			return isInsideZeroAndPositiveZone(value, zoneGratherValue, zoneLowerValue);
+		}else {
+			System.out.println("NO RULER");
+			return false;
+		}	
+	}
 
+	private boolean isInsideTwoNegativaZones(double value, double zoneGratherValue, double zoneLowerValue) {
+		return value > 0.0 ? false : value <= zoneGratherValue && value >= zoneLowerValue;
+	}
+	
+	private boolean isInsideTwoPositiveZones(double value, double zoneGratherValue, double zoneLowerValue) {
+		return value > 0.0 ? value<=zoneGratherValue&&value>=zoneLowerValue: false;
+	}
+	
+	private boolean isInsideOnePositiveAndOneNegativeZone(double value, double zoneGratherValue, double zoneLowerValue) {
+		return value > 0.0 ? value <= zoneGratherValue : value >= zoneLowerValue;
+	}
+	
+	private boolean isInsideZeroAndNegativeZone(double value, double zoneGratherValue, double zoneLowerValue) {
+		return value > 0.0 ? false : value >= zoneLowerValue;
+	}
+	
+	private boolean isInsideZeroAndPositiveZone(double value, double zoneGratherValue, double zoneLowerValue) {
+		return value < 0.0 ? false : value <= zoneGratherValue;
+	}
+		
 }
+

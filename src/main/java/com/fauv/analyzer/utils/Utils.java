@@ -23,5 +23,5 @@ public class Utils {
 	public static double sumDoubleValueList(List<Double> fmListValues) {
 		return fmListValues.stream().reduce(0.0, (currentSum, currentValue) -> currentSum + currentValue);
 	}
-
+	
 }

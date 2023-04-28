@@ -79,7 +79,6 @@ public class ParserHandleImpl implements ParserHandleService {
 		PmpDTO pmpDTO = new PmpDTO();
 		
 		pmpDTO.setName(helper.getName());
-		pmpDTO.setAxis(helper.getNominalCoordinate().getWorkingOnAxis());
 		pmpDTO.setX(helper.getNominalCoordinate().getValues().get(0).getValue());
 		pmpDTO.setY(helper.getNominalCoordinate().getValues().get(1).getValue());
 		pmpDTO.setZ(helper.getNominalCoordinate().getValues().get(2).getValue());
