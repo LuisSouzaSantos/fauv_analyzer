@@ -71,7 +71,7 @@ public class NominalFm {
 	  name = "nominal_pmp_fm", 
 	  joinColumns = @JoinColumn(name = "nominal_fm_id"), 
 	  inverseJoinColumns = @JoinColumn(name = "nominal_pmp_id"))
-	private List<NominalPmp> pointsUsingToMap = new ArrayList<>();
+	private List<NominalPmp> pmpList = new ArrayList<>();
 	
 	public Long getId() {
 		return id;
@@ -161,12 +161,12 @@ public class NominalFm {
 		this.fmImpactList = fmImpactList;
 	}
 
-	public List<NominalPmp> getPointsUsingToMap() {
-		return pointsUsingToMap;
+	public List<NominalPmp> getPmpList() {
+		return pmpList;
 	}
 
-	public void setPointsUsingToMap(List<NominalPmp> pointsUsingToMap) {
-		this.pointsUsingToMap = pointsUsingToMap;
+	public void setPmpList(List<NominalPmp> pmpList) {
+		this.pmpList = pmpList;
 	}
 
 	public static NominalFm buildNominalFm(FmForm fmForm) {

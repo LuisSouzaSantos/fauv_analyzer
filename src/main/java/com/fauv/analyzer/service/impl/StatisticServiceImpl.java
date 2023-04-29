@@ -179,7 +179,7 @@ public class StatisticServiceImpl implements StatisticService {
 		fmStatistic.setTotalAk(fmIndicator.getAk());
 		fmStatistic.setTotalBk(fmIndicator.getBk());
 		fmStatistic.setTotalIo(fmIndicator.getIo());
-		fmStatistic.setMappedPmpList(nominalFm.getPointsUsingToMap().stream().map(pmp -> pmp.getName()).collect(Collectors.toList()));
+		fmStatistic.setMappedPmpList(nominalFm.getPmpList().stream().map(pmp -> pmp.getName()).collect(Collectors.toList()));
 		fmStatistic.setImpactList(nominalFm.getFmImpactList().stream().map(impact -> impact.getInfo()).collect(Collectors.toList()));
 		//fmStatistic.setNominalDistribution(nominalDistribution);
 		

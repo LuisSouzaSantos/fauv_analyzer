@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,8 @@ import com.fauv.analyzer.entity.Model;
 import com.fauv.analyzer.entity.dto.ModelDTO;
 import com.fauv.analyzer.entity.form.ModelForm;
 import com.fauv.analyzer.entity.form.ModelPreview;
+import com.fauv.analyzer.exception.CarException;
+import com.fauv.analyzer.exception.EntityValidatorException;
 import com.fauv.analyzer.exception.ModelException;
 import com.fauv.analyzer.service.ModelHelperService;
 import com.fauv.analyzer.service.ModelService;
@@ -35,10 +38,9 @@ public class ModelController {
 	private ModelHelperService modelHelperService;
 	
 	@PostMapping("/preview")
-	public ResponseEntity<ModelPreview> previewModel(@RequestParam("dmoFile") MultipartFile dmoFile, @RequestParam(name = "csvFile", required = false) MultipartFile csvFile) throws Exception {
+	public ResponseEntity<ModelPreview> previewModel(@RequestParam(name = "dmoFile", required = true) MultipartFile dmoFile, @RequestParam(name = "csvFile", required = false) MultipartFile csvFile) throws Exception {
 		return ResponseEntity.ok(modelService.preview(dmoFile, csvFile)); 
 	}
-	
 	
 	@PostMapping
 	public ResponseEntity<ModelDTO> createModel(@RequestBody ModelForm form) throws Exception {
@@ -52,6 +54,15 @@ public class ModelController {
 		List<Model> models = modelService.getAll();
 		
 		return ResponseEntity.ok(modelHelperService.toModelDTO(models)); 
+	}
+	
+	@PutMapping
+	public ResponseEntity<ModelDTO> edit(@RequestBody ModelDTO modelDTO) throws EntityValidatorException, ModelException, CarException {
+		Model modelToBeSave = modelHelperService.toModel(modelDTO);
+		
+		Model model = modelService.edit(modelToBeSave);
+		
+		return ResponseEntity.ok(modelHelperService.toModelDTO(model)); 
 	}
 	
 	@GetMapping("/{id}")

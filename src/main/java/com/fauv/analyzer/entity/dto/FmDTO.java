@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fauv.analyzer.enums.AxisType;
+import com.fauv.analyzer.enums.CatalogType;
 import com.fauv.analyzer.enums.FmLevel;
 
 public class FmDTO {
@@ -16,8 +17,10 @@ public class FmDTO {
 	private double defaultValue;
 	private FmLevel level; 
 	private AxisType axis;
+	private boolean active;
+	private CatalogType catalogType;
 	@JsonIgnoreProperties(value = {"axisCoordinateList"})
-	private List<PmpDTO> pointsUsingToMap = new ArrayList<>();
+	private List<PmpDTO> pmpList = new ArrayList<>();
 	private List<FmImpactDTO> fmImpactList = new ArrayList<>();
 	
 	public Long getId() {
@@ -75,13 +78,29 @@ public class FmDTO {
 	public void setAxis(AxisType axis) {
 		this.axis = axis;
 	}
+	
+	public boolean isActive() {
+		return active;
+	}
 
-	public List<PmpDTO> getPointsUsingToMap() {
-		return pointsUsingToMap;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
-	public void setPointsUsingToMap(List<PmpDTO> pointsUsingToMap) {
-		this.pointsUsingToMap = pointsUsingToMap;
+	public CatalogType getCatalogType() {
+		return catalogType;
+	}
+
+	public void setCatalogType(CatalogType catalogType) {
+		this.catalogType = catalogType;
+	}
+
+	public List<PmpDTO> getPmpList() {
+		return pmpList;
+	}
+
+	public void setPmpList(List<PmpDTO> pmpList) {
+		this.pmpList = pmpList;
 	}
 
 	public List<FmImpactDTO> getFmImpactList() {

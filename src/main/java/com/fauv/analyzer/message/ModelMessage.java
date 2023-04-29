@@ -10,7 +10,12 @@ public class ModelMessage {
 	public static final String FORM_CAR = "CAR_CANNOT_BE_NULL";
 	
 	public static final String NOT_FOUND = "MODEL_NOT_FOUND";
+	public static final String PMP_NOT_FOUND = "PMP_NOT_FOUND";
 	public static final String DUPLICATE = "DUPLICATE_MODEL";
+	public static final String DUPLICATE_PMP = "DUPLICATE_PMP";
+	public static final String DUPLICATE_FM = "DUPLICATE_FM";
+	public static final String DUPLICATE_AXIS_COORDINATE = "DUPLICATE_AXIS_COORDINATE";
+	public static final String DUPLICATE_PMP_FM = "DUPLICATE_PMP_IN_FM_LIST";
 	
 	public static final String NOMINAL_PMP_NAME = "NOMINAL_PMP_NAME_CANNOT_BE_NULL_OR_EMPTLY";
 	public static final String NOMINAL_PMP_AXIS = "NOMINAL_PMP_AXIS_CANNOT_BE_NULL";

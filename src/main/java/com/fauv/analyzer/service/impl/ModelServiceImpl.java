@@ -62,8 +62,10 @@ public class ModelServiceImpl implements ModelService {
 	@Override
 	public ModelPreview preview(MultipartFile dmoFile, MultipartFile csvFile) throws Exception {
 		SampleHelper sample = parserHttp.readDmoFileAndBuildASample(dmoFile);
-		Set<FmImpactHelper> extractedFmImpactList = csvHandleService.parseCsvFileToImpactHelpers(csvFile);
-				
+		Set<FmImpactHelper> extractedFmImpactList = new HashSet<>();
+		
+		if (csvFile != null) { extractedFmImpactList = csvHandleService.parseCsvFileToImpactHelpers(csvFile); }
+						
 		return createModelPreviewUsignSampleHelperAsReference(sample, extractedFmImpactList);
 	}
 
@@ -91,12 +93,12 @@ public class ModelServiceImpl implements ModelService {
 		for (FmForm fmForm: form.getFmList()) {			
 			NominalFm nominalFm = NominalFm.buildNominalFm(fmForm);
 			
-			for (PmpDTO pmpDTO : fmForm.getPointsUsingToMap()) {
+			for (PmpDTO pmpDTO : fmForm.getPmpList()) {
 				NominalPmp nominalPmp = model.getPmpByName(pmpDTO.getName());
 				
 				if (nominalPmp == null) { continue; }
 				
-				nominalFm.getPointsUsingToMap().add(nominalPmp);
+				nominalFm.getPmpList().add(nominalPmp);
 			}
 			
 			for (FmImpactForm fmImpactForm : fmForm.getFmImpactList()) {
@@ -116,14 +118,13 @@ public class ModelServiceImpl implements ModelService {
 		
 		return modelRepository.save(model);
 	}
-
+	
 	@Override
 	public Model edit(Model model) throws EntityValidatorException, ModelException, CarException {
 		Model modelById = getByIdValidateIt(model.getId());
 
 		Car car = carService.getByIdValidateIt(model.getCar().getId());
 
-		
 		modelById.setPartNumber(model.getPartNumber());
 		modelById.setStepDescription(model.getStepDescription());
 		modelById.setCar(car);
@@ -132,51 +133,64 @@ public class ModelServiceImpl implements ModelService {
 		
 		if (duplicateModel != null && !modelById.getId().equals(duplicateModel.getId())) { throw new ModelException(ModelMessage.DUPLICATE); }
 		
-		for (NominalPmp previousNominalPmp : model.getPmpList()) {			
-			NominalPmp nominalPmp = previousNominalPmp.getId() == null ? NominalPmp.buildNominalPmp(previousNominalPmp, model):previousNominalPmp;
+		for (NominalPmp nominalPmp : model.getPmpList()) {		
+			modelValidator.validateNominalPmp(nominalPmp);
 			
-			if (nominalPmp.getId() != null) {
-				nominalPmp.setName(previousNominalPmp.getName());
-				nominalPmp.setActive(previousNominalPmp.isActive());
-				nominalPmp.setX(previousNominalPmp.getX());
-				nominalPmp.setY(previousNominalPmp.getY());
-				nominalPmp.setZ(previousNominalPmp.getZ());
+			boolean isNewPmp = nominalPmp.getId() == null;
+			
+			if (isNewPmp) {	
+				nominalPmp = NominalPmp.buildNominalPmp(nominalPmp, model);
 				
-				redoNewNominalAxisCoordinate(nominalPmp.getAxisCoordinateList(), nominalPmp);
+				NominalPmp previousPmp = modelById.getPmpByName(nominalPmp.getName());
+				
+				if (previousPmp != null && !nominalPmp.getId().equals(previousPmp.getId())) { throw new ModelException(ModelMessage.DUPLICATE_PMP); }
+				
+				modelById.getPmpList().add(previousPmp);
+			}else {
+				NominalPmp previousPmp = modelById.getPmpById(nominalPmp.getId());
+				previousPmp.setName(nominalPmp.getName());
+				previousPmp.setX(nominalPmp.getX());
+				previousPmp.setY(nominalPmp.getY());
+				previousPmp.setZ(nominalPmp.getZ());
+				previousPmp.setActive(nominalPmp.isActive());
+				
+				redoNominalAxisCoordinate(previousPmp.getAxisCoordinateList(), nominalPmp.getAxisCoordinateList(), previousPmp);
 			}
 			
-			modelValidator.validateNominalPmp(nominalPmp);
-			model.getPmpList().add(nominalPmp);
 		}
 		
-		for (NominalFm previousNominalFm: model.getFmList()) {
-			NominalFm nominalFm = previousNominalFm.getId() == null ? NominalFm.buildNominalFm(previousNominalFm, model):previousNominalFm;
-			
-			nominalFm.getPointsUsingToMap().clear();
-			nominalFm.getFmImpactList().clear();
-			
-			for (NominalPmp previousNominalPmp : nominalFm.getPointsUsingToMap()) {
-				NominalPmp nominalPmp = model.getPmpByName(previousNominalPmp.getName());
-				
-				if (nominalPmp == null) {
-					System.out.println("NOT FOUND THE PMP BY NAME");
-					continue; 
-				}
-		
-				nominalFm.getPointsUsingToMap().add(nominalPmp);
-			}
-			
-			for (FmImpact previousfmImpact : nominalFm.getFmImpactList()) {
-				FmImpact fmImpact = previousfmImpact.getId() == null ? FmImpact.buildFmImpact(previousfmImpact, nominalFm):previousfmImpact;
-				
-				modelValidator.validateFmImpact(fmImpact);
-				
-				nominalFm.getFmImpactList().add(fmImpact);
-			}
-			
+		for (NominalFm nominalFm: model.getFmList()) {
 			modelValidator.validateNominalFm(nominalFm);
 			
-			model.getFmList().add(nominalFm);
+			boolean isNewFm = nominalFm.getId() == null;
+			
+			if (isNewFm) {
+				nominalFm = NominalFm.buildNominalFm(nominalFm, model);
+				
+				NominalFm previousFm = model.getFmByName(nominalFm.getName());
+				
+				if (previousFm != null && !nominalFm.getId().equals(previousFm.getId())) { throw new ModelException(ModelMessage.DUPLICATE_FM); }
+
+				redoNominalPmp(nominalFm.getPmpList(), nominalFm.getPmpList(), nominalFm, modelById);
+				redoFmImpactList(nominalFm.getFmImpactList(), nominalFm.getFmImpactList(), nominalFm);
+				
+				modelById.getFmList().add(nominalFm);
+			}else {
+				NominalFm previousFm = model.getFmById(nominalFm.getId());
+				
+				previousFm.setName(nominalFm.getName());
+				previousFm.setAxis(nominalFm.getAxis());
+				previousFm.setCatalogType(nominalFm.getCatalogType());
+				previousFm.setDefaultValue(nominalFm.getDefaultValue());
+				previousFm.setHigherTolerance(nominalFm.getHigherTolerance());
+				previousFm.setLowerTolerance(nominalFm.getLowerTolerance());
+				previousFm.setLevel(nominalFm.getLevel());
+				previousFm.setActive(nominalFm.isActive());		
+				
+				redoNominalPmp(previousFm.getPmpList(), nominalFm.getPmpList(), nominalFm, modelById);
+				redoFmImpactList(previousFm.getFmImpactList(), nominalFm.getFmImpactList(), previousFm);
+			}
+						
 		}
 		
 		
@@ -262,7 +276,7 @@ public class ModelServiceImpl implements ModelService {
 					.filter(fmImpactHelper -> fmImpactHelper.getFmName().equals(fmHelper.getName())).findFirst().orElse(null);
 			
 			FmForm fmForm = parserHandleService.buildFmFormBasedOnHelper(fmHelper);
-			fmForm.setPointsUsingToMap(pointsFound);
+			fmForm.setPmpList(pointsFound);
 			
 			if (fmImpactHelperFound != null) {
 				fmForm.setFmImpactList(parserHandleService.buildFmImpactFormBasedOnHelper(fmImpactHelperFound));
@@ -273,27 +287,49 @@ public class ModelServiceImpl implements ModelService {
 		
 		return setFmForm;
 	}
-	
-	// Review this method
-	private List<NominalAxisCoordinate> redoNewNominalAxisCoordinate(List<NominalAxisCoordinate> axisCoordinateListToBeUpdate, NominalPmp nominalPmp) throws ModelException, EntityValidatorException {
 		
-		for (NominalAxisCoordinate axisCoordinateToBeUpdate : axisCoordinateListToBeUpdate) {
+	private void redoNominalAxisCoordinate(List<NominalAxisCoordinate> currentList, List<NominalAxisCoordinate> newList, NominalPmp nominalPmp) throws ModelException, EntityValidatorException {						
+		for (NominalAxisCoordinate nominalAxisCoordinate : newList) {
+			modelValidator.validateNominalAxisCoordinate(nominalAxisCoordinate);
 			
-			//Find NominalAxisCoordinate by name
-//			NominalAxisCoordinate currentNominalAxisCoordinate = currentNominalAxisCoordinateList.stream()
-//					.filter(axisCoordinate -> axisCoordinate.getName().equals(axisCoordinateToBeUpdate.getName()))
-//					.findFirst().orElse(null);		
-//			
-//			if ((currentNominalAxisCoordinate != null) && (axisCoordinateToBeUpdate.getId() == null)) { throw new ModelException(ModelMessage.THIS_NOMINAL_AXIS_COORDINATE_CANNOT_HAS_ID_NULL); }
-//			if ((currentNominalAxisCoordinate != null) && !(axisCoordinateToBeUpdate.getId().equals(currentNominalAxisCoordinate.getId()))) { throw new ModelException(ModelMessage.NOMINAL_AXIS_COORDINATE_NOT_FIND_BY_NAME_IN_UPDATE); }
-			if (axisCoordinateToBeUpdate.getId() == null) { 
-				axisCoordinateToBeUpdate.setNominalPmp(nominalPmp); 
-			}
-			
-			modelValidator.validateNominalAxisCoordinate(axisCoordinateToBeUpdate);
+			nominalAxisCoordinate.setNominalPmp(nominalPmp);
 		}
 		
-		return axisCoordinateListToBeUpdate;
+		boolean hasDuplicate = newList.stream().map(axisCoordinate -> axisCoordinate.getName()).distinct().count() != newList.size();
+		
+		if (hasDuplicate) { throw new ModelException(ModelMessage.DUPLICATE_AXIS_COORDINATE); }
+		
+		currentList.clear();
+		currentList.addAll(newList);
+	}
+	
+	private void redoNominalPmp(List<NominalPmp> currentList, List<NominalPmp> newList, NominalFm nominalFm, Model model) throws EntityValidatorException, ModelException {
+		if (newList == null || newList.isEmpty()) { throw new ModelException(ModelMessage.NOMINAL_FM_NOMINAL_POINTS); }
+		
+		currentList.clear();
+		
+		for (NominalPmp nominalPmp : newList) {
+			NominalPmp previousPmp = model.getPmpByName(nominalPmp.getName());
+			
+			if (previousPmp == null) { throw new ModelException(ModelMessage.PMP_NOT_FOUND); }
+			
+			currentList.add(previousPmp);
+		}
+		
+		boolean hasDuplicate = newList.stream().map(nominalPmp -> nominalPmp.getName()).distinct().count() != newList.size();
+		
+		if (hasDuplicate) { throw new ModelException(ModelMessage.DUPLICATE_PMP_FM); }		
+	}
+	
+	private void redoFmImpactList(List<FmImpact> currentList, List<FmImpact> newList, NominalFm nominalFm) throws EntityValidatorException {
+		for (FmImpact fmImpact : newList) {
+			modelValidator.validateFmImpact(fmImpact);
+		
+			fmImpact.setNominalFm(nominalFm);
+		}
+
+		currentList.clear();
+		currentList.addAll(newList);
 	}
 		
 }

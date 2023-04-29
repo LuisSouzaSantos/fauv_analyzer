@@ -19,7 +19,7 @@ public class FmForm {
 	private boolean active = true;
 	
 	private List<FmImpactForm> fmImpactList = new ArrayList<>();
-	private List<PmpDTO> pointsUsingToMap = new ArrayList<>();
+	private List<PmpDTO> pmpList = new ArrayList<>();
 	
 	public String getName() {
 		return name;
@@ -85,12 +85,12 @@ public class FmForm {
 		this.fmImpactList = fmImpactList;
 	}
 
-	public List<PmpDTO> getPointsUsingToMap() {
-		return pointsUsingToMap;
+	public List<PmpDTO> getPmpList() {
+		return pmpList;
 	}
 
-	public void setPointsUsingToMap(List<PmpDTO> pointsUsingToMap) {
-		this.pointsUsingToMap = pointsUsingToMap;
+	public void setPmpList(List<PmpDTO> pmpList) {
+		this.pmpList = pmpList;
 	}
 
 	@Override

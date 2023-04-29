@@ -53,13 +53,13 @@ public class ModelValidator {
 	public void validateNominalPmp(NominalPmp nominalPmp) throws EntityValidatorException, ModelException {
 		nominalPmpValidator.validateFields(nominalPmp);
 		
-		if (nominalPmp.getAxisCoordinateList() == null || nominalPmp.getAxisCoordinateList().isEmpty()) { throw new ModelException(ModelMessage.NOMINAL_PMP_AXIS_COORDINATE_LIST); }
+		if (nominalPmp.getAxisCoordinateList() == null || nominalPmp.getAxisCoordinateList().isEmpty()) { throw new ModelException(ModelMessage.NOMINAL_PMP_AXIS_COORDINATE_LIST+":"+nominalPmp.getId()); }
 	}
 	
 	public void validateNominalFm(NominalFm nominalFm) throws EntityValidatorException, ModelException {
 		nominalFmValidator.validateFields(nominalFm);
 		
-		if (nominalFm.getPointsUsingToMap() == null || nominalFm.getPointsUsingToMap().isEmpty()) { throw new ModelException(ModelMessage.NOMINAL_FM_NOMINAL_POINTS); }
+		if (nominalFm.getPmpList() == null || nominalFm.getPmpList().isEmpty()) { throw new ModelException(ModelMessage.NOMINAL_FM_NOMINAL_POINTS+":"+nominalFm.getName()); }
 	}
 	
 	
