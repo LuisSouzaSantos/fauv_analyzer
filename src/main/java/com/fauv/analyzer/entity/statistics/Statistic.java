@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fauv.analyzer.entity.dto.FmDTO;
 import com.fauv.analyzer.entity.dto.PmpDTO;
 
@@ -12,7 +15,9 @@ public class Statistic {
 	private String carName;
 	private String partNumber;
 	private String unitName;
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDate initDate;
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	private LocalDate endDate;
 	private Long modelId;
 	private long numberOfSamples;
@@ -21,7 +26,9 @@ public class Statistic {
 	private long totalBk;
 	private long totalIo;
 	private List<Long> samplesIds = new ArrayList<>();
+	@JsonIgnoreProperties(value = {"pmpList", "fmImpactList"})
 	private List<FmDTO> defaultFmNames = new ArrayList<FmDTO>();
+	@JsonIgnoreProperties(value = {"axisCoordinateList"})
 	private List<PmpDTO> defaultPmpNames = new ArrayList<PmpDTO>();
 	
 	public String getCarName() {

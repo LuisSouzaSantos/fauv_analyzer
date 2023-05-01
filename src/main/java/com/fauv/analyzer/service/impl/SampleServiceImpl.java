@@ -29,11 +29,13 @@ import com.fauv.analyzer.entity.dto.MeasurementAxisCoordinateDTO;
 import com.fauv.analyzer.entity.dto.MeasurementFmDTO;
 import com.fauv.analyzer.entity.dto.MeasurementPmpDTO;
 import com.fauv.analyzer.entity.dto.SampleDTO;
+import com.fauv.analyzer.entity.dto.SampleLoadingDTO;
 import com.fauv.analyzer.entity.helper.CoordinateValueHelper;
 import com.fauv.analyzer.entity.helper.FmHelper;
 import com.fauv.analyzer.entity.helper.MeasurementAxisCoordinateHelper;
 import com.fauv.analyzer.entity.helper.PmpHelper;
 import com.fauv.analyzer.entity.helper.SampleHelper;
+import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.enums.AxisType;
 import com.fauv.analyzer.enums.StatusType;
 import com.fauv.analyzer.enums.ToleranceType;
@@ -183,6 +185,35 @@ public class SampleServiceImpl implements SampleService {
 	}
 	
 	@Override
+	public List<SampleLoadingDTO> toSampleLoadingDTO(List<Sample> list) {
+		if (list == null) { return new ArrayList<>(); }
+		
+		return list.stream().map(item -> toSampleLoadingDTO(item)).collect(Collectors.toList());
+	}
+
+	@Override
+	public SampleLoadingDTO toSampleLoadingDTO(Sample sample) {
+		if (sample == null) { return null; }
+		
+		SampleLoadingDTO sampleLoadingDTO = new SampleLoadingDTO();
+		sampleLoadingDTO.setId(sample.getId());
+		sampleLoadingDTO.setModel(modelHelperService.toModelDTO(sample.getModel()));
+		sampleLoadingDTO.setEquipment(equipmentService.toEquipmentDTO(sample.getEquipment()));
+		sampleLoadingDTO.setUploadDate(sample.getUploadedDate());
+		sampleLoadingDTO.setStatus(sample.getStatus());
+		sampleLoadingDTO.setUploadUser(sample.getUploadedUser());
+		
+		FmIndicator fmIndicator = calcService.calcFmIndicator(sample.getMeasurementFmList());
+		
+		sampleLoadingDTO.setAk(fmIndicator.getAk());
+		sampleLoadingDTO.setBk(fmIndicator.getBk());
+		sampleLoadingDTO.setIo(fmIndicator.getIo());
+		
+		return sampleLoadingDTO;
+	}
+	
+	//TODO Improve the performace
+	@Override
 	public Set<SampleDTO> getByModels(Set<Model> models) {
 		Set<Sample> samples = sampleRepository.findByModelIn(models);
 
@@ -200,6 +231,8 @@ public class SampleServiceImpl implements SampleService {
 		
 		return query.getResultList();
 	}
+	
+	
 		
 	private Sample getByPinAndModel(String pin, Model model) {
 		return sampleRepository.findByPinAndModel(pin, model);

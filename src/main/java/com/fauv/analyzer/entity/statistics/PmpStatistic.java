@@ -17,7 +17,7 @@ public class PmpStatistic {
 	private double sigmaLevel;
 	private double average;
 	private double nominalDistribution;
-	private List<String> mappedPmpList = new ArrayList<>();
+	private List<String> mappedFmList = new ArrayList<>();
 	private List<String> impactList = new ArrayList<>();
 	private CepIndividualValuesGraphic cepIndividualValuesGraphic;
 	private CepMovelAmplitudeGraphic cepMovelAmplitudeGraphic;
@@ -119,12 +119,12 @@ public class PmpStatistic {
 		this.nominalDistribution = nominalDistribution;
 	}
 	
-	public List<String> getMappedPmpList() {
-		return mappedPmpList;
+	public List<String> getMappedFmList() {
+		return mappedFmList;
 	}
 	
-	public void setMappedPmpList(List<String> mappedPmpList) {
-		this.mappedPmpList = mappedPmpList;
+	public void setMappedFmList(List<String> mappedFmList) {
+		this.mappedFmList = mappedFmList;
 	}
 	
 	public List<String> getImpactList() {

@@ -39,7 +39,5 @@ public class StatisticController {
 	public ResponseEntity<FmStatistic> generatePmpStatistic(@PathVariable Long modelId, @PathVariable String pmpName) {
 		return ResponseEntity.ok(null); 
 	}
-	
 
-	
 }

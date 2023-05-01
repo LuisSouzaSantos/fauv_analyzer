@@ -16,6 +16,7 @@ import com.fauv.analyzer.entity.statistics.MovelAmplitudeGraphic;
 import com.fauv.analyzer.enums.GraphicType;
 import com.fauv.analyzer.enums.StatisticCriteria;
 import com.fauv.analyzer.service.GraphicService;
+import com.fauv.analyzer.utils.Utils;
 
 @Service
 public class GraphicServiceImpl implements GraphicService {
@@ -25,25 +26,25 @@ public class GraphicServiceImpl implements GraphicService {
 			double midline, double avgMat, double valueToCalcateZone, List<MeasurementFm> measurementFmList) {
 		CepIndividualValuesGraphic graphic = new CepIndividualValuesGraphic();
 		
-		graphic.setPositiveZoneA(avgMat+3*valueToCalcateZone);
-		graphic.setPositiveZoneB(avgMat+2*valueToCalcateZone);
-		graphic.setPosttiveZoneC(avgMat+1*valueToCalcateZone);
-		graphic.setNegativeZoneA(avgMat-3*valueToCalcateZone);
-		graphic.setNegativeZoneB(avgMat-2*valueToCalcateZone);
-		graphic.setNegativeZoneC(avgMat-1*valueToCalcateZone);
-		graphic.setHigherTolerance(higherTolerance);
-		graphic.setLowerTolerance(lowerTolerance);
-		graphic.setMidline(midline);
+		graphic.setPositiveZoneA(Utils.formatNumberToFmGraphic(avgMat+3*valueToCalcateZone));
+		graphic.setPositiveZoneB(Utils.formatNumberToFmGraphic(avgMat+2*valueToCalcateZone));
+		graphic.setPosttiveZoneC(Utils.formatNumberToFmGraphic(avgMat+1*valueToCalcateZone));
+		graphic.setNegativeZoneA(Utils.formatNumberToFmGraphic(avgMat-3*valueToCalcateZone));
+		graphic.setNegativeZoneB(Utils.formatNumberToFmGraphic(avgMat-2*valueToCalcateZone));
+		graphic.setNegativeZoneC(Utils.formatNumberToFmGraphic(avgMat-1*valueToCalcateZone));
+		graphic.setHigherTolerance(Utils.formatNumberToFmGraphic(higherTolerance));
+		graphic.setLowerTolerance(Utils.formatNumberToFmGraphic(lowerTolerance));
+		graphic.setMidline(Utils.formatNumberToFmGraphic(midline));
 		graphic.setGraphicType(GraphicType.CEP_INDIVIDUAL_VALUES);
 		
 		List<DetailedFmGraphicHelper> detailedFmGraphicHelper = measurementFmList.stream().map(fm -> { 
 				Sample sample = fm.getSample();
-				DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), (fm.getValue().doubleValue()-fm.getNominalFm().getDefaultValue().doubleValue()));
+				DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic((fm.getValue().doubleValue()-fm.getNominalFm().getDefaultValue().doubleValue())));
 				
 				return new DetailedFmGraphicHelper(detailedFmGraphic, fm);
 		}).collect(Collectors.toList());
 		
-		includeOutsideControlLimitsIfNeeded(higherTolerance, graphic.getLowerTolerance(), detailedFmGraphicHelper);
+		includeOutsideControlLimitsIfNeeded(higherTolerance, lowerTolerance, detailedFmGraphicHelper);
 		includeTwoOrMoreRunsOfThreeConsecutivePointsCauseIfNeeded(graphic.getPositiveZoneA(), graphic.getPositiveZoneB(), graphic.getNegativeZoneA(), graphic.getNegativeZoneB(), detailedFmGraphicHelper);
 		includeFifteenConsecutivePointsInZoneCCauseIfNeeded(graphic.getPosttiveZoneC(), graphic.getNegativeZoneC(), midline, detailedFmGraphicHelper);
 		includeFourOrMorePointsOfFiveConsecutivePointsOnSameSideOfMeanCauseIfNeeded(graphic.getPosttiveZoneC(), graphic.getPositiveZoneA(), graphic.getNegativeZoneC(), graphic.getNegativeZoneA(), detailedFmGraphicHelper);
@@ -61,9 +62,9 @@ public class GraphicServiceImpl implements GraphicService {
 			double midline, List<MeasurementFm> measurementFmList, List<Double> movelRange) {
 		CepMovelAmplitudeGraphic graphic = new CepMovelAmplitudeGraphic();
 		
-		graphic.setHigherTolerance(higherTolerance);
-		graphic.setLowerTolerance(lowerTolerance);
-		graphic.setMidline(midline);
+		graphic.setHigherTolerance(Utils.formatNumberToFmGraphic(higherTolerance));
+		graphic.setLowerTolerance(Utils.formatNumberToFmGraphic(lowerTolerance));
+		graphic.setMidline(Utils.formatNumberToFmGraphic(midline));
 		graphic.setGraphicType(GraphicType.CEP_MOVEL_AMPLITUDE);
 		
 		for (int i = 0; i < measurementFmList.size(); i++) {
@@ -72,7 +73,7 @@ public class GraphicServiceImpl implements GraphicService {
 			
 			Sample sample = measurementFm.getSample();
 			
-			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), movelRangeFm);
+			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic(movelRangeFm));
 			
 			graphic.getDetailedFmGraphicsList().add(detailedFmGraphic);
 		}
@@ -85,9 +86,9 @@ public class GraphicServiceImpl implements GraphicService {
 			List<MeasurementFm> measurementFmList, List<Double> mat) {
 		IndividualValuesGraphic graphic = new IndividualValuesGraphic();
 		
-		graphic.setHigherTolerance(higherTolerance);
-		graphic.setLowerTolerance(lowerTolerance);
-		graphic.setMidline(midline);
+		graphic.setHigherTolerance(Utils.formatNumberToFmGraphic(higherTolerance));
+		graphic.setLowerTolerance(Utils.formatNumberToFmGraphic(lowerTolerance));
+		graphic.setMidline(Utils.formatNumberToFmGraphic(midline));
 		graphic.setGraphicType(GraphicType.INDIVIDUAL_VALUES);
 		
 		for (int i = 0; i < measurementFmList.size(); i++) {
@@ -96,7 +97,7 @@ public class GraphicServiceImpl implements GraphicService {
 			
 			Sample sample = measurementFm.getSample();
 			
-			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), singleMatValue);
+			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic(singleMatValue));
 			
 			graphic.getDetailedFmGraphicsList().add(detailedFmGraphic);
 		}
@@ -109,9 +110,9 @@ public class GraphicServiceImpl implements GraphicService {
 			List<MeasurementFm> measurementFmList, List<Double> movelRange) {
 		MovelAmplitudeGraphic graphic = new MovelAmplitudeGraphic();
 		
-		graphic.setHigherTolerance(higherTolerance);
-		graphic.setLowerTolerance(lowerTolerance);
-		graphic.setMidline(midline);
+		graphic.setHigherTolerance(Utils.formatNumberToFmGraphic(higherTolerance));
+		graphic.setLowerTolerance(Utils.formatNumberToFmGraphic(lowerTolerance));
+		graphic.setMidline(Utils.formatNumberToFmGraphic(midline));
 		graphic.setGraphicType(GraphicType.MOVEL_AMPLITUDE);
 		
 		for (int i = 0; i < measurementFmList.size(); i++) {
@@ -120,7 +121,7 @@ public class GraphicServiceImpl implements GraphicService {
 			
 			Sample sample = measurementFm.getSample();
 			
-			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), movelRangeFm);
+			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic(movelRangeFm));
 			
 			graphic.getDetailedFmGraphicsList().add(detailedFmGraphic);
 		}

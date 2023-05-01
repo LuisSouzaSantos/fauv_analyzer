@@ -12,6 +12,9 @@ public class FmStatistic {
 	private int totalIo;
 	private int totalBk;
 	private int totalAk;
+	private double percentageAk;
+	private double percentageBk;
+	private double percentageIo;
 	private double cp;
 	private double cpk;
 	private double pp;
@@ -65,6 +68,30 @@ public class FmStatistic {
 
 	public void setTotalAk(int totalAk) {
 		this.totalAk = totalAk;
+	}
+	
+	public double getPercentageAk() {
+		return percentageAk;
+	}
+
+	public void setPercentageAk(double percentageAk) {
+		this.percentageAk = percentageAk;
+	}
+
+	public double getPercentageBk() {
+		return percentageBk;
+	}
+
+	public void setPercentageBk(double percentageBk) {
+		this.percentageBk = percentageBk;
+	}
+
+	public double getPercentageIo() {
+		return percentageIo;
+	}
+
+	public void setPercentageIo(double percentageIo) {
+		this.percentageIo = percentageIo;
 	}
 
 	public double getCp() {

@@ -1,6 +1,5 @@
 package com.fauv.analyzer.service.impl;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -33,9 +32,7 @@ import com.fauv.analyzer.utils.Utils;
 
 @Service
 public class StatisticServiceImpl implements StatisticService {
-	
-    private static final DecimalFormat FM_FORMAT_CALCULATE = new DecimalFormat("#.#");
-    
+	    
 	@Autowired
 	private SampleService sampleService;
 	
@@ -163,25 +160,33 @@ public class StatisticServiceImpl implements StatisticService {
 		CepMovelAmplitudeGraphic cepMovelAmplitudeGraphic = graphicService.buildCepMovelAmplitudeGraphic(lcsMovelAmplitude, licMovelAmplitude, averageLineMovelAmplitude, measurementFmList, movelRange);
 		CepIndividualValuesGraphic cepIndividualValuesGraphic = graphicService.buildCepIndividualValuesGraphic(lscCep, licCep, averageLine, avgMat, valueToCalcateZone, measurementFmList);
 		
+		int totalIndicator = fmIndicator.getAk()+fmIndicator.getBk()+fmIndicator.getIo();
+		double percentageAk = fmIndicator.getAk()/totalIndicator;
+		double percentageBk = fmIndicator.getBk()/totalIndicator;
+		double percentageIo = fmIndicator.getIo()/totalIndicator;
+		
 		fmStatistic.setCatalogType(nominalFm.getCatalogType());
 		fmStatistic.setName(nominalFm.getName());
 		fmStatistic.setIndividualValuesGraphic(individualValuesGraphic);
 		fmStatistic.setMovelAmplitudeGraphic(movelAmplitudeGraphic);
 		fmStatistic.setCepIndividualValuesGraphic(cepIndividualValuesGraphic);
 		fmStatistic.setCepMovelAmplitudeGraphic(cepMovelAmplitudeGraphic);
-		fmStatistic.setStandardDeviation(startandDeviation);
-		fmStatistic.setAverage(avgMat);
-		fmStatistic.setCp(cp);
-		fmStatistic.setCpk(cpk);
-		fmStatistic.setSigmaLevel(sigmaLevel);
-		fmStatistic.setPp(pp);
-		fmStatistic.setPpk(ppk);
+		fmStatistic.setStandardDeviation(Utils.formatNumberToFmGraphic(startandDeviation));
+		fmStatistic.setAverage(Utils.formatNumberToFmGraphic(avgMat));
+		fmStatistic.setCp(Double.isInfinite(cp) ? Utils.formatNumberToFmGraphic(1.0):  Utils.formatNumberToFmGraphic(cp));
+		fmStatistic.setCpk(Double.isInfinite(cpk) ? Utils.formatNumberToFmGraphic(1.0):  Utils.formatNumberToFmGraphic(cpk));
+		fmStatistic.setSigmaLevel(Double.isInfinite(sigmaLevel) ? Utils.formatNumberToFmGraphic(6.0):  Utils.formatNumberToFmGraphic(sigmaLevel));
+		fmStatistic.setPp(Double.isInfinite(pp) ? Utils.formatNumberToFmGraphic(1.0):  Utils.formatNumberToFmGraphic(pp));
+		fmStatistic.setPpk(Double.isInfinite(ppk) ? Utils.formatNumberToFmGraphic(1.0):  Utils.formatNumberToFmGraphic(ppk));
 		fmStatistic.setTotalAk(fmIndicator.getAk());
 		fmStatistic.setTotalBk(fmIndicator.getBk());
 		fmStatistic.setTotalIo(fmIndicator.getIo());
 		fmStatistic.setMappedPmpList(nominalFm.getPmpList().stream().map(pmp -> pmp.getName()).collect(Collectors.toList()));
 		fmStatistic.setImpactList(nominalFm.getFmImpactList().stream().map(impact -> impact.getInfo()).collect(Collectors.toList()));
-		//fmStatistic.setNominalDistribution(nominalDistribution);
+		fmStatistic.setPercentageAk(percentageAk);
+		fmStatistic.setPercentageBk(percentageBk);
+		fmStatistic.setPercentageIo(percentageIo);
+		fmStatistic.setNominalDistribution(0.0);
 		
 		return fmStatistic;
 	}

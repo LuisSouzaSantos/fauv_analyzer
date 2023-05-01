@@ -1,5 +1,7 @@
 package com.fauv.analyzer.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.dto.SampleDTO;
+import com.fauv.analyzer.entity.dto.SampleLoadingDTO;
 import com.fauv.analyzer.exception.SampleException;
 import com.fauv.analyzer.service.SampleService;
 
@@ -35,6 +38,13 @@ public class SampleController {
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
 		sampleService.delete(id);
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<SampleLoadingDTO>> getAll() {
+		List<Sample> sampleList = sampleService.getAll();
+		
+		return ResponseEntity.ok(sampleService.toSampleLoadingDTO(sampleList)); 
 	}
 	
 	@GetMapping("/{id}")
