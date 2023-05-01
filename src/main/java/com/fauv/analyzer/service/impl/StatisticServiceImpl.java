@@ -12,9 +12,8 @@ import com.fauv.analyzer.entity.MeasurementFm;
 import com.fauv.analyzer.entity.Model;
 import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.dto.FmDTO;
-import com.fauv.analyzer.entity.dto.ModelDTO;
 import com.fauv.analyzer.entity.dto.PmpDTO;
-import com.fauv.analyzer.entity.dto.SampleDTO;
+import com.fauv.analyzer.entity.dto.SampleStatisticsLoadingDTO;
 import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.entity.statistics.CepIndividualValuesGraphic;
 import com.fauv.analyzer.entity.statistics.CepMovelAmplitudeGraphic;
@@ -48,25 +47,28 @@ public class StatisticServiceImpl implements StatisticService {
 	@Override
 	public List<Statistic> getAll(Long unitId) {
 		Set<Model> models = modelService.getAllModelsByUnitId(unitId);
-		Set<SampleDTO> samples = sampleService.getByModels(models);
+		
+		List<SampleStatisticsLoadingDTO> samplesStatisticsLoading = sampleService.getSampleStatisticsLoadingByModels(models);
 		
 		List<Statistic> statistics = new ArrayList<>();
 		
-		for (SampleDTO sampleDTO : samples) {
+		for (SampleStatisticsLoadingDTO sample : samplesStatisticsLoading) {
 			Statistic foundStatistic = statistics.stream()
-					.filter(statistic -> statistic.getPartNumber().equals(sampleDTO.getModel().getPartNumber()))
+					.filter(statistic -> statistic.getPartNumber().equals(sample.getPartNumber()))
 					.findFirst().orElse(null);
 			
 			if (foundStatistic == null) {
-				ModelDTO model = sampleDTO.getModel();
+				Model selectedModel = models.stream().filter(model -> model.getId().equals(sample.getModelId())).findFirst().orElse(null);
 				
+				if (selectedModel == null) { continue; }
+								
 				foundStatistic = new Statistic();
-				foundStatistic.setUnitName(sampleDTO.getModel().getCar().getUnit().getName());
-				foundStatistic.setCarName(sampleDTO.getModel().getCar().getName());
-				foundStatistic.setPartNumber(sampleDTO.getModel().getPartNumber());
-				foundStatistic.setModelId(model.getId());
+				foundStatistic.setUnitName(sample.getUnitName());
+				foundStatistic.setCarName(sample.getCarName());
+				foundStatistic.setPartNumber(sample.getPartNumber());
+				foundStatistic.setModelId(sample.getModelId());
 				
-				List<PmpDTO> pmpList = model.getPmpList().stream().map(pmp -> {
+				List<PmpDTO> pmpList = selectedModel.getPmpList().stream().map(pmp -> {
 					PmpDTO pmpDTO = new PmpDTO();
 					
 					pmpDTO.setName(pmp.getName());
@@ -74,7 +76,7 @@ public class StatisticServiceImpl implements StatisticService {
 					return pmpDTO;
 				}).collect(Collectors.toList());
 				
-				List<FmDTO> fmList = model.getFmList().stream().map(fm -> {
+				List<FmDTO> fmList = selectedModel.getFmList().stream().map(fm -> {
 					FmDTO fmDTO = new FmDTO();
 					
 					fmDTO.setAxis(fm.getAxis());
@@ -90,13 +92,13 @@ public class StatisticServiceImpl implements StatisticService {
 				statistics.add(foundStatistic);
 			}
 			
-			foundStatistic.setInitDate(sampleDTO.getScanInitDate().toLocalDate());
-			foundStatistic.setEndDate(sampleDTO.getScanEndDate().toLocalDate());
-			foundStatistic.setTotalAk(foundStatistic.getTotalAk()+sampleDTO.getFmIndicator().getAk());
-			foundStatistic.setTotalBk(foundStatistic.getTotalBk()+sampleDTO.getFmIndicator().getBk());
-			foundStatistic.setTotalIo(foundStatistic.getTotalIo()+sampleDTO.getFmIndicator().getIo());
+			foundStatistic.setInitDate(sample.getInitDate().toLocalDate());
+			foundStatistic.setEndDate(sample.getEndDate().toLocalDate());
+			foundStatistic.setTotalAk(foundStatistic.getTotalAk()+sample.getAk());
+			foundStatistic.setTotalBk(foundStatistic.getTotalBk()+sample.getBk());
+			foundStatistic.setTotalIo(foundStatistic.getTotalIo()+sample.getIo());
 			foundStatistic.setNumberOfSamples(foundStatistic.getNumberOfSamples()+1);
-			foundStatistic.getSamplesIds().add(sampleDTO.getId());
+			foundStatistic.getSamplesIds().add(sample.getId());
 		} 
 		
 		return statistics;

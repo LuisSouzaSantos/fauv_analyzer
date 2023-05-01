@@ -30,6 +30,7 @@ import com.fauv.analyzer.entity.dto.MeasurementFmDTO;
 import com.fauv.analyzer.entity.dto.MeasurementPmpDTO;
 import com.fauv.analyzer.entity.dto.SampleDTO;
 import com.fauv.analyzer.entity.dto.SampleLoadingDTO;
+import com.fauv.analyzer.entity.dto.SampleStatisticsLoadingDTO;
 import com.fauv.analyzer.entity.helper.CoordinateValueHelper;
 import com.fauv.analyzer.entity.helper.FmHelper;
 import com.fauv.analyzer.entity.helper.MeasurementAxisCoordinateHelper;
@@ -211,15 +212,7 @@ public class SampleServiceImpl implements SampleService {
 		
 		return sampleLoadingDTO;
 	}
-	
-	//TODO Improve the performace
-	@Override
-	public Set<SampleDTO> getByModels(Set<Model> models) {
-		Set<Sample> samples = sampleRepository.findByModelIn(models);
-
-		return samples.stream().map(sample -> toSampleDTO(sample)).collect(Collectors.toSet());
-	}	
-	
+		
 	@Override
 	public List<MeasurementFm> getMeasurementFmBasedOnModelAndFmName(Model model, String fmName) {
 		String jpql = "SELECT mf FROM Sample s INNER JOIN s.measurementFmList mf WHERE mf.nominalFm.name = :fmName AND s.model.id = :modelId ORDER BY s.scanEndDate";
@@ -232,8 +225,35 @@ public class SampleServiceImpl implements SampleService {
 		return query.getResultList();
 	}
 	
-	
+	@Override
+	public List<SampleStatisticsLoadingDTO> getSampleStatisticsLoadingByModels(Set<Model> models) {
+		Set<Sample> samples = sampleRepository.findByModelIn(models);
 		
+		List<SampleStatisticsLoadingDTO>  sampleStatisticsLoadingDTOList = new ArrayList<>();
+		
+		for (Sample sample : samples) {
+			SampleStatisticsLoadingDTO sampleStatisticsLoadingDTO = new SampleStatisticsLoadingDTO();
+			sampleStatisticsLoadingDTO.setId(sample.getId());
+			sampleStatisticsLoadingDTO.setCarName(sample.getModel().getCar().getName());
+			sampleStatisticsLoadingDTO.setEndDate(sample.getScanEndDate());
+			sampleStatisticsLoadingDTO.setInitDate(sample.getScanInitDate());
+			sampleStatisticsLoadingDTO.setModelId(sample.getModel().getId());
+			sampleStatisticsLoadingDTO.setPartNumber(sample.getModel().getPartNumber());
+			sampleStatisticsLoadingDTO.setUnitName(sample.getModel().getCar().getUnit().getName());
+			
+			FmIndicator fmIndicator = calcService.calcFmIndicator(sample.getMeasurementFmList());
+			
+			sampleStatisticsLoadingDTO.setAk(fmIndicator.getAk());
+			sampleStatisticsLoadingDTO.setBk(fmIndicator.getBk());
+			sampleStatisticsLoadingDTO.setIo(fmIndicator.getIo());
+			
+			sampleStatisticsLoadingDTOList.add(sampleStatisticsLoadingDTO);
+		}
+		
+		return sampleStatisticsLoadingDTOList;
+	}
+
+	
 	private Sample getByPinAndModel(String pin, Model model) {
 		return sampleRepository.findByPinAndModel(pin, model);
 	}

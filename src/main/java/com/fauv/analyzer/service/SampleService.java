@@ -10,6 +10,7 @@ import com.fauv.analyzer.entity.Model;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.dto.SampleDTO;
 import com.fauv.analyzer.entity.dto.SampleLoadingDTO;
+import com.fauv.analyzer.entity.dto.SampleStatisticsLoadingDTO;
 import com.fauv.analyzer.exception.EquipmentException;
 import com.fauv.analyzer.exception.ModelException;
 import com.fauv.analyzer.exception.SampleException;
@@ -34,9 +35,9 @@ public interface SampleService {
 	public List<SampleLoadingDTO> toSampleLoadingDTO(List<Sample> list);
 	
 	public SampleLoadingDTO toSampleLoadingDTO(Sample sample);
-	
-	public Set<SampleDTO> getByModels(Set<Model> models);
-	
+		
 	public List<MeasurementFm> getMeasurementFmBasedOnModelAndFmName(Model model, String fmName);
+	
+	public List<SampleStatisticsLoadingDTO> getSampleStatisticsLoadingByModels(Set<Model> models);
 	
 }
