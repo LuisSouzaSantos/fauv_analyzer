@@ -62,8 +62,7 @@ public class NominalFm {
 	@ManyToOne
     private Model model;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "nominal_fm_id")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "nominalFm")
 	private List<FmImpact> fmImpactList = new ArrayList<>();
 	
 	@ManyToMany

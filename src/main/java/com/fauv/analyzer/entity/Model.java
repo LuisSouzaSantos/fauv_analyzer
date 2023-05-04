@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -40,12 +41,14 @@ public class Model {
 	@Size(min = 1, max = 255, message = ModelMessage.FORM_STEP_DESCRIPTION_SIZE)
 	private String stepDescription;
 	
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "model_id")
+	@OrderBy("name")
 	private List<NominalPmp> pmpList = new ArrayList<>();
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "model_id") 
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "model_id")
+	@OrderBy("name")
 	private List<NominalFm> fmList = new ArrayList<>();
 	
 	public Long getId() {

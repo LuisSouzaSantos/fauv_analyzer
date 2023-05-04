@@ -165,18 +165,18 @@ public class ModelServiceImpl implements ModelService {
 			boolean isNewFm = nominalFm.getId() == null;
 			
 			if (isNewFm) {
-				nominalFm = NominalFm.buildNominalFm(nominalFm, model);
+				NominalFm newNominalFm = NominalFm.buildNominalFm(nominalFm, model);
 				
-				NominalFm previousFm = model.getFmByName(nominalFm.getName());
+				NominalFm previousFm = modelById.getFmByName(newNominalFm.getName());
 				
 				if (previousFm != null && !nominalFm.getId().equals(previousFm.getId())) { throw new ModelException(ModelMessage.DUPLICATE_FM); }
 
-				redoNominalPmp(nominalFm.getPmpList(), nominalFm.getPmpList(), nominalFm, modelById);
-				redoFmImpactList(nominalFm.getFmImpactList(), nominalFm.getFmImpactList(), nominalFm);
+				redoNominalPmp(newNominalFm.getPmpList(), nominalFm.getPmpList(), newNominalFm, modelById);
+				redoFmImpactList(newNominalFm.getFmImpactList(), nominalFm.getFmImpactList(), newNominalFm);
 				
-				modelById.getFmList().add(nominalFm);
+				modelById.getFmList().add(newNominalFm);
 			}else {
-				NominalFm previousFm = model.getFmById(nominalFm.getId());
+				NominalFm previousFm = modelById.getFmById(nominalFm.getId());
 				
 				previousFm.setName(nominalFm.getName());
 				previousFm.setAxis(nominalFm.getAxis());
@@ -185,14 +185,13 @@ public class ModelServiceImpl implements ModelService {
 				previousFm.setHigherTolerance(nominalFm.getHigherTolerance());
 				previousFm.setLowerTolerance(nominalFm.getLowerTolerance());
 				previousFm.setLevel(nominalFm.getLevel());
-				previousFm.setActive(nominalFm.isActive());		
+				previousFm.setActive(nominalFm.isActive());
 				
-				redoNominalPmp(previousFm.getPmpList(), nominalFm.getPmpList(), nominalFm, modelById);
+				redoNominalPmp(previousFm.getPmpList(), nominalFm.getPmpList(), previousFm, modelById);
 				redoFmImpactList(previousFm.getFmImpactList(), nominalFm.getFmImpactList(), previousFm);
 			}
 						
 		}
-		
 		
 		return modelRepository.save(modelById);
 	}
@@ -303,7 +302,7 @@ public class ModelServiceImpl implements ModelService {
 		currentList.addAll(newList);
 	}
 	
-	private void redoNominalPmp(List<NominalPmp> currentList, List<NominalPmp> newList, NominalFm nominalFm, Model model) throws EntityValidatorException, ModelException {
+	private void redoNominalPmp(List<NominalPmp> currentList, List<NominalPmp> newList, NominalFm previousFm, Model model) throws EntityValidatorException, ModelException {
 		if (newList == null || newList.isEmpty()) { throw new ModelException(ModelMessage.NOMINAL_FM_NOMINAL_POINTS); }
 		
 		currentList.clear();
@@ -322,14 +321,14 @@ public class ModelServiceImpl implements ModelService {
 	}
 	
 	private void redoFmImpactList(List<FmImpact> currentList, List<FmImpact> newList, NominalFm nominalFm) throws EntityValidatorException {
+		currentList.clear();
+		
 		for (FmImpact fmImpact : newList) {
 			modelValidator.validateFmImpact(fmImpact);
 		
 			fmImpact.setNominalFm(nominalFm);
+			currentList.add(fmImpact);
 		}
-
-		currentList.clear();
-		currentList.addAll(newList);
 	}
 		
 }
