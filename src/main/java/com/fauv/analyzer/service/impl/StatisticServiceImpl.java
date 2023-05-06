@@ -163,9 +163,9 @@ public class StatisticServiceImpl implements StatisticService {
 		CepIndividualValuesGraphic cepIndividualValuesGraphic = graphicService.buildCepIndividualValuesGraphic(lscCep, licCep, averageLine, avgMat, valueToCalcateZone, measurementFmList);
 		
 		int totalIndicator = fmIndicator.getAk()+fmIndicator.getBk()+fmIndicator.getIo();
-		double percentageAk = fmIndicator.getAk()/totalIndicator;
-		double percentageBk = fmIndicator.getBk()/totalIndicator;
-		double percentageIo = fmIndicator.getIo()/totalIndicator;
+		double percentageAk = (double) fmIndicator.getAk()/totalIndicator;
+		double percentageBk = (double) fmIndicator.getBk()/totalIndicator;
+		double percentageIo = (double) fmIndicator.getIo()/totalIndicator;
 		
 		fmStatistic.setCatalogType(nominalFm.getCatalogType());
 		fmStatistic.setName(nominalFm.getName());
