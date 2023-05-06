@@ -17,6 +17,7 @@ public class SampleLoadingDTO {
 	private EquipmentDTO equipment;
 	private StatusType status;
 	private String uploadUser;
+	private String pin;
 	private int ak;
 	private int bk;
 	private int io;
@@ -69,6 +70,14 @@ public class SampleLoadingDTO {
 		this.uploadUser = uploadUser;
 	}
 	
+	public String getPin() {
+		return pin;
+	}
+
+	public void setPin(String pin) {
+		this.pin = pin;
+	}
+
 	public int getAk() {
 		return ak;
 	}

@@ -3,6 +3,7 @@ package com.fauv.analyzer.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,8 +27,8 @@ import com.fauv.analyzer.exception.ModelException;
 import com.fauv.analyzer.service.ModelHelperService;
 import com.fauv.analyzer.service.ModelService;
 
-@CrossOrigin
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/model")
 public class ModelController {
 
@@ -37,8 +38,10 @@ public class ModelController {
 	@Autowired
 	private ModelHelperService modelHelperService;
 	
-	@PostMapping("/preview")
-	public ResponseEntity<ModelPreview> previewModel(@RequestParam(name = "dmoFile", required = true) MultipartFile dmoFile, @RequestParam(name = "csvFile", required = false) MultipartFile csvFile) throws Exception {
+	@PostMapping(path = "/preview", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	public ResponseEntity<ModelPreview> previewModel(
+			@RequestParam(name = "dmoFile", required = true) MultipartFile dmoFile,
+			@RequestParam(name = "csvFile", required = false) MultipartFile csvFile) throws Exception {
 		return ResponseEntity.ok(modelService.preview(dmoFile, csvFile)); 
 	}
 	
