@@ -189,7 +189,11 @@ public class SampleServiceImpl implements SampleService {
 	public List<SampleLoadingDTO> toSampleLoadingDTO(List<Sample> list) {
 		if (list == null) { return new ArrayList<>(); }
 		
-		return list.stream().map(item -> toSampleLoadingDTO(item)).collect(Collectors.toList());
+		List<SampleLoadingDTO> listSampleLoading = list.stream().map(item -> toSampleLoadingDTO(item)).collect(Collectors.toList());
+		
+		listSampleLoading.sort((samplesLoading, samplesLoading2) -> (samplesLoading.getUploadDate().compareTo(samplesLoading2.getUploadDate())*-1));
+		
+		return listSampleLoading;
 	}
 
 	@Override
@@ -203,6 +207,7 @@ public class SampleServiceImpl implements SampleService {
 		sampleLoadingDTO.setUploadDate(sample.getUploadedDate());
 		sampleLoadingDTO.setStatus(sample.getStatus());
 		sampleLoadingDTO.setUploadUser(sample.getUploadedUser());
+		sampleLoadingDTO.setPin(sample.getPin());
 		
 		FmIndicator fmIndicator = calcService.calcFmIndicator(sample.getMeasurementFmList());
 		
