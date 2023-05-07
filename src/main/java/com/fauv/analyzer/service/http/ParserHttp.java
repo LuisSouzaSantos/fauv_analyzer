@@ -3,6 +3,7 @@ package com.fauv.analyzer.service.http;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,17 +14,21 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fauv.analyzer.configuration.Properties;
 import com.fauv.analyzer.entity.helper.SampleHelper;
 
 @Service
 public class ParserHttp {
 
+	@Autowired
+	private Properties properties;
+	
 	public SampleHelper readDmoFileAndBuildASample(MultipartFile dmoFile) {
         RestTemplate restTemplate = new RestTemplate();
         SampleHelper response = null;
         
         try {
-			String parseUrl = "http://localhost:8081/dmo";
+			String parseUrl = properties.getBaseParserUrl()+"/dmo";
 			
 		    HttpHeaders headers = new HttpHeaders();
 		    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
