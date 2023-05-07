@@ -32,7 +32,7 @@ public class AuthenticationFilterOnRequest extends OncePerRequestFilter {
 	@Transactional
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		String token = request.getHeader(AUTHORIZATION_HEADER);
+ 		String token = request.getHeader(AUTHORIZATION_HEADER);
 		
 		if (tokenService.isValid(token)) { tryingToAuthenticateTheUserOnServer(token); }
 		
@@ -44,5 +44,6 @@ public class AuthenticationFilterOnRequest extends OncePerRequestFilter {
 		
 		authenticationService.authenticateOnServer(user);
 	}
+	
 	
 }

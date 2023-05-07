@@ -4,12 +4,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fauv.analyzer.enums.StatisticCriteria;
 
 public class DetailedFmGraphic {
 
 	private Long sampleId;
 	private String pin;
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime updatedDate;
 	private double value;
 	private List<StatisticCriteria> statisticCriteriaList = new ArrayList<StatisticCriteria>();

@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.entity.indicators.PmpIndicator;
@@ -12,13 +15,19 @@ import com.fauv.analyzer.enums.StatusType;
 public class SampleDTO {
 
 	private Long id;
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime uploadedDate;
 	private String uploadedUser;
 	private EquipmentDTO equipment;
 	@JsonIgnoreProperties(value = {"pmpList", "fmList"})
 	private ModelDTO model;
 	private String pin;
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime scanInitDate;
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime scanEndDate;
 	private StatusType status;
 	private String fileName;

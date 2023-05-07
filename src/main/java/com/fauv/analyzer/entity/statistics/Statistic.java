@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fauv.analyzer.entity.dto.FmDTO;
 import com.fauv.analyzer.entity.dto.PmpDTO;
@@ -15,9 +16,11 @@ public class Statistic {
 	private String carName;
 	private String partNumber;
 	private String unitName;
-	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/yyyy")
 	private LocalDate initDate;
-	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/yyyy")
 	private LocalDate endDate;
 	private Long modelId;
 	private long numberOfSamples;

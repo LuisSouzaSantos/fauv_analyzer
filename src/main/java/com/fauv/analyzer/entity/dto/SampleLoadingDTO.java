@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fauv.analyzer.enums.StatusType;
 
@@ -11,6 +12,7 @@ public class SampleLoadingDTO {
 
 	private Long id;
 	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime uploadDate;
 	@JsonIgnoreProperties(value = {"pmpList", "fmList"})
 	private ModelDTO model;

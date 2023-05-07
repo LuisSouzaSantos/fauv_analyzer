@@ -30,24 +30,17 @@ public class CalcServiceImpl implements CalcService {
 	//private static final Logger logger = LoggerFactory.getLogger(CalcServiceImpl.class);
     private static final DecimalFormat FM_FORMAT_CALCULATE = new DecimalFormat("#.#");
     private static final DecimalFormat PMP_FORMAT_CALCULATE = new DecimalFormat("#.##");
-	private static final double BK_PERCENT = 75.0;
+	private static final double BK_PERCENT = 0.75;
 	
 	@Override
 	public FmIndicator calcFmIndicatorUsingDTO(Set<MeasurementFmDTO> fmMeasurementDTOList) {
 		FmIndicator indicator = new FmIndicator();
 		
 		for (MeasurementFmDTO fmMeasurement : fmMeasurementDTOList) {
-			double defaultHigherToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getHigherTolerance()));
-			double defaultLowerToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getLowerTolerance()));
-
-			double defaultLimitedHigherToleranceValueRounded = BK_PERCENT*defaultHigherToleranceValueRounded;
-			double defaultLimitedLowerToleranceValueRounded = BK_PERCENT*defaultLowerToleranceValueRounded;
-
 			double matValue = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getValue()-fmMeasurement.getDefaultValue()));
 			
-			boolean isAk = matValue > defaultHigherToleranceValueRounded || matValue < defaultLowerToleranceValueRounded;
-			boolean isBk = !isAk && ((matValue <= defaultHigherToleranceValueRounded && matValue>=defaultLimitedHigherToleranceValueRounded) || 
-					(matValue <= defaultLowerToleranceValueRounded && matValue <= defaultLimitedLowerToleranceValueRounded));
+			boolean isAk = isAk(fmMeasurement.getHigherTolerance(), fmMeasurement.getLowerTolerance(), matValue);
+			boolean isBk = isBk(fmMeasurement.getHigherTolerance(), fmMeasurement.getLowerTolerance(), matValue);
 			
 			if (isAk) { indicator.setAk(indicator.getAk()+1); }
 			else if (isBk) { indicator.setBk(indicator.getBk()+1); }
@@ -63,20 +56,13 @@ public class CalcServiceImpl implements CalcService {
 		
 		for (MeasurementFm fmMeasurement : fmMeasurementList) {
 			NominalFm nominalFm = fmMeasurement.getNominalFm();
-			
-			double defaultHigherToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(nominalFm.getHigherTolerance()));
-			double defaultLowerToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(nominalFm.getLowerTolerance()));
-
-			double defaultLimitedHigherToleranceValueRounded = BK_PERCENT*defaultHigherToleranceValueRounded;
-			double defaultLimitedLowerToleranceValueRounded = BK_PERCENT*defaultLowerToleranceValueRounded;
 
 			double matValue = fmMeasurement.getValue().doubleValue()-nominalFm.getDefaultValue().doubleValue();
 			
 			matValue = Double.parseDouble(FM_FORMAT_CALCULATE.format(matValue));
 			
-			boolean isAk = matValue > defaultHigherToleranceValueRounded || matValue < defaultLowerToleranceValueRounded;
-			boolean isBk = !isAk && ((matValue <= defaultHigherToleranceValueRounded && matValue>=defaultLimitedHigherToleranceValueRounded) || 
-					(matValue <= defaultLowerToleranceValueRounded && matValue <= defaultLimitedLowerToleranceValueRounded));
+			boolean isAk = isAk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
+			boolean isBk = isBk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
 			
 			if (isAk) { indicator.setAk(indicator.getAk()+1); }
 			else if (isBk) { indicator.setBk(indicator.getBk()+1); }
@@ -92,20 +78,11 @@ public class CalcServiceImpl implements CalcService {
 		
 		for (MeasurementFm fmMeasurement : fmMeasurementList) {
 			NominalFm nominalFm = fmMeasurement.getNominalFm();
-			
-			double defaultHigherToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(nominalFm.getHigherTolerance()));
-			double defaultLowerToleranceValueRounded = Double.parseDouble(FM_FORMAT_CALCULATE.format(nominalFm.getLowerTolerance()));
-
-			double defaultLimitedHigherToleranceValueRounded = BK_PERCENT*defaultHigherToleranceValueRounded;
-			double defaultLimitedLowerToleranceValueRounded = BK_PERCENT*defaultLowerToleranceValueRounded;
 
 			double matValue = fmMeasurement.getValue().doubleValue()-nominalFm.getDefaultValue().doubleValue();
-			
-			matValue = Double.parseDouble(FM_FORMAT_CALCULATE.format(matValue));
-			
-			boolean isAk = matValue > defaultHigherToleranceValueRounded || matValue < defaultLowerToleranceValueRounded;
-			boolean isBk = !isAk && ((matValue <= defaultHigherToleranceValueRounded && matValue>=defaultLimitedHigherToleranceValueRounded) || 
-					(matValue <= defaultLowerToleranceValueRounded && matValue <= defaultLimitedLowerToleranceValueRounded));
+						
+			boolean isAk = isAk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
+			boolean isBk = isBk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
 			
 			if (isAk) { indicator.setAk(indicator.getAk()+1); }
 			else if (isBk) { indicator.setBk(indicator.getBk()+1); }
@@ -114,6 +91,67 @@ public class CalcServiceImpl implements CalcService {
 		
 		return indicator;
 	}
+	
+	private boolean isAk(double higherTolerance, double lowerTolerance, double value) {
+		boolean valueIsPositive = value > 0.0;
+		
+		boolean isBothPositive = higherTolerance > 0.0 && lowerTolerance > 0.0;
+		boolean isBothNegative = higherTolerance < 0.0 && lowerTolerance < 0.0;
+		
+		if (isBothPositive) {
+			if (valueIsPositive) {
+				return value > higherTolerance || value < lowerTolerance;
+			}else {
+				return true;
+			}
+		}else if (isBothNegative) {
+			if (valueIsPositive) {
+				return true;
+			}else {
+				return value > lowerTolerance || value < higherTolerance;
+			}
+		}else {
+			if (valueIsPositive) {
+				return value > higherTolerance;
+			}else {
+				return value < lowerTolerance;
+			}
+		}
+				
+	}
+	
+	private boolean isBk(double higherTolerance, double lowerTolerance, double value) {
+		boolean valueIsPositive = value > 0.0;
+		
+		double higherToleranceBkTolerance = BK_PERCENT*higherTolerance;
+		double lowerToleranceBkTolerance = BK_PERCENT*lowerTolerance;
+		
+		boolean isBothPositive = higherTolerance > 0.0 && lowerTolerance > 0.0;
+		boolean isBothNegative = higherTolerance < 0.0 && lowerTolerance < 0.0;
+		
+		if (isBothPositive) {
+			if (valueIsPositive) {
+				return (value <= higherTolerance && value >= higherToleranceBkTolerance) || 
+						(value <= lowerTolerance && value >= lowerToleranceBkTolerance);
+			}else {
+				return true;
+			}
+		}else if (isBothNegative) {
+			if (valueIsPositive) {
+				return true;
+			}else {
+				return (value >= lowerTolerance && value <= lowerToleranceBkTolerance) || 
+						(value >= higherTolerance && value <= higherToleranceBkTolerance);
+			}
+		}else {
+			if (valueIsPositive) {
+				return (value <= higherTolerance && value >= higherToleranceBkTolerance);
+			}else {
+				return (value >= lowerTolerance && value<= lowerToleranceBkTolerance);
+			}
+		}
+	}
+	
 
 	@Override
 	public PmpIndicator calcPmpIndicatorUsingDTO(Set<MeasurementPmpDTO> measurementPmpDTOList) {
