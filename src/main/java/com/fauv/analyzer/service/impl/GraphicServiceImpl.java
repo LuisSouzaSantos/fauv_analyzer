@@ -1,5 +1,6 @@
 package com.fauv.analyzer.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,7 @@ public class GraphicServiceImpl implements GraphicService {
 		
 		List<DetailedFmGraphicHelper> detailedFmGraphicHelper = measurementFmList.stream().map(fm -> { 
 				Sample sample = fm.getSample();
-				DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic((fm.getValue().doubleValue()-fm.getNominalFm().getDefaultValue().doubleValue())));
+				DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getScanEndDate(), Utils.formatNumberToFmGraphic((fm.getValue().doubleValue()-fm.getNominalFm().getDefaultValue().doubleValue())));
 				
 				return new DetailedFmGraphicHelper(detailedFmGraphic, fm);
 		}).collect(Collectors.toList());
@@ -67,16 +68,22 @@ public class GraphicServiceImpl implements GraphicService {
 		graphic.setMidline(Utils.formatNumberToFmGraphic(midline));
 		graphic.setGraphicType(GraphicType.CEP_MOVEL_AMPLITUDE);
 		
+		List<DetailedFmGraphicHelper> detailedFmGraphicHelper = new ArrayList<>();
+		
 		for (int i = 0; i < measurementFmList.size(); i++) {
 			MeasurementFm measurementFm = measurementFmList.get(i);
 			Double movelRangeFm = movelRange.get(i);
 			
 			Sample sample = measurementFm.getSample();
 			
-			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic(movelRangeFm));
-			
-			graphic.getDetailedFmGraphicsList().add(detailedFmGraphic);
+			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getScanEndDate(), Utils.formatNumberToFmGraphic(movelRangeFm));
+
+			detailedFmGraphicHelper.add(new DetailedFmGraphicHelper(detailedFmGraphic, measurementFm));			
 		}
+		
+		includeOutsideControlLimitsIfNeeded(graphic.getHigherTolerance(), graphic.getLowerTolerance(), detailedFmGraphicHelper);
+		
+		graphic.setDetailedFmGraphicsList(detailedFmGraphicHelper.stream().map(detailedFmGraphic -> detailedFmGraphic.getDetailedFmGraphic()).collect(Collectors.toList()));
 		
 		return graphic;
 	}
@@ -91,16 +98,22 @@ public class GraphicServiceImpl implements GraphicService {
 		graphic.setMidline(Utils.formatNumberToFmGraphic(midline));
 		graphic.setGraphicType(GraphicType.INDIVIDUAL_VALUES);
 		
+		List<DetailedFmGraphicHelper> detailedFmGraphicHelper = new ArrayList<>();
+		
 		for (int i = 0; i < measurementFmList.size(); i++) {
 			MeasurementFm measurementFm = measurementFmList.get(i);
 			Double singleMatValue = mat.get(i);
 			
 			Sample sample = measurementFm.getSample();
 			
-			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic(singleMatValue));
+			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getScanEndDate(), Utils.formatNumberToFmGraphic(singleMatValue));
 			
-			graphic.getDetailedFmGraphicsList().add(detailedFmGraphic);
+			detailedFmGraphicHelper.add(new DetailedFmGraphicHelper(detailedFmGraphic, measurementFm));			
 		}
+		
+		includeOutsideControlLimitsIfNeeded(graphic.getHigherTolerance(), graphic.getLowerTolerance(), detailedFmGraphicHelper);
+		
+		graphic.setDetailedFmGraphicsList(detailedFmGraphicHelper.stream().map(detailedFmGraphic -> detailedFmGraphic.getDetailedFmGraphic()).collect(Collectors.toList()));
 		
 		return graphic;
 	}
@@ -115,16 +128,22 @@ public class GraphicServiceImpl implements GraphicService {
 		graphic.setMidline(Utils.formatNumberToFmGraphic(midline));
 		graphic.setGraphicType(GraphicType.MOVEL_AMPLITUDE);
 		
+		List<DetailedFmGraphicHelper> detailedFmGraphicHelper = new ArrayList<>();
+		
 		for (int i = 0; i < measurementFmList.size(); i++) {
 			MeasurementFm measurementFm = measurementFmList.get(i);
 			Double movelRangeFm = movelRange.get(i);
 			
 			Sample sample = measurementFm.getSample();
 			
-			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getUploadedDate(), Utils.formatNumberToFmGraphic(movelRangeFm));
+			DetailedFmGraphic detailedFmGraphic = new DetailedFmGraphic(sample.getId(), sample.getPin(), sample.getScanEndDate(), Utils.formatNumberToFmGraphic(movelRangeFm));
 			
-			graphic.getDetailedFmGraphicsList().add(detailedFmGraphic);
+			detailedFmGraphicHelper.add(new DetailedFmGraphicHelper(detailedFmGraphic, measurementFm));			
 		}
+		
+		includeOutsideControlLimitsIfNeeded(graphic.getHigherTolerance(), graphic.getLowerTolerance(), detailedFmGraphicHelper);
+		
+		graphic.setDetailedFmGraphicsList(detailedFmGraphicHelper.stream().map(detailedFmGraphic -> detailedFmGraphic.getDetailedFmGraphic()).collect(Collectors.toList()));
 		
 		return graphic;
 	}
