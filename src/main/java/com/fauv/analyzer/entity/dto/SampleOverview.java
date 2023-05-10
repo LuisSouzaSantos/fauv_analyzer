@@ -11,6 +11,8 @@ import com.fauv.analyzer.enums.StatusType;
 
 public class SampleOverview {
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private LocalDateTime uploadedDate;
 	private String uploadedUser;
 	private String equipmentName;

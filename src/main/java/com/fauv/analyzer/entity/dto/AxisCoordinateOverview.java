@@ -11,6 +11,9 @@ public class AxisCoordinateOverview {
 	private AxisType axis;
 	private ToleranceType toleranceType;
 	private ToleranceTypeStatus toleranceStatus;
+	private double lowerTolerance;
+	private double higherTolerance;
+	private boolean wasFound;
 	
 	public String getName() {
 		return name;
@@ -50,6 +53,30 @@ public class AxisCoordinateOverview {
 	
 	public void setToleranceStatus(ToleranceTypeStatus toleranceStatus) {
 		this.toleranceStatus = toleranceStatus;
+	}
+
+	public double getLowerTolerance() {
+		return lowerTolerance;
+	}
+
+	public void setLowerTolerance(double lowerTolerance) {
+		this.lowerTolerance = lowerTolerance;
+	}
+
+	public double getHigherTolerance() {
+		return higherTolerance;
+	}
+
+	public void setHigherTolerance(double higherTolerance) {
+		this.higherTolerance = higherTolerance;
+	}
+
+	public boolean isWasFound() {
+		return wasFound;
+	}
+
+	public void setWasFound(boolean wasFound) {
+		this.wasFound = wasFound;
 	}
 	
 }

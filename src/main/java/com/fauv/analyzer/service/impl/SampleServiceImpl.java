@@ -25,11 +25,15 @@ import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.NominalPmp;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.Unit;
+import com.fauv.analyzer.entity.dto.AxisCoordinateOverview;
+import com.fauv.analyzer.entity.dto.FmOverview;
 import com.fauv.analyzer.entity.dto.MeasurementAxisCoordinateDTO;
 import com.fauv.analyzer.entity.dto.MeasurementFmDTO;
 import com.fauv.analyzer.entity.dto.MeasurementPmpDTO;
+import com.fauv.analyzer.entity.dto.PmpOverview;
 import com.fauv.analyzer.entity.dto.SampleDTO;
 import com.fauv.analyzer.entity.dto.SampleLoadingDTO;
+import com.fauv.analyzer.entity.dto.SampleOverview;
 import com.fauv.analyzer.entity.dto.SampleStatisticsLoadingDTO;
 import com.fauv.analyzer.entity.helper.CoordinateValueHelper;
 import com.fauv.analyzer.entity.helper.FmHelper;
@@ -40,6 +44,7 @@ import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.enums.AxisType;
 import com.fauv.analyzer.enums.StatusType;
 import com.fauv.analyzer.enums.ToleranceType;
+import com.fauv.analyzer.enums.ToleranceTypeStatus;
 import com.fauv.analyzer.exception.EquipmentException;
 import com.fauv.analyzer.exception.ModelException;
 import com.fauv.analyzer.exception.SampleException;
@@ -257,6 +262,159 @@ public class SampleServiceImpl implements SampleService {
 		
 		return sampleStatisticsLoadingDTOList;
 	}
+	
+	@Override
+	public SampleOverview getSampleOverview(Long id) throws SampleException {
+		Sample sample = getByIdValidateIt(id);
+		
+		SampleOverview sampleOverview = new SampleOverview();
+		
+		Model model = sample.getModel();
+		String carName = model.getCar().getName();
+		String partNumber = model.getPartNumber();
+		String equipmentName = sample.getEquipment().getName();
+	
+		sampleOverview.setCarName(carName);
+		sampleOverview.setPartNumber(partNumber);
+		sampleOverview.setEquipmentName(equipmentName);
+		sampleOverview.setEndDate(sample.getScanEndDate());
+		sampleOverview.setInitDate(sample.getScanInitDate());
+		sampleOverview.setPin(sample.getPin());
+		sampleOverview.setUploadedDate(sample.getUploadedDate());
+		sampleOverview.setStatus(sample.getStatus());
+		sampleOverview.setUploadedUser(sample.getUploadedUser());
+		
+		for (MeasurementFm measurementFm : sample.getMeasurementFmList()) {
+			NominalFm nominalFm = measurementFm.getNominalFm();
+			
+			FmOverview fmOverview = new FmOverview();
+			
+			double matValue = measurementFm.getValue().doubleValue()-nominalFm.getDefaultValue().doubleValue();
+			
+			fmOverview.setName(nominalFm.getName());
+			fmOverview.setAxis(nominalFm.getAxis());
+			fmOverview.setCatalog(nominalFm.getCatalogType());
+			fmOverview.setFmLevel(nominalFm.getLevel());
+			fmOverview.setHigherTolerance(nominalFm.getHigherTolerance().doubleValue());
+			fmOverview.setLowerTolerance(nominalFm.getLowerTolerance().doubleValue());
+			fmOverview.setTolerance(measurementFm.getToleranceType());
+			fmOverview.setValue(matValue);
+			fmOverview.setWasFound(measurementFm.getWasFound());
+			fmOverview.setPmpList(new ArrayList<String>(measurementFm.getMeasurementPmpNameList()));
+			
+			ToleranceTypeStatus toleranceTypeStatus = calcService.getToleranceTypeStatus(
+					nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(),
+					matValue);
+						
+			fmOverview.setToleranceStatus(toleranceTypeStatus);
+			
+			if (fmOverview.getToleranceStatus().equals(ToleranceTypeStatus.AK)) {
+				sampleOverview.setTotalFmAk(sampleOverview.getTotalFmAk()+1);
+			}else if (fmOverview.getToleranceStatus().equals(ToleranceTypeStatus.BK)) {
+				sampleOverview.setTotalFmBk(sampleOverview.getTotalFmBk()+1);
+			}else {
+				sampleOverview.setTotalFmIo(sampleOverview.getTotalFmIo()+1);
+			}
+			
+			sampleOverview.getFmOverviewList().add(fmOverview);
+		}
+		
+		for (MeasurementPmp measurementPmp : sample.getMeasurementPmpList()) {
+			NominalPmp nominalPmp = measurementPmp.getNominalPmp();
+			
+			PmpOverview pmpOverview = new PmpOverview();
+			pmpOverview.setName(nominalPmp.getName());
+			pmpOverview.setX(measurementPmp.getX().doubleValue());
+			pmpOverview.setY(measurementPmp.getY().doubleValue());
+			pmpOverview.setZ(measurementPmp.getZ().doubleValue());
+			pmpOverview.setWasFound(measurementPmp.getWasFound());
+			
+			for (MeasurementAxisCoordinate measurementAxisCoordinate : measurementPmp.getMeasurementAxisCoordinateList()) {
+				NominalAxisCoordinate nominalAxisCoordinate = measurementAxisCoordinate.getNominalAxisCoordinate();
+								
+				AxisCoordinateOverview axisCoordinateOverview = new AxisCoordinateOverview();
+				axisCoordinateOverview.setName(nominalAxisCoordinate.getName());
+				axisCoordinateOverview.setAxis(nominalAxisCoordinate.getAxis());
+				axisCoordinateOverview.setToleranceType(measurementAxisCoordinate.getToleranceType());
+				axisCoordinateOverview.setValue(measurementAxisCoordinate.getValue().doubleValue());
+				axisCoordinateOverview.setHigherTolerance(nominalAxisCoordinate.getHigherTolerance().doubleValue());
+				axisCoordinateOverview.setLowerTolerance(nominalAxisCoordinate.getLowerTolerance().doubleValue());
+				axisCoordinateOverview.setWasFound(measurementAxisCoordinate.getWasFound());
+				
+				ToleranceTypeStatus toleranceTypeStatus = calcService.getToleranceTypeStatus(
+						nominalAxisCoordinate.getHigherTolerance().doubleValue(), nominalAxisCoordinate.getLowerTolerance().doubleValue(),
+						measurementAxisCoordinate.getValue().doubleValue());
+				
+				axisCoordinateOverview.setToleranceStatus(toleranceTypeStatus);
+				
+				if (axisCoordinateOverview.getToleranceStatus().equals(ToleranceTypeStatus.AK)) {
+					pmpOverview.setAk(pmpOverview.getAk()+1);
+				}else if (axisCoordinateOverview.getToleranceStatus().equals(ToleranceTypeStatus.BK)) {
+					pmpOverview.setBk(pmpOverview.getBk()+1);
+				}else {
+					pmpOverview.setIo(pmpOverview.getIo()+1);
+				}
+				
+				pmpOverview.getAxisCoordinateOverviewList().add(axisCoordinateOverview);
+			}
+			
+			sampleOverview.getPmpOverviewList().add(pmpOverview);
+			sampleOverview.setTotalPmpAk(sampleOverview.getTotalPmpAk()+pmpOverview.getAk());
+			sampleOverview.setTotalPmpBk(sampleOverview.getTotalPmpBk()+pmpOverview.getBk());
+			sampleOverview.setTotalPmpIo(sampleOverview.getTotalPmpIo()+pmpOverview.getIo());
+		}
+		
+		sampleOverview.getFmOverviewList().sort((fmOverview1, fmOverview2) -> {
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.AK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.AK)) {
+				return 0;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.IO) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.IO)) {
+				return 0;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.BK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.BK)) {
+				return 0;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.AK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.BK)) {
+				return -1;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.AK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.IO)){
+				return -1;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.BK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.AK)){
+				return 1;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.BK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.IO)){
+				return -1;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.IO) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.AK)){
+				return 1;
+			}
+			
+			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.IO) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.BK)){
+				return 1;
+			}
+			
+			return 0;
+		});
+		
+		sampleOverview.getPmpOverviewList().sort((pmpOverview1, pmpOverview2) -> {
+			if (pmpOverview1.getAk() > pmpOverview2.getAk()) { return -1; }
+			if (pmpOverview1.getBk() > pmpOverview2.getBk()) { return -1; }
+		
+			return 0;
+		});
+		
+		
+		return sampleOverview;
+	}
+
 
 	
 	private Sample getByPinAndModel(String pin, Model model) {
@@ -441,5 +599,5 @@ public class SampleServiceImpl implements SampleService {
 		
 		return measurementAxisCoordinateList;
 	}
-
+	
 }

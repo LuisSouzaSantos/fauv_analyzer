@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fauv.analyzer.entity.Sample;
 import com.fauv.analyzer.entity.dto.SampleDTO;
 import com.fauv.analyzer.entity.dto.SampleLoadingDTO;
+import com.fauv.analyzer.entity.dto.SampleOverview;
 import com.fauv.analyzer.exception.SampleException;
 import com.fauv.analyzer.service.SampleService;
 
@@ -53,5 +54,11 @@ public class SampleController {
 		
 		return ResponseEntity.ok(sampleService.toSampleDTO(sample)); 
 	}
+	
+	@GetMapping("/overview/{id}")
+	public ResponseEntity<SampleOverview> getSampleOverview(@PathVariable Long id) throws SampleException {
+		return ResponseEntity.ok(sampleService.getSampleOverview(id)); 
+	}
+	
 	
 }

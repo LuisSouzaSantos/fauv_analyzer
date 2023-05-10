@@ -2,8 +2,8 @@ package com.fauv.analyzer.service.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.entity.indicators.PmpIndicator;
 import com.fauv.analyzer.enums.AxisType;
 import com.fauv.analyzer.enums.D;
+import com.fauv.analyzer.enums.ToleranceTypeStatus;
 import com.fauv.analyzer.service.CalcService;
 
 @Service
@@ -27,21 +28,20 @@ public class CalcServiceImpl implements CalcService {
 
 	//private static final Logger logger = LoggerFactory.getLogger(CalcServiceImpl.class);
     private static final DecimalFormat FM_FORMAT_CALCULATE = new DecimalFormat("#.#");
-    private static final DecimalFormat PMP_FORMAT_CALCULATE = new DecimalFormat("#.##");
+    //private static final DecimalFormat PMP_FORMAT_CALCULATE = new DecimalFormat("#.##");
 	private static final double BK_PERCENT = 0.75;
 	
 	@Override
-	public FmIndicator calcFmIndicatorUsingDTO(Set<MeasurementFmDTO> fmMeasurementDTOList) {
+	public FmIndicator calcFmIndicatorUsingDTO(Collection<MeasurementFmDTO> fmMeasurementDTOList) {
 		FmIndicator indicator = new FmIndicator();
 		
 		for (MeasurementFmDTO fmMeasurement : fmMeasurementDTOList) {
 			double matValue = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getValue()-fmMeasurement.getDefaultValue()));
 			
-			boolean isAk = isAk(fmMeasurement.getHigherTolerance(), fmMeasurement.getLowerTolerance(), matValue);
-			boolean isBk = isBk(fmMeasurement.getHigherTolerance(), fmMeasurement.getLowerTolerance(), matValue);
+			ToleranceTypeStatus toleranceTypeStatus = getToleranceTypeStatus(fmMeasurement.getHigherTolerance(), fmMeasurement.getLowerTolerance(), matValue);
 			
-			if (isAk) { indicator.setAk(indicator.getAk()+1); }
-			else if (isBk) { indicator.setBk(indicator.getBk()+1); }
+			if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAk(indicator.getAk()+1); }
+			else if (toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBk(indicator.getBk()+1); }
 			else { indicator.setIo(indicator.getIo()+1); }
 		}
 		
@@ -49,7 +49,7 @@ public class CalcServiceImpl implements CalcService {
 	}
 
 	@Override
-	public FmIndicator calcFmIndicator(Set<MeasurementFm> fmMeasurementList) {
+	public FmIndicator calcFmIndicator(Collection<MeasurementFm> fmMeasurementList) {
 		FmIndicator indicator = new FmIndicator();
 		
 		for (MeasurementFm fmMeasurement : fmMeasurementList) {
@@ -59,11 +59,10 @@ public class CalcServiceImpl implements CalcService {
 			
 			matValue = Double.parseDouble(FM_FORMAT_CALCULATE.format(matValue));
 			
-			boolean isAk = isAk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
-			boolean isBk = isBk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
+			ToleranceTypeStatus toleranceTypeStatus = getToleranceTypeStatus(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
 			
-			if (isAk) { indicator.setAk(indicator.getAk()+1); }
-			else if (isBk) { indicator.setBk(indicator.getBk()+1); }
+			if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAk(indicator.getAk()+1); }
+			else if (toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBk(indicator.getBk()+1); }
 			else { indicator.setIo(indicator.getIo()+1); }
 		}
 		
@@ -71,23 +70,16 @@ public class CalcServiceImpl implements CalcService {
 	}
 	
 	@Override
-	public FmIndicator calcFmIndicator(List<MeasurementFm> fmMeasurementList) {
-		FmIndicator indicator = new FmIndicator();
+	public ToleranceTypeStatus getToleranceTypeStatus(double higherTolerance, double lowerTolerance, double value) {
+		boolean isAk = isAk(higherTolerance, lowerTolerance, value);
 		
-		for (MeasurementFm fmMeasurement : fmMeasurementList) {
-			NominalFm nominalFm = fmMeasurement.getNominalFm();
-
-			double matValue = fmMeasurement.getValue().doubleValue()-nominalFm.getDefaultValue().doubleValue();
-						
-			boolean isAk = isAk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
-			boolean isBk = isBk(nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(), matValue);
-			
-			if (isAk) { indicator.setAk(indicator.getAk()+1); }
-			else if (isBk) { indicator.setBk(indicator.getBk()+1); }
-			else { indicator.setIo(indicator.getIo()+1); }
-		}
+		if (isAk) { return ToleranceTypeStatus.AK; }
 		
-		return indicator;
+		boolean isBk = isBk(higherTolerance, lowerTolerance, value);
+		
+		if (isBk) { return ToleranceTypeStatus.BK; }
+		
+		return ToleranceTypeStatus.IO;
 	}
 	
 	private boolean isAk(double higherTolerance, double lowerTolerance, double value) {
@@ -152,7 +144,7 @@ public class CalcServiceImpl implements CalcService {
 	
 
 	@Override
-	public PmpIndicator calcPmpIndicatorUsingDTO(Set<MeasurementPmpDTO> measurementPmpDTOList) {
+	public PmpIndicator calcPmpIndicatorUsingDTO(Collection<MeasurementPmpDTO> measurementPmpDTOList) {
 		PmpIndicator indicator = new PmpIndicator();
 		
 		List<MeasurementAxisCoordinateDTO> measurementAxisCoordinateList =	measurementPmpDTOList
@@ -160,38 +152,30 @@ public class CalcServiceImpl implements CalcService {
 				.flatMap(measurementPmp -> measurementPmp.getMeasurementAxisCoordinateList().stream())
 				.collect(Collectors.toList());
 		
-		for (MeasurementAxisCoordinateDTO measurementAxisCoordinate : measurementAxisCoordinateList) {					
-			double defaultHigherToleranceValueRounded = Double.parseDouble(PMP_FORMAT_CALCULATE.format(measurementAxisCoordinate.getHigherTolerance()));
-			double defaultlowerToleranceValueRounded = Double.parseDouble(PMP_FORMAT_CALCULATE.format(measurementAxisCoordinate.getLowerTolerance()));
-
-			double defaultLimitedHigherToleranceValueRounded = BK_PERCENT*defaultHigherToleranceValueRounded;
-			double defaultLimitedLlowerToleranceValueRounded = BK_PERCENT*defaultlowerToleranceValueRounded;
+		for (MeasurementAxisCoordinateDTO measurementAxisCoordinate : measurementAxisCoordinateList) {
+			ToleranceTypeStatus toleranceTypeStatus = getToleranceTypeStatus(
+					measurementAxisCoordinate.getHigherTolerance(), measurementAxisCoordinate.getLowerTolerance(),
+					measurementAxisCoordinate.getValue().doubleValue());
 			
-			double value = Double.parseDouble(PMP_FORMAT_CALCULATE.format(measurementAxisCoordinate.getValue().doubleValue()));
-			
-			boolean isAk = value > defaultHigherToleranceValueRounded || value < defaultlowerToleranceValueRounded;
-			boolean isBk = !isAk && ((value <= defaultHigherToleranceValueRounded && value>=defaultLimitedHigherToleranceValueRounded) || 
-					(value <= defaultlowerToleranceValueRounded && value <= defaultLimitedLlowerToleranceValueRounded));
-							
 			if (measurementAxisCoordinate.getAxis().equals(AxisType.X)) {
-				if (isAk) { indicator.setAkT(indicator.getAkT()+1);}
-				else if(isBk) { indicator.setBkT(indicator.getBkT()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkT(indicator.getAkT()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkT(indicator.getBkT()+1); }
 				else { indicator.setIoT(indicator.getIoT()+1); }
 			}else if(measurementAxisCoordinate.getAxis().equals(AxisType.Y)) {
-				if (isAk) { indicator.setAkD(indicator.getAkD()+1);}
-				else if(isBk) { indicator.setBkD(indicator.getBkD()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkD(indicator.getAkD()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkD(indicator.getBkD()+1); }
 				else { indicator.setIoD(indicator.getIoD()+1); }
 			}else if (measurementAxisCoordinate.getAxis().equals(AxisType.Z)) {
-				if (isAk) { indicator.setAkZ(indicator.getAkZ()+1);}
-				else if(isBk) { indicator.setBkZ(indicator.getBkZ()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkZ(indicator.getAkZ()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkZ(indicator.getBkZ()+1); }
 				else { indicator.setIoZ(indicator.getIoZ()+1); }
 			}else if (measurementAxisCoordinate.getAxis().equals(AxisType.D)) {
-				if (isAk) { indicator.setAkY(indicator.getAkY()+1);}
-				else if(isBk) { indicator.setBkY(indicator.getBkY()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkY(indicator.getAkY()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkY(indicator.getBkY()+1); }
 				else { indicator.setIoY(indicator.getIoY()+1); }
 			}else {
-				if (isAk) { indicator.setAkX(indicator.getAkX()+1);}
-				else if(isBk) { indicator.setBkX(indicator.getBkX()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkX(indicator.getAkX()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkX(indicator.getBkX()+1); }
 				else { indicator.setIoX(indicator.getIoX()+1); }
 			}
 				
@@ -201,7 +185,7 @@ public class CalcServiceImpl implements CalcService {
 	}
 
 	@Override
-	public PmpIndicator calcPmpIndicator(Set<MeasurementPmp> measurementPmpList) {
+	public PmpIndicator calcPmpIndicator(Collection<MeasurementPmp> measurementPmpList) {
 		PmpIndicator indicator = new PmpIndicator();
 		
 		List<MeasurementAxisCoordinate> measurementAxisCoordinateList =	measurementPmpList
@@ -211,38 +195,30 @@ public class CalcServiceImpl implements CalcService {
 		
 		for (MeasurementAxisCoordinate measurementAxisCoordinate : measurementAxisCoordinateList) {
 			NominalAxisCoordinate nominalAxisCoordinate = measurementAxisCoordinate.getNominalAxisCoordinate();
-
-			double defaultHigherToleranceValueRounded = Double.parseDouble(PMP_FORMAT_CALCULATE.format(nominalAxisCoordinate.getHigherTolerance()));
-			double defaultlowerToleranceValueRounded = Double.parseDouble(PMP_FORMAT_CALCULATE.format(nominalAxisCoordinate.getLowerTolerance()));
-
-			double defaultLimitedHigherToleranceValueRounded = BK_PERCENT*defaultHigherToleranceValueRounded;
-			double defaultLimitedLlowerToleranceValueRounded = BK_PERCENT*defaultlowerToleranceValueRounded;
 			
-			double value = Double.parseDouble(PMP_FORMAT_CALCULATE.format(measurementAxisCoordinate.getValue().doubleValue()));
-			
-			boolean isAk = value > defaultHigherToleranceValueRounded || value < defaultlowerToleranceValueRounded;
-			boolean isBk = !isAk && ((value <= defaultHigherToleranceValueRounded && value>=defaultLimitedHigherToleranceValueRounded) || 
-					(value <= defaultlowerToleranceValueRounded && value <= defaultLimitedLlowerToleranceValueRounded));
+			ToleranceTypeStatus toleranceTypeStatus = getToleranceTypeStatus(
+					nominalAxisCoordinate.getHigherTolerance().doubleValue(), nominalAxisCoordinate.getLowerTolerance().doubleValue(),
+					measurementAxisCoordinate.getValue().doubleValue());
 							
 			if (nominalAxisCoordinate.getAxis().equals(AxisType.X)) {
-				if (isAk) { indicator.setAkT(indicator.getAkT()+1);}
-				else if(isBk) { indicator.setBkT(indicator.getBkT()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkT(indicator.getAkT()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkT(indicator.getBkT()+1); }
 				else { indicator.setIoT(indicator.getIoT()+1); }
 			}else if(nominalAxisCoordinate.getAxis().equals(AxisType.Y)) {
-				if (isAk) { indicator.setAkD(indicator.getAkD()+1);}
-				else if(isBk) { indicator.setBkD(indicator.getBkD()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkD(indicator.getAkD()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkD(indicator.getBkD()+1); }
 				else { indicator.setIoD(indicator.getIoD()+1); }
 			}else if (nominalAxisCoordinate.getAxis().equals(AxisType.Z)) {
-				if (isAk) { indicator.setAkZ(indicator.getAkZ()+1);}
-				else if(isBk) { indicator.setBkZ(indicator.getBkZ()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkZ(indicator.getAkZ()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkZ(indicator.getBkZ()+1); }
 				else { indicator.setIoZ(indicator.getIoZ()+1); }
 			}else if (nominalAxisCoordinate.getAxis().equals(AxisType.D)) {
-				if (isAk) { indicator.setAkY(indicator.getAkY()+1);}
-				else if(isBk) { indicator.setBkY(indicator.getBkY()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkY(indicator.getAkY()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkY(indicator.getBkY()+1); }
 				else { indicator.setIoY(indicator.getIoY()+1); }
 			}else {
-				if (isAk) { indicator.setAkX(indicator.getAkX()+1);}
-				else if(isBk) { indicator.setBkX(indicator.getBkX()+1); }
+				if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAkX(indicator.getAkX()+1);}
+				else if(toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBkX(indicator.getBkX()+1); }
 				else { indicator.setIoX(indicator.getIoX()+1); }
 			}
 		}

@@ -1,7 +1,7 @@
 package com.fauv.analyzer.service;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import com.fauv.analyzer.entity.MeasurementFm;
 import com.fauv.analyzer.entity.MeasurementPmp;
@@ -9,18 +9,19 @@ import com.fauv.analyzer.entity.dto.MeasurementFmDTO;
 import com.fauv.analyzer.entity.dto.MeasurementPmpDTO;
 import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.entity.indicators.PmpIndicator;
+import com.fauv.analyzer.enums.ToleranceTypeStatus;
 
 public interface CalcService {
 
-	public FmIndicator calcFmIndicatorUsingDTO(Set<MeasurementFmDTO> fmMeasurementDTOList);
+	public FmIndicator calcFmIndicatorUsingDTO(Collection<MeasurementFmDTO> fmMeasurementDTOList);
 
-	public FmIndicator calcFmIndicator(Set<MeasurementFm> fmMeasurementList);
+	public FmIndicator calcFmIndicator(Collection<MeasurementFm> fmMeasurementList);
 	
-	public FmIndicator calcFmIndicator(List<MeasurementFm> fmMeasurementList);
+	public ToleranceTypeStatus getToleranceTypeStatus(double higherTolerance, double lowerTolerance, double value);
 	
-	public PmpIndicator calcPmpIndicatorUsingDTO(Set<MeasurementPmpDTO> measurementPmpDTOList);
+	public PmpIndicator calcPmpIndicatorUsingDTO(Collection<MeasurementPmpDTO> measurementPmpDTOList);
 	
-	public PmpIndicator calcPmpIndicator(Set<MeasurementPmp> measurementPmpList);
+	public PmpIndicator calcPmpIndicator(Collection<MeasurementPmp> measurementPmpList);
 	
 	public double calcStartandDeviation(List<Double> matValues, double avgMat, int numberOfSamples);
 	

@@ -9,11 +9,11 @@ public class PmpOverview {
 	private double x;
 	private double y;
 	private double z;
-	private List<String> fmList;
 	private int ak;
 	private int bk;
 	private int io;
 	private List<AxisCoordinateOverview> axisCoordinateOverviewList = new ArrayList<>();
+	private boolean wasFound;
 	
 	public String getName() {
 		return name;
@@ -47,14 +47,6 @@ public class PmpOverview {
 		this.z = z;
 	}
 	
-	public List<String> getFmList() {
-		return fmList;
-	}
-	
-	public void setFmList(List<String> fmList) {
-		this.fmList = fmList;
-	}
-	
 	public int getAk() {
 		return ak;
 	}
@@ -85,6 +77,14 @@ public class PmpOverview {
 	
 	public void setAxisCoordinateOverviewList(List<AxisCoordinateOverview> axisCoordinateOverviewList) {
 		this.axisCoordinateOverviewList = axisCoordinateOverviewList;
+	}
+
+	public boolean isWasFound() {
+		return wasFound;
+	}
+
+	public void setWasFound(boolean wasFound) {
+		this.wasFound = wasFound;
 	}
 	
 }
