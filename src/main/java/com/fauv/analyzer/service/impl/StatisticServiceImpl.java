@@ -154,6 +154,11 @@ public class StatisticServiceImpl implements StatisticService {
 		double sigmaLevel = calcService.calcSigmaLevel(cpk);
 		double pp = calcService.calcPp(higherTolerance, lowerTolerance, startandDeviation);
 		double ppk = calcService.calcPpk(higherTolerance, lowerTolerance, avgMat, startandDeviation);
+		double z1 = calcService.calcNominalDistributionZ1(lscCep, avgMat, startandDeviation, numberOfSamples);
+		double z2 = calcService.calcNominalDistributionZ2(licCep, avgMat, startandDeviation, numberOfSamples);
+		double z = z1+z2;
+		boolean isAble = cp >= 1 && cpk >= 1 && pp >= 1 && ppk >= 1;
+		
 		//double nominalDistribution = calcService.calcNominalDistribution(higherTolerance, lowerTolerance, avgMat, startandDeviation, numberOfSamples);
 		FmIndicator fmIndicator = calcService.calcFmIndicator(measurementFmList);
 		
@@ -188,7 +193,10 @@ public class StatisticServiceImpl implements StatisticService {
 		fmStatistic.setPercentageAk(percentageAk);
 		fmStatistic.setPercentageBk(percentageBk);
 		fmStatistic.setPercentageIo(percentageIo);
-		fmStatistic.setNominalDistribution(0.0);
+		fmStatistic.setNominalDistribution(z);
+		fmStatistic.setZ1(z1);
+		fmStatistic.setZ2(z2);
+		fmStatistic.setAble(isAble);
 		
 		return fmStatistic;
 	}

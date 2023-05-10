@@ -20,9 +20,7 @@ import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.entity.indicators.PmpIndicator;
 import com.fauv.analyzer.enums.AxisType;
 import com.fauv.analyzer.enums.D;
-import com.fauv.analyzer.enums.Z;
 import com.fauv.analyzer.service.CalcService;
-import com.fauv.analyzer.utils.Utils;
 
 @Service
 public class CalcServiceImpl implements CalcService {
@@ -321,19 +319,33 @@ public class CalcServiceImpl implements CalcService {
 		return Double.min(ppi, pps);
 	}
 	
-	public double calcNominalDistribution(double lsc, double lic, double avgMat, double standardDeviation, int numberOfSamples) {
-		double standardDeviation2 = standardDeviation / Math.sqrt(numberOfSamples);
-		
-		double z1 = (lsc - avgMat) / standardDeviation2;
-		double z2 = (lic - avgMat) / standardDeviation2;
-		
-		double formatedZ1 = Utils.formatNomalDistribution(z1);
-		double formatedZ2 = Utils.formatNomalDistribution(z2);
-		
-		double z1Value = Z.getByValue(formatedZ1);
-		double z2Value = Z.getByValue(formatedZ2);
-		
-		return (z1Value+z2Value);
+	public double calcNominalDistributionZ1(double lsc, double avgMat, double standardDeviation, int numberOfSamples) {				
+		return normDist(lsc, avgMat, standardDeviation, true);
 	}
 
+	public double calcNominalDistributionZ2(double lic, double avgMat, double standardDeviation, int numberOfSamples) {
+	    return normDist(lic, avgMat, standardDeviation, true);
+	}
+	
+    public static double normDist(double x, double mean, double standardDev, boolean cumulative) {
+        if (cumulative) {
+            // return the cumulative distribution function
+            return (1.0 + erf((x - mean) / (standardDev * Math.sqrt(2.0)))) / 2.0;
+        } else {
+            // return the probability density function
+            return Math.exp(-(x - mean) * (x - mean) / (2.0 * standardDev * standardDev))
+                    / (standardDev * Math.sqrt(2.0 * Math.PI));
+        }
+    }
+    
+    private static double erf(double x) {
+        double t = 1.0 / (1.0 + 0.5 * Math.abs(x));
+        double ans = 1 - t * Math.exp(-x*x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+        if (x >= 0.0) {
+            return ans;
+        } else {
+            return -ans;
+        }
+    }
+	
 }

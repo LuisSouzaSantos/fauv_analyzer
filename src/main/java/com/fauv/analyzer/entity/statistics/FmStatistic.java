@@ -23,6 +23,9 @@ public class FmStatistic {
 	private double sigmaLevel;
 	private double average;
 	private double nominalDistribution;
+	private double z1;
+	private double z2;
+	private boolean isAble;
 	private List<String> mappedPmpList = new ArrayList<>();
 	private List<String> impactList = new ArrayList<>();
 	private CepIndividualValuesGraphic cepIndividualValuesGraphic;
@@ -158,6 +161,30 @@ public class FmStatistic {
 		this.nominalDistribution = nominalDistribution;
 	}
 	
+	public double getZ1() {
+		return z1;
+	}
+
+	public void setZ1(double z1) {
+		this.z1 = z1;
+	}
+
+	public double getZ2() {
+		return z2;
+	}
+
+	public void setZ2(double z2) {
+		this.z2 = z2;
+	}
+	
+	public boolean isAble() {
+		return isAble;
+	}
+
+	public void setAble(boolean isAble) {
+		this.isAble = isAble;
+	}
+
 	public List<String> getMappedPmpList() {
 		return mappedPmpList;
 	}
