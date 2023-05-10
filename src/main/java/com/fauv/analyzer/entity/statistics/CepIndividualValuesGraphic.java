@@ -4,7 +4,7 @@ public class CepIndividualValuesGraphic extends Graphic {
 
 	double positiveZoneA;
 	double positiveZoneB;
-	double posttiveZoneC;
+	double positiveZoneC;
 	double negativeZoneA;
 	double negativeZoneB;
 	double negativeZoneC;
@@ -21,11 +21,11 @@ public class CepIndividualValuesGraphic extends Graphic {
 	public void setPositiveZoneB(double positiveZoneB) {
 		this.positiveZoneB = positiveZoneB;
 	}
-	public double getPosttiveZoneC() {
-		return posttiveZoneC;
+	public double getPositiveZoneC() {
+		return positiveZoneC;
 	}
-	public void setPosttiveZoneC(double posttiveZoneC) {
-		this.posttiveZoneC = posttiveZoneC;
+	public void setPositiveZoneC(double positiveZoneC) {
+		this.positiveZoneC = positiveZoneC;
 	}
 	public double getNegativeZoneA() {
 		return negativeZoneA;

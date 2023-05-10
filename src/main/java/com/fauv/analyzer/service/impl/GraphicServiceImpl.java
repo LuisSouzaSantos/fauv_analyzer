@@ -29,7 +29,7 @@ public class GraphicServiceImpl implements GraphicService {
 		
 		graphic.setPositiveZoneA(Utils.formatNumberToFmGraphic(avgMat+3*valueToCalcateZone));
 		graphic.setPositiveZoneB(Utils.formatNumberToFmGraphic(avgMat+2*valueToCalcateZone));
-		graphic.setPosttiveZoneC(Utils.formatNumberToFmGraphic(avgMat+1*valueToCalcateZone));
+		graphic.setPositiveZoneC(Utils.formatNumberToFmGraphic(avgMat+1*valueToCalcateZone));
 		graphic.setNegativeZoneA(Utils.formatNumberToFmGraphic(avgMat-3*valueToCalcateZone));
 		graphic.setNegativeZoneB(Utils.formatNumberToFmGraphic(avgMat-2*valueToCalcateZone));
 		graphic.setNegativeZoneC(Utils.formatNumberToFmGraphic(avgMat-1*valueToCalcateZone));
@@ -47,11 +47,12 @@ public class GraphicServiceImpl implements GraphicService {
 		
 		includeOutsideControlLimitsIfNeeded(higherTolerance, lowerTolerance, detailedFmGraphicHelper);
 		includeTwoOrMoreRunsOfThreeConsecutivePointsCauseIfNeeded(graphic.getPositiveZoneA(), graphic.getPositiveZoneB(), graphic.getNegativeZoneA(), graphic.getNegativeZoneB(), detailedFmGraphicHelper);
-		includeFifteenConsecutivePointsInZoneCCauseIfNeeded(graphic.getPosttiveZoneC(), graphic.getNegativeZoneC(), midline, detailedFmGraphicHelper);
-		includeFourOrMorePointsOfFiveConsecutivePointsOnSameSideOfMeanCauseIfNeeded(graphic.getPosttiveZoneC(), graphic.getPositiveZoneA(), graphic.getNegativeZoneC(), graphic.getNegativeZoneA(), detailedFmGraphicHelper);
+		includeFifteenConsecutivePointsInZoneCCauseIfNeeded(graphic.getPositiveZoneC(), graphic.getNegativeZoneC(), midline, detailedFmGraphicHelper);
+		includeFourOrMorePointsOfFiveConsecutivePointsOnSameSideOfMeanCauseIfNeeded(graphic.getPositiveZoneC(), graphic.getPositiveZoneA(), graphic.getNegativeZoneC(), graphic.getNegativeZoneA(), detailedFmGraphicHelper);
 		includeIfFmIsNineConsecutivePointsInTheSameSideCauseIfNeeded(detailedFmGraphicHelper, higherTolerance, lowerTolerance, midline);
 		includeSixConsecutivePointsInAscendingOrDescendingOrderCauseIfNeeded(detailedFmGraphicHelper, higherTolerance, lowerTolerance);
 		includeForteenConsecutivePointsAlternatingAboveAndBelowMediumLineCauseIfNeeded(detailedFmGraphicHelper,higherTolerance, lowerTolerance, midline);
+		includeEightConsecutivePointsOutOfZoneC(graphic.getPositiveZoneC(), graphic.getNegativeZoneC(),higherTolerance, lowerTolerance, detailedFmGraphicHelper);
 		
 		graphic.setDetailedFmGraphicsList(detailedFmGraphicHelper.stream().map(detailedFmGraphic -> detailedFmGraphic.getDetailedFmGraphic()).collect(Collectors.toList()));
 		
@@ -316,7 +317,7 @@ public class GraphicServiceImpl implements GraphicService {
 	private void includeForteenConsecutivePointsAlternatingAboveAndBelowMediumLineCauseIfNeeded(List<DetailedFmGraphicHelper> detailedFmGraphicHelperList, double lcs, double lic, double mediumLine) {
 	    if (detailedFmGraphicHelperList.size() < 14) { return; }
 	    
-	    int consecutivePointsCount = 1;
+	    int consecutivePointsCount = 0;
 	    
 	    DetailedFmGraphicHelper firstDetailedFmGraphic = detailedFmGraphicHelperList.get(0);
 	    
@@ -353,6 +354,30 @@ public class GraphicServiceImpl implements GraphicService {
 	        }
 	       
 	    }
+	}
+	
+	public void includeEightConsecutivePointsOutOfZoneC(double positiveZoneC, double negativeZoneC, double lcs, double lic, List<DetailedFmGraphicHelper> detailedFmGraphicHelperList) {
+		if (detailedFmGraphicHelperList.size() < 8) { return; }
+		
+		int consecutivePointsCount = 0;
+		
+		for (int i = 1; i < detailedFmGraphicHelperList.size(); i++) {
+	    	DetailedFmGraphicHelper detailedFmGraphicHelper = detailedFmGraphicHelperList.get(0);
+	    	
+	    	double value = detailedFmGraphicHelper.getDetailedFmGraphic().getValue();
+	    	
+	        if (!isInsideTwoLimitsValues(value, lcs, lic) || isInsideTwoLimitsValues(value, positiveZoneC, negativeZoneC)) {
+	        	consecutivePointsCount=0;
+	        }else {
+	        	consecutivePointsCount++;
+	        }
+	        
+	        if (consecutivePointsCount >= 8) { 
+	        	detailedFmGraphicHelper.getDetailedFmGraphic().getStatisticCriteriaList().add(StatisticCriteria.EIGHT_CONSECURTIVE_POINTS_OUT_OF_ZONE_A);
+	        }
+	        
+		}
+		
 	}
 	
 	public boolean isInsideTwoLimitsValues(double value, double zoneGratherValue, double zoneLowerValue) {
