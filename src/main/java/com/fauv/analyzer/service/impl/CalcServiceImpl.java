@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
 import org.springframework.stereotype.Service;
 
 import com.fauv.analyzer.entity.MeasurementAxisCoordinate;
@@ -295,33 +296,19 @@ public class CalcServiceImpl implements CalcService {
 		return Double.min(ppi, pps);
 	}
 	
-	public double calcNominalDistributionZ1(double lsc, double avgMat, double standardDeviation, int numberOfSamples) {				
-		return normDist(lsc, avgMat, standardDeviation, true);
+	public double calcNominalDistributionZ1(double lsc, double avgMat, double standardDeviation) {				
+		return calculateNormalDistribution(lsc, avgMat, standardDeviation);
 	}
 
-	public double calcNominalDistributionZ2(double lic, double avgMat, double standardDeviation, int numberOfSamples) {
-	    return normDist(lic, avgMat, standardDeviation, true);
+	public double calcNominalDistributionZ2(double lic, double avgMat, double standardDeviation) {
+	    return calculateNormalDistribution(lic, avgMat, standardDeviation);
 	}
 	
-    public static double normDist(double x, double mean, double standardDev, boolean cumulative) {
-        if (cumulative) {
-            // return the cumulative distribution function
-            return (1.0 + erf((x - mean) / (standardDev * Math.sqrt(2.0)))) / 2.0;
-        } else {
-            // return the probability density function
-            return Math.exp(-(x - mean) * (x - mean) / (2.0 * standardDev * standardDev))
-                    / (standardDev * Math.sqrt(2.0 * Math.PI));
-        }
-    }
-    
-    private static double erf(double x) {
-        double t = 1.0 / (1.0 + 0.5 * Math.abs(x));
-        double ans = 1 - t * Math.exp(-x*x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
-        if (x >= 0.0) {
-            return ans;
-        } else {
-            return -ans;
-        }
-    }
+	public static double calculateNormalDistribution(double x, double mean, double standardDeviation) {
+		NormalDistribution normalDistribution = new NormalDistribution(mean, standardDeviation);
+		
+		return normalDistribution.cumulativeProbability(x);
+	}
+
 	
 }

@@ -41,7 +41,7 @@ public interface CalcService {
 	
 	public double calcPpk(double lsc, double lic, double avgMat, double startandDeviation);
 	
-	public double calcNominalDistributionZ1(double lsc, double avgMat, double standardDeviation, int numberOfSamples);
+	public double calcNominalDistributionZ1(double lsc, double avgMat, double standardDeviation);
 	
-	public double calcNominalDistributionZ2(double lic, double avgMat, double standardDeviation, int numberOfSamples);
+	public double calcNominalDistributionZ2(double lic, double avgMat, double standardDeviation);
 }
