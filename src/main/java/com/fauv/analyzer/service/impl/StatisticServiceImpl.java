@@ -72,6 +72,7 @@ public class StatisticServiceImpl implements StatisticService {
 					PmpDTO pmpDTO = new PmpDTO();
 					
 					pmpDTO.setName(pmp.getName());
+					pmpDTO.setActive(pmp.isActive());
 					
 					return pmpDTO;
 				}).collect(Collectors.toList());
@@ -82,6 +83,7 @@ public class StatisticServiceImpl implements StatisticService {
 					fmDTO.setAxis(fm.getAxis());
 					fmDTO.setName(fm.getName());
 					fmDTO.setLevel(fm.getLevel());
+					fmDTO.setActive(fm.isActive());
 					
 					return fmDTO;
 				}).collect(Collectors.toList());
