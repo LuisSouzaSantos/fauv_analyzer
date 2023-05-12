@@ -58,6 +58,7 @@ import com.fauv.analyzer.service.ModelService;
 import com.fauv.analyzer.service.SampleService;
 import com.fauv.analyzer.service.UnitService;
 import com.fauv.analyzer.service.http.ParserHttp;
+import com.fauv.analyzer.utils.Utils;
 
 @Service
 public class SampleServiceImpl implements SampleService {
@@ -298,9 +299,10 @@ public class SampleServiceImpl implements SampleService {
 			fmOverview.setHigherTolerance(nominalFm.getHigherTolerance().doubleValue());
 			fmOverview.setLowerTolerance(nominalFm.getLowerTolerance().doubleValue());
 			fmOverview.setTolerance(measurementFm.getToleranceType());
-			fmOverview.setValue(matValue);
+			fmOverview.setValue(Utils.formatNumberToFmOverview(matValue));
 			fmOverview.setWasFound(measurementFm.getWasFound());
 			fmOverview.setPmpList(new ArrayList<String>(measurementFm.getMeasurementPmpNameList()));
+			fmOverview.setImpactList(nominalFm.getFmImpactListString());
 			
 			ToleranceTypeStatus toleranceTypeStatus = calcService.getToleranceTypeStatus(
 					nominalFm.getHigherTolerance().doubleValue(), nominalFm.getLowerTolerance().doubleValue(),
@@ -336,7 +338,7 @@ public class SampleServiceImpl implements SampleService {
 				axisCoordinateOverview.setName(nominalAxisCoordinate.getName());
 				axisCoordinateOverview.setAxis(nominalAxisCoordinate.getAxis());
 				axisCoordinateOverview.setToleranceType(measurementAxisCoordinate.getToleranceType());
-				axisCoordinateOverview.setValue(measurementAxisCoordinate.getValue().doubleValue());
+				axisCoordinateOverview.setValue(Utils.formatNumberToPmpOverview(measurementAxisCoordinate.getValue().doubleValue()));
 				axisCoordinateOverview.setHigherTolerance(nominalAxisCoordinate.getHigherTolerance().doubleValue());
 				axisCoordinateOverview.setLowerTolerance(nominalAxisCoordinate.getLowerTolerance().doubleValue());
 				axisCoordinateOverview.setWasFound(measurementAxisCoordinate.getWasFound());

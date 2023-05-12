@@ -16,6 +16,7 @@ public class FmOverview {
 	private CatalogType catalog;
 	private ToleranceType tolerance;
 	private List<String> pmpList = new ArrayList<>();
+	private List<String> impactList = new ArrayList<>();
 	private ToleranceTypeStatus toleranceStatus;
 	private double higherTolerance;
 	private double lowerTolerance;
@@ -52,6 +53,12 @@ public class FmOverview {
 	}
 	public void setPmpList(List<String> pmpList) {
 		this.pmpList = pmpList;
+	}
+	public List<String> getImpactList() {
+		return impactList;
+	}
+	public void setImpactList(List<String> impactList) {
+		this.impactList = impactList;
 	}
 	public ToleranceTypeStatus getToleranceStatus() {
 		return toleranceStatus;

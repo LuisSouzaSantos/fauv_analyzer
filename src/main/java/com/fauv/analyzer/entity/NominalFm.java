@@ -3,6 +3,7 @@ package com.fauv.analyzer.entity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -166,6 +167,10 @@ public class NominalFm {
 
 	public void setPmpList(List<NominalPmp> pmpList) {
 		this.pmpList = pmpList;
+	}
+	
+	public List<String> getFmImpactListString() {
+		return this.getFmImpactList().stream().map(impact -> impact.getInfo()).collect(Collectors.toList());
 	}
 
 	public static NominalFm buildNominalFm(FmForm fmForm) {
