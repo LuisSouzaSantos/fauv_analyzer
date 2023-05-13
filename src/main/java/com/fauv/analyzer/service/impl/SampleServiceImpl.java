@@ -312,6 +312,7 @@ public class SampleServiceImpl implements SampleService {
 			
 			if (fmOverview.getToleranceStatus().equals(ToleranceTypeStatus.AK)) {
 				sampleOverview.setTotalFmAk(sampleOverview.getTotalFmAk()+1);
+				sampleOverview.getFmListAk().add(nominalFm.getName());
 			}else if (fmOverview.getToleranceStatus().equals(ToleranceTypeStatus.BK)) {
 				sampleOverview.setTotalFmBk(sampleOverview.getTotalFmBk()+1);
 			}else {
@@ -509,7 +510,7 @@ public class SampleServiceImpl implements SampleService {
 							.findFirst().orElse(null);
 					
 					if (foundMeasurementPmp == null || !foundMeasurementPmp.getWasFound()) { 
-						throw new SampleException(SampleMessage.PMP_NOT_FOUND); 
+						throw new SampleException("FM"+nominalFm.getName()+" "+SampleMessage.PMP_NOT_FOUND+":"+pmpName); 
 					}
 					
 					measurementFm.getMeasurementPmpList().add(foundMeasurementPmp);
