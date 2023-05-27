@@ -248,8 +248,8 @@ public class StatisticServiceImpl implements StatisticService {
 			pmpStatistics.setPercentageAk(percentageAk);
 			pmpStatistics.setPercentageBk(percentageBk);
 			pmpStatistics.setPercentageIo(percentageIo);
-			pmpStatistics.setNominalDistribution(nominalDistribution); // QUEBRAR EM DUAS CASAS
-			pmpStatistics.setRestOfNormalDistribution(restOfNormalDistribution); // QUEBRAR EM DUAS CASAS
+			pmpStatistics.setNominalDistribution(Utils.formatNomalDistribution(nominalDistribution)*100);
+			pmpStatistics.setRestOfNormalDistribution(Utils.formatNomalDistribution(restOfNormalDistribution)*100);
 			pmpStatistics.setAble(isAble);
 			pmpStatistics.setAxis(axis);
 			pmpStatistics.setCepIndividualValuesGraphic(cepIndividualValuesGraphic);
@@ -348,8 +348,8 @@ public class StatisticServiceImpl implements StatisticService {
 		fmStatistic.setPercentageAk(percentageAk);
 		fmStatistic.setPercentageBk(percentageBk);
 		fmStatistic.setPercentageIo(percentageIo);
-		fmStatistic.setNominalDistribution(nominalDistribution); // QUEBRAR EM DUAS CASAS
-		fmStatistic.setRestOfNormalDistribution(restOfNormalDistribution); // QUEBRAR EM DUAS CASAS
+		fmStatistic.setNominalDistribution(Utils.formatNomalDistribution(nominalDistribution)*100);
+		fmStatistic.setRestOfNormalDistribution(Utils.formatNomalDistribution(restOfNormalDistribution)*100);
 		fmStatistic.setAble(isAble);
 		
 		return fmStatistic;

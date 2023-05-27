@@ -1,6 +1,5 @@
 package com.fauv.analyzer.service.impl;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,9 +27,6 @@ import com.fauv.analyzer.service.CalcService;
 @Service
 public class CalcServiceImpl implements CalcService {
 
-	//private static final Logger logger = LoggerFactory.getLogger(CalcServiceImpl.class);
-    private static final DecimalFormat FM_FORMAT_CALCULATE = new DecimalFormat("#.#");
-    //private static final DecimalFormat PMP_FORMAT_CALCULATE = new DecimalFormat("#.##");
 	private static final double BK_PERCENT = 0.75;
 	private static final double MAX_CP_VALUE = 1.0;
 	private static final double MAX_CPK_VALUE = 1.0;
@@ -43,7 +39,7 @@ public class CalcServiceImpl implements CalcService {
 		FmIndicator indicator = new FmIndicator();
 		
 		for (MeasurementFmDTO fmMeasurement : fmMeasurementDTOList) {
-			double matValue = Double.parseDouble(FM_FORMAT_CALCULATE.format(fmMeasurement.getValue()-fmMeasurement.getDefaultValue()));
+			double matValue = fmMeasurement.getValue()-fmMeasurement.getDefaultValue();
 			
 			ToleranceTypeStatus toleranceTypeStatus = getToleranceTypeStatus(fmMeasurement.getHigherTolerance(), fmMeasurement.getLowerTolerance(), matValue);
 			
@@ -246,7 +242,7 @@ public class CalcServiceImpl implements CalcService {
 			
 			if (toleranceTypeStatus.equals(ToleranceTypeStatus.AK)) { indicator.setAk(indicator.getAk()+1); }
 			if (toleranceTypeStatus.equals(ToleranceTypeStatus.BK)) { indicator.setBk(indicator.getBk()+1); }
-			if (toleranceTypeStatus.equals(ToleranceTypeStatus.IO)) { indicator.setBk(indicator.getIo()+1); }
+			if (toleranceTypeStatus.equals(ToleranceTypeStatus.IO)) { indicator.setIo(indicator.getIo()+1); }
 			
 		}
 		

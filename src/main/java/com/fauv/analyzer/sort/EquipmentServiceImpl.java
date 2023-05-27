@@ -1,4 +1,4 @@
-package com.fauv.analyzer.service.impl;
+package com.fauv.analyzer.sort;
 
 import java.util.List;
 import java.util.stream.Collectors;

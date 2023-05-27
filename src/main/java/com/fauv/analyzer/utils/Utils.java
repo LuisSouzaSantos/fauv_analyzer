@@ -6,7 +6,7 @@ import java.util.List;
 public class Utils {
 	
 	private static final DecimalFormat DF_FORMAT = new DecimalFormat("#.###");
-	private static final DecimalFormat NORMAL_DISTRIBUTION_FORMAT = new DecimalFormat("#.###");
+	private static final DecimalFormat NORMAL_DISTRIBUTION_FORMAT = new DecimalFormat("#.##");
     private static final DecimalFormat FM_FORMAT_CALCULATE = new DecimalFormat("#.#####");
     private static final DecimalFormat PMP_FORMAT_CALCULATE = new DecimalFormat("#.##");
     private static final DecimalFormat FM_FORMAT_OVERVIEW = new DecimalFormat("#.#");

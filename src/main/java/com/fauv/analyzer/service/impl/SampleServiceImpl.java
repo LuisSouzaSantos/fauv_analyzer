@@ -58,6 +58,7 @@ import com.fauv.analyzer.service.ModelService;
 import com.fauv.analyzer.service.SampleService;
 import com.fauv.analyzer.service.UnitService;
 import com.fauv.analyzer.service.http.ParserHttp;
+import com.fauv.analyzer.sort.PmpOverviewComparator;
 import com.fauv.analyzer.utils.Utils;
 
 @Service
@@ -379,53 +380,8 @@ public class SampleServiceImpl implements SampleService {
 			sampleOverview.setTotalPmpIo(sampleOverview.getTotalPmpIo()+pmpOverview.getIo());
 		}
 		
-		sampleOverview.getFmOverviewList().sort((fmOverview1, fmOverview2) -> {
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.AK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.AK)) {
-				return 0;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.IO) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.IO)) {
-				return 0;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.BK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.BK)) {
-				return 0;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.AK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.BK)) {
-				return -1;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.AK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.IO)){
-				return -1;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.BK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.AK)){
-				return 1;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.BK) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.IO)){
-				return -1;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.IO) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.AK)){
-				return 1;
-			}
-			
-			if (fmOverview1.getToleranceStatus().equals(ToleranceTypeStatus.IO) && fmOverview2.getToleranceStatus().equals(ToleranceTypeStatus.BK)){
-				return 1;
-			}
-			
-			return 0;
-		});
-		
-		sampleOverview.getPmpOverviewList().sort((pmpOverview1, pmpOverview2) -> {
-			if (pmpOverview1.getAk() > pmpOverview2.getAk()) { return -1; }
-			if (pmpOverview1.getBk() > pmpOverview2.getBk()) { return -1; }
-		
-			return 0;
-		});
-		
+		sampleOverview.getFmOverviewList().sort(new FmOverviewComparator());
+		sampleOverview.getPmpOverviewList().sort(new PmpOverviewComparator());
 		
 		return sampleOverview;
 	}
