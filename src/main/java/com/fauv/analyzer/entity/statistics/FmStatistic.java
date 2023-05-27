@@ -23,8 +23,7 @@ public class FmStatistic {
 	private double sigmaLevel;
 	private double average;
 	private double nominalDistribution;
-	private double z1;
-	private double z2;
+	private double restOfNormalDistribution;
 	private boolean isAble;
 	private List<String> mappedPmpList = new ArrayList<>();
 	private List<String> impactList = new ArrayList<>();
@@ -161,20 +160,12 @@ public class FmStatistic {
 		this.nominalDistribution = nominalDistribution;
 	}
 	
-	public double getZ1() {
-		return z1;
+	public double getRestOfNormalDistribution() {
+		return restOfNormalDistribution;
 	}
 
-	public void setZ1(double z1) {
-		this.z1 = z1;
-	}
-
-	public double getZ2() {
-		return z2;
-	}
-
-	public void setZ2(double z2) {
-		this.z2 = z2;
+	public void setRestOfNormalDistribution(double restOfNormalDistribution) {
+		this.restOfNormalDistribution = restOfNormalDistribution;
 	}
 	
 	public boolean isAble() {

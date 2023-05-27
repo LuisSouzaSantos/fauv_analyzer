@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fauv.analyzer.enums.StatisticCriteria;
 
-public class DetailedFmGraphic {
+public class DetailedGraphic {
 
 	private Long sampleId;
 	private String pin;
@@ -19,7 +19,7 @@ public class DetailedFmGraphic {
 	private double value;
 	private List<StatisticCriteria> statisticCriteriaList = new ArrayList<StatisticCriteria>();
 	
-	public DetailedFmGraphic(Long sampleId, String pin, LocalDateTime updatedDate, double value) {
+	public DetailedGraphic(Long sampleId, String pin, LocalDateTime updatedDate, double value) {
 		this.sampleId = sampleId;
 		this.pin = pin;
 		this.updatedDate = updatedDate;

@@ -4,19 +4,19 @@ import com.fauv.analyzer.entity.MeasurementFm;
 
 public class DetailedFmGraphicHelper {
 
-	private DetailedFmGraphic detailedFmGraphic;
+	private DetailedGraphic detailedFmGraphic;
 	private MeasurementFm measurementFm;
 	
-	public DetailedFmGraphicHelper(DetailedFmGraphic detailedFmGraphic, MeasurementFm measurementFm) {
+	public DetailedFmGraphicHelper(DetailedGraphic detailedFmGraphic, MeasurementFm measurementFm) {
 		this.detailedFmGraphic = detailedFmGraphic;
 		this.measurementFm = measurementFm;
 	}
 
-	public DetailedFmGraphic getDetailedFmGraphic() {
+	public DetailedGraphic getDetailedFmGraphic() {
 		return detailedFmGraphic;
 	}
 	
-	public void setDetailedFmGraphic(DetailedFmGraphic detailedFmGraphic) {
+	public void setDetailedFmGraphic(DetailedGraphic detailedFmGraphic) {
 		this.detailedFmGraphic = detailedFmGraphic;
 	}
 	

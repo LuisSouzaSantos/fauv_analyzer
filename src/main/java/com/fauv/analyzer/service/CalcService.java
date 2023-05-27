@@ -3,10 +3,12 @@ package com.fauv.analyzer.service;
 import java.util.Collection;
 import java.util.List;
 
+import com.fauv.analyzer.entity.MeasurementAxisCoordinate;
 import com.fauv.analyzer.entity.MeasurementFm;
 import com.fauv.analyzer.entity.MeasurementPmp;
 import com.fauv.analyzer.entity.dto.MeasurementFmDTO;
 import com.fauv.analyzer.entity.dto.MeasurementPmpDTO;
+import com.fauv.analyzer.entity.indicators.AxisIndicator;
 import com.fauv.analyzer.entity.indicators.FmIndicator;
 import com.fauv.analyzer.entity.indicators.PmpIndicator;
 import com.fauv.analyzer.enums.ToleranceTypeStatus;
@@ -22,6 +24,8 @@ public interface CalcService {
 	public PmpIndicator calcPmpIndicatorUsingDTO(Collection<MeasurementPmpDTO> measurementPmpDTOList);
 	
 	public PmpIndicator calcPmpIndicator(Collection<MeasurementPmp> measurementPmpList);
+	
+	public AxisIndicator calcAxisIndicatorOnlyOneAxis(Collection<MeasurementAxisCoordinate> measurementAxisCoordinateList);
 	
 	public double calcStartandDeviation(List<Double> matValues, double avgMat, int numberOfSamples);
 	
@@ -41,7 +45,5 @@ public interface CalcService {
 	
 	public double calcPpk(double lsc, double lic, double avgMat, double startandDeviation);
 	
-	public double calcNominalDistributionZ1(double lsc, double avgMat, double standardDeviation);
-	
-	public double calcNominalDistributionZ2(double lic, double avgMat, double standardDeviation);
+	public boolean calcIsProcessIsAble(double cp, double cpk, double pp, double ppk);
 }

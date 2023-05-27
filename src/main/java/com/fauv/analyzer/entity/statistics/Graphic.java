@@ -11,7 +11,7 @@ public abstract class Graphic {
 	protected double higherTolerance;
 	protected double lowerTolerance;
 	protected double midline;
-	protected List<DetailedFmGraphic> detailedFmGraphicsList = new ArrayList<>();
+	protected List<DetailedGraphic> detailedFmGraphicsList = new ArrayList<>();
 	
 	public GraphicType getGraphicType() {
 		return graphicType;
@@ -45,11 +45,11 @@ public abstract class Graphic {
 		this.midline = midline;
 	}
 
-	public List<DetailedFmGraphic> getDetailedFmGraphicsList() {
+	public List<DetailedGraphic> getDetailedFmGraphicsList() {
 		return detailedFmGraphicsList;
 	}
 	
-	public void setDetailedFmGraphicsList(List<DetailedFmGraphic> detailedFmGraphicsList) {
+	public void setDetailedFmGraphicsList(List<DetailedGraphic> detailedFmGraphicsList) {
 		this.detailedFmGraphicsList = detailedFmGraphicsList;
 	}
 	

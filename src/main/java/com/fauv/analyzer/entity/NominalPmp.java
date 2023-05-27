@@ -50,6 +50,9 @@ public class NominalPmp {
 	@JoinColumn(name = "nominal_pmp_id")
 	private List<NominalAxisCoordinate> axisCoordinateList = new ArrayList<>();
 	
+	@OneToMany(mappedBy = "nominalPmp")
+	private List<MeasurementPmp> measurementPmpList = new ArrayList<>();
+	
 	public Long getId() {
 		return id;
 	}
@@ -114,6 +117,18 @@ public class NominalPmp {
 		this.axisCoordinateList = axisCoordinateList;
 	}
 	
+	public List<MeasurementPmp> getMeasurementPmpList() {
+		return measurementPmpList;
+	}
+
+	public void setMeasurementPmpList(List<MeasurementPmp> measurementPmpList) {
+		this.measurementPmpList = measurementPmpList;
+	}
+	
+	public boolean hasMeasurementPmps() {
+		return getMeasurementPmpList() != null && !getMeasurementPmpList().isEmpty();
+	}
+
 	public NominalAxisCoordinate getAxisCoordinateByName(String name) {
 		return getAxisCoordinateList().stream().filter(axisCoordinate -> axisCoordinate.getName().equals(name)).findFirst().orElse(null);
 	}

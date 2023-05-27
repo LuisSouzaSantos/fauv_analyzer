@@ -237,6 +237,18 @@ public class SampleServiceImpl implements SampleService {
 	}
 	
 	@Override
+	public List<MeasurementPmp> getMeasurementPmpBasedOnModelAndPmpName(Model model, String pmpName) {
+		String jpql = "SELECT mp FROM Sample s INNER JOIN s.measurementPmpList mp WHERE mp.nominalPmp.name = :pmpName AND s.model.id = :modelId ORDER BY s.scanEndDate";
+
+		TypedQuery<MeasurementPmp> query = entityManager.createQuery(jpql, MeasurementPmp.class);
+		query.setParameter("pmpName", pmpName);
+		query.setParameter("modelId", model.getId());
+		query.setMaxResults(25);
+		
+		return query.getResultList();
+	}
+	
+	@Override
 	public List<SampleStatisticsLoadingDTO> getSampleStatisticsLoadingByModels(Set<Model> models) {
 		Set<Sample> samples = sampleRepository.findByModelIn(models);
 		

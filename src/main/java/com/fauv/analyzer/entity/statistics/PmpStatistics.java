@@ -1,14 +1,16 @@
 package com.fauv.analyzer.entity.statistics;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fauv.analyzer.enums.AxisType;
 
-public class PmpStatistic {
+public class PmpStatistics {
 
-	private String name;
-	private double totalIo;
-	private double totalBk;
-	private double totalAk;
+	private AxisType axis;
+	private int totalIo;
+	private int totalBk;
+	private int totalAk;
+	private double percentageAk;
+	private double percentageBk;
+	private double percentageIo;
 	private double cp;
 	private double cpk;
 	private double pp;
@@ -17,42 +19,67 @@ public class PmpStatistic {
 	private double sigmaLevel;
 	private double average;
 	private double nominalDistribution;
-	private List<String> mappedFmList = new ArrayList<>();
-	private List<String> impactList = new ArrayList<>();
+	private double restOfNormalDistribution; 
+	private boolean isAble;
 	private CepIndividualValuesGraphic cepIndividualValuesGraphic;
 	private CepMovelAmplitudeGraphic cepMovelAmplitudeGraphic;
 	private IndividualValuesGraphic individualValuesGraphic;
 	private MovelAmplitudeGraphic movelAmplitudeGraphic;
 	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
+	public AxisType getAxis() {
+		return axis;
 	}
 	
-	public double getTotalIo() {
+	public void setAxis(AxisType axis) {
+		this.axis = axis;
+	}
+	
+	public int getTotalIo() {
 		return totalIo;
 	}
 	
-	public void setTotalIo(double totalIo) {
+	public void setTotalIo(int totalIo) {
 		this.totalIo = totalIo;
 	}
 	
-	public double getTotalBk() {
+	public int getTotalBk() {
 		return totalBk;
 	}
 	
-	public void setTotalBk(double totalBk) {
+	public void setTotalBk(int totalBk) {
 		this.totalBk = totalBk;
 	}
 	
-	public double getTotalAk() {
+	public int getTotalAk() {
 		return totalAk;
 	}
 	
-	public void setTotalAk(double totalAk) {
+	public void setTotalAk(int totalAk) {
 		this.totalAk = totalAk;
+	}
+	
+	public double getPercentageAk() {
+		return percentageAk;
+	}
+	
+	public void setPercentageAk(double percentageAk) {
+		this.percentageAk = percentageAk;
+	}
+	
+	public double getPercentageBk() {
+		return percentageBk;
+	}
+	
+	public void setPercentageBk(double percentageBk) {
+		this.percentageBk = percentageBk;
+	}
+	
+	public double getPercentageIo() {
+		return percentageIo;
+	}
+	
+	public void setPercentageIo(double percentageIo) {
+		this.percentageIo = percentageIo;
 	}
 	
 	public double getCp() {
@@ -119,20 +146,20 @@ public class PmpStatistic {
 		this.nominalDistribution = nominalDistribution;
 	}
 	
-	public List<String> getMappedFmList() {
-		return mappedFmList;
+	public double getRestOfNormalDistribution() {
+		return restOfNormalDistribution;
+	}
+
+	public void setRestOfNormalDistribution(double restOfNormalDistribution) {
+		this.restOfNormalDistribution = restOfNormalDistribution;
+	}
+
+	public boolean isAble() {
+		return isAble;
 	}
 	
-	public void setMappedFmList(List<String> mappedFmList) {
-		this.mappedFmList = mappedFmList;
-	}
-	
-	public List<String> getImpactList() {
-		return impactList;
-	}
-	
-	public void setImpactList(List<String> impactList) {
-		this.impactList = impactList;
+	public void setAble(boolean isAble) {
+		this.isAble = isAble;
 	}
 	
 	public CepIndividualValuesGraphic getCepIndividualValuesGraphic() {

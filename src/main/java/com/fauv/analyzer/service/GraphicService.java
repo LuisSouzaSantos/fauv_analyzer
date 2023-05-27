@@ -2,6 +2,7 @@ package com.fauv.analyzer.service;
 
 import java.util.List;
 
+import com.fauv.analyzer.entity.MeasurementAxisCoordinate;
 import com.fauv.analyzer.entity.MeasurementFm;
 import com.fauv.analyzer.entity.statistics.CepIndividualValuesGraphic;
 import com.fauv.analyzer.entity.statistics.CepMovelAmplitudeGraphic;
@@ -17,5 +18,13 @@ public interface GraphicService {
 	public IndividualValuesGraphic buildIndividualGraphic(double higherTolerance, double lowerTolerance, double midline, List<MeasurementFm> measurementFmList, List<Double> mat);
 	
 	public MovelAmplitudeGraphic buildMovelAmplideGraphic(double higherTolerance, double lowerTolerance, double midline, List<MeasurementFm> measurementFmList, List<Double> movelRange);
+	
+	public CepIndividualValuesGraphic buildCepIndividualValuesGraphicAxisCoordinate(double higherTolerance, double lowerTolerance, double midline, double avgMat, double valueToCalcateZone, List<MeasurementAxisCoordinate> measurementAxisCoordinateList);
+
+	public CepMovelAmplitudeGraphic buildCepMovelAmplitudeGraphicAxisCoordinate(double higherTolerance, double lowerTolerance, double midline, List<MeasurementAxisCoordinate> measurementAxisCoordinateList, List<Double> movelRange);
+	
+	public IndividualValuesGraphic buildIndividualGraphicAxisCoordinate(double higherTolerance, double lowerTolerance, double midline, List<MeasurementAxisCoordinate> measurementAxisCoordinateList, List<Double> mat);
+	
+	public MovelAmplitudeGraphic buildMovelAmplideGraphicAxisCoordinate(double higherTolerance, double lowerTolerance, double midline, List<MeasurementAxisCoordinate> measurementAxisCoordinateList, List<Double> movelRange);
 	
 }

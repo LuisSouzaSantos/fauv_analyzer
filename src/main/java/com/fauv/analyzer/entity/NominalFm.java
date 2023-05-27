@@ -73,6 +73,9 @@ public class NominalFm {
 	  inverseJoinColumns = @JoinColumn(name = "nominal_pmp_id"))
 	private List<NominalPmp> pmpList = new ArrayList<>();
 	
+	@OneToMany(mappedBy = "nominalFm")
+	private List<MeasurementFm> measurementFmList = new ArrayList<>();
+	
 	public Long getId() {
 		return id;
 	}
@@ -169,8 +172,24 @@ public class NominalFm {
 		this.pmpList = pmpList;
 	}
 	
+	public List<MeasurementFm> getMeasurementFmList() {
+		return measurementFmList;
+	}
+
+	public void setMeasurementFmList(List<MeasurementFm> measurementFmList) {
+		this.measurementFmList = measurementFmList;
+	}
+	
+	public boolean hasMeasurementFms() {
+		return getMeasurementFmList() != null && !getMeasurementFmList().isEmpty();
+	}
+
 	public List<String> getFmImpactListString() {
 		return this.getFmImpactList().stream().map(impact -> impact.getInfo()).collect(Collectors.toList());
+	}
+	
+	public List<String> getMappedPmpList() {
+		return getPmpList().stream().map(pmp -> pmp.getName()).collect(Collectors.toList());
 	}
 
 	public static NominalFm buildNominalFm(FmForm fmForm) {

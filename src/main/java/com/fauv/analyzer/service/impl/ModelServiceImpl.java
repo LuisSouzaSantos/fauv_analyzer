@@ -1,5 +1,6 @@
 package com.fauv.analyzer.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -133,6 +134,14 @@ public class ModelServiceImpl implements ModelService {
 		
 		if (duplicateModel != null && !modelById.getId().equals(duplicateModel.getId())) { throw new ModelException(ModelMessage.DUPLICATE); }
 		
+		List<NominalPmp> deletedPmps = getDeletedNominalPmp(modelById.getPmpList(), model.getPmpList());
+		List<NominalFm> deletedFms = getDeletedNominalFm(modelById.getFmList(), model.getFmList());
+		
+		checkDeletedNominalPmp(deletedPmps);
+		checkDeletedNominalFm(deletedFms);
+		
+		List<NominalPmp> newNominalPmpList = new ArrayList<>();
+		
 		for (NominalPmp nominalPmp : model.getPmpList()) {		
 			modelValidator.validateNominalPmp(nominalPmp);
 			
@@ -145,7 +154,7 @@ public class ModelServiceImpl implements ModelService {
 				
 				if (previousPmp != null && !nominalPmp.getId().equals(previousPmp.getId())) { throw new ModelException(ModelMessage.DUPLICATE_PMP); }
 				
-				modelById.getPmpList().add(previousPmp);
+				newNominalPmpList.add(nominalPmp);
 			}else {
 				NominalPmp previousPmp = modelById.getPmpById(nominalPmp.getId());
 				previousPmp.setName(nominalPmp.getName());
@@ -155,9 +164,15 @@ public class ModelServiceImpl implements ModelService {
 				previousPmp.setActive(nominalPmp.isActive());
 				
 				redoNominalAxisCoordinate(previousPmp.getAxisCoordinateList(), nominalPmp.getAxisCoordinateList(), previousPmp);
+				
+				newNominalPmpList.add(previousPmp);
 			}
-			
 		}
+		
+		modelById.getPmpList().clear();
+		modelById.getPmpList().addAll(newNominalPmpList);
+		
+		List<NominalFm> newNominalFmList = new ArrayList<>();
 		
 		for (NominalFm nominalFm: model.getFmList()) {
 			modelValidator.validateNominalFm(nominalFm);
@@ -174,7 +189,7 @@ public class ModelServiceImpl implements ModelService {
 				redoNominalPmp(newNominalFm.getPmpList(), nominalFm.getPmpList(), newNominalFm, modelById);
 				redoFmImpactList(newNominalFm.getFmImpactList(), nominalFm.getFmImpactList(), newNominalFm);
 				
-				modelById.getFmList().add(newNominalFm);
+				newNominalFmList.add(newNominalFm);
 			}else {
 				NominalFm previousFm = modelById.getFmById(nominalFm.getId());
 				
@@ -189,9 +204,14 @@ public class ModelServiceImpl implements ModelService {
 				
 				redoNominalPmp(previousFm.getPmpList(), nominalFm.getPmpList(), previousFm, modelById);
 				redoFmImpactList(previousFm.getFmImpactList(), nominalFm.getFmImpactList(), previousFm);
+				
+				newNominalFmList.add(previousFm);
 			}
 						
 		}
+		
+		modelById.getFmList().clear();
+		modelById.getFmList().addAll(newNominalFmList);
 		
 		return modelRepository.save(modelById);
 	}
@@ -328,6 +348,46 @@ public class ModelServiceImpl implements ModelService {
 		
 			fmImpact.setNominalFm(nominalFm);
 			currentList.add(fmImpact);
+		}
+	}
+	
+	private List<NominalPmp> getDeletedNominalPmp(List<NominalPmp> previousNominalPmpList, List<NominalPmp> newNominalPmpList) {
+		List<NominalPmp> deletedNominalPmpList = new ArrayList<>();
+		
+		for (NominalPmp previousPmp : previousNominalPmpList) {
+			if (newNominalPmpList.stream().anyMatch(nominalPmp -> nominalPmp.getName().equals(previousPmp.getName()))) { continue; }
+			
+			deletedNominalPmpList.add(previousPmp);
+		}
+		
+		return deletedNominalPmpList;
+	}
+	
+	private List<NominalFm> getDeletedNominalFm(List<NominalFm> previousNominalFmList, List<NominalFm> newNominalFmList) {
+		List<NominalFm> deletedNominalFmList = new ArrayList<>();
+		
+		for (NominalFm previousFm : previousNominalFmList) {
+			if (newNominalFmList.stream().anyMatch(nominalFm -> nominalFm.getName().equals(previousFm.getName()))) { continue; }
+			
+			deletedNominalFmList.add(previousFm);
+		}
+		
+		return deletedNominalFmList;
+	}
+	
+	private void checkDeletedNominalPmp(List<NominalPmp> nominalPmpList) throws ModelException {
+		for (NominalPmp nominalPmp : nominalPmpList) {
+			if (!nominalPmp.hasMeasurementPmps()) { continue; }
+			
+			throw new ModelException(ModelMessage.NOMINAL_PMP_HAS_ASSOCIATION);
+		}
+	}
+	
+	private void checkDeletedNominalFm(List<NominalFm> nominalFmList) throws ModelException {
+		for (NominalFm NominalFm : nominalFmList) {
+			if (!NominalFm.hasMeasurementFms()) { continue; }
+			
+			throw new ModelException(ModelMessage.NOMINAL_FM_HAS_ASSOCIATION);
 		}
 	}
 		
