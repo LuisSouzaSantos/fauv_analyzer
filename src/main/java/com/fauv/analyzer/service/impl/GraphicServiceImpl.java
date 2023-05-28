@@ -373,7 +373,7 @@ public class GraphicServiceImpl implements GraphicService {
 		    	positiveZone++;
 		    	negativeZone = 0;
 		    }
-		    else if (isInsideTwoLimitsValues(value, negativeZoneAUpper, negativeZoneBDown)) { 
+		    else if (isInsideTwoLimitsValues(value, negativeZoneBDown, negativeZoneAUpper)) { 
 		    	negativeZone++; 
 		    	positiveZone = 0;
 		    }else {
@@ -403,7 +403,7 @@ public class GraphicServiceImpl implements GraphicService {
 		    	positiveZone++;
 		    	negativeZone = 0;
 		    }
-		    else if (isInsideTwoLimitsValues(value, negativeZoneAUpper, negativeZoneBDown)) { 
+		    else if (isInsideTwoLimitsValues(value, negativeZoneBDown, negativeZoneAUpper)) { 
 		    	negativeZone++; 
 		    	positiveZone = 0;
 		    }else {
