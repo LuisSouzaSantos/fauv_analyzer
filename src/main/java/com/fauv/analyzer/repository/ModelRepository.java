@@ -1,5 +1,6 @@
 package com.fauv.analyzer.repository;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fauv.analyzer.entity.Car;
 import com.fauv.analyzer.entity.Model;
+import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.Unit;
 
 @Repository
@@ -19,5 +21,8 @@ public interface ModelRepository extends JpaRepository<Model, Long> {
 	
 	@Query(value = "SELECT m FROM Model m WHERE m.car.unit.id = :unitId ")
 	public Set<Model> findAllPartNumbersByUnitId(Long unitId);
+	
+	@Query(value = "SELECT nf FROM NominalFm nf INNER JOIN nf.pmpList np WHERE np.id = :nominalPmpId")
+	public List<NominalFm> findNominalFmListRelatedToANominalPmp(Long nominalPmpId);
 	
 }

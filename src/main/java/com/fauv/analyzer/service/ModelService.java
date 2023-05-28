@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fauv.analyzer.entity.Car;
 import com.fauv.analyzer.entity.Model;
+import com.fauv.analyzer.entity.NominalFm;
 import com.fauv.analyzer.entity.Unit;
 import com.fauv.analyzer.entity.form.ModelForm;
 import com.fauv.analyzer.entity.form.ModelPreview;
@@ -36,6 +37,8 @@ public interface ModelService {
 	
 	public Set<Model> getAllModelsByUnitId(Long unitId);
 	
-	public List<Model> getAll(); 
+	public List<Model> getAll();
+	
+	public List<NominalFm> getNominalFmListRelatedToANominalPmp(Long nominalPmpId);
 	
 }

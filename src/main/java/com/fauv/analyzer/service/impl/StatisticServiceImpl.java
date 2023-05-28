@@ -147,22 +147,35 @@ public class StatisticServiceImpl implements StatisticService {
 		PmpStatisticsContainer pmpStatisticsContainer = new PmpStatisticsContainer();
 		pmpStatisticsContainer.setName(pmpName);
 		
-		List<PmpStatistics> pmpStatisticsList = buildPmpStatistics(measurementPmpList);
+		if (measurementPmpList == null || measurementPmpList.isEmpty()) { return pmpStatisticsContainer; }
+		
+		NominalPmp nominalPmp = measurementPmpList.get(0).getNominalPmp();
+		
+		List<NominalFm> nomianFms = modelService.getNominalFmListRelatedToANominalPmp(nominalPmp.getId());
+		
+		List<FmDTO> fmList = nomianFms.stream().map(fm -> {
+			FmDTO fmDTO = new FmDTO();
+			
+			fmDTO.setName(fm.getName());
+			fmDTO.setAxis(fm.getAxis());
+			fmDTO.setCatalogType(fm.getCatalogType());
+			
+			return fmDTO;
+		}).collect(Collectors.toList());
+		
+		List<PmpStatistics> pmpStatisticsList = buildPmpStatistics(measurementPmpList, nominalPmp);
 		pmpStatisticsContainer.setPmpStatisticsList(pmpStatisticsList);
 		pmpStatisticsContainer.setAxisList(pmpStatisticsList.stream().map(pmpStatistics -> pmpStatistics.getAxis()).collect(Collectors.toList()));
+		pmpStatisticsContainer.setMappedFmList(fmList);
 		
 		return pmpStatisticsContainer;
 	}
 	
-	private List<PmpStatistics> buildPmpStatistics(List<MeasurementPmp> measurementPmpList) {
+	private List<PmpStatistics> buildPmpStatistics(List<MeasurementPmp> measurementPmpList, NominalPmp nominalPmp) {
 		List<PmpStatistics> list = new ArrayList<>();
 		
-		if (measurementPmpList == null || measurementPmpList.isEmpty()) { return list; }
-		
-		NominalPmp nominalPmp = measurementPmpList.get(0).getNominalPmp();
-		
 		List<AxisType> axisList = nominalPmp.getAxisCoordinateList().stream().map(axisCoordinate -> axisCoordinate.getAxis()).collect(Collectors.toList());
-		
+	
 		for (AxisType axis: axisList) {
 			PmpStatistics pmpStatistics = new PmpStatistics();
 			
@@ -184,7 +197,8 @@ public class StatisticServiceImpl implements StatisticService {
 					.collect(Collectors.toList());
 		
 			int numberOfSamples = mat.size();
-			double d2 = D.D2.getConstant(numberOfSamples);
+			// Using 2 samples as default 
+			double d2 = D.D2.getConstant(2);
 			double d3 = D.D3.getConstant(numberOfSamples);
 			double d4 = D.D4.getConstant(numberOfSamples);
 			
@@ -271,8 +285,8 @@ public class StatisticServiceImpl implements StatisticService {
 		List<Double> fmValues = mapDoubleValuesByMeasurementFm(measurementFmList);
 		
 		int numberOfSamples = fmValues.size();
-		
-		double d2 = D.D2.getConstant(numberOfSamples);
+		// Using 2 samples as default 
+		double d2 = D.D2.getConstant(2);
 		double d3 = D.D3.getConstant(numberOfSamples);
 		double d4 = D.D4.getConstant(numberOfSamples);
 				

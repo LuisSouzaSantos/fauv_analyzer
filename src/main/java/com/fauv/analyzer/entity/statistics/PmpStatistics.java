@@ -161,7 +161,7 @@ public class PmpStatistics {
 	public void setAble(boolean isAble) {
 		this.isAble = isAble;
 	}
-	
+
 	public CepIndividualValuesGraphic getCepIndividualValuesGraphic() {
 		return cepIndividualValuesGraphic;
 	}

@@ -619,8 +619,8 @@ public class GraphicServiceImpl implements GraphicService {
 	    boolean isAboveMean = firstDetailedFmGraphic.getDetailedFmGraphic().getValue() > mediumLine;
 	    boolean isBelowMean = firstDetailedFmGraphic.getDetailedFmGraphic().getValue() < mediumLine;
 	    
-	    for (int i = 1; i < detailedFmGraphicHelperList.size(); i++) {
-	    	DetailedFmGraphicHelper detailedFmGraphicHelper = detailedFmGraphicHelperList.get(0);
+	    for (int i = 0; i < detailedFmGraphicHelperList.size(); i++) {
+	    	DetailedFmGraphicHelper detailedFmGraphicHelper = detailedFmGraphicHelperList.get(i);
 	    	
 	    	double value = detailedFmGraphicHelper.getDetailedFmGraphic().getValue();
 	    	
@@ -661,8 +661,8 @@ public class GraphicServiceImpl implements GraphicService {
 	    boolean isAboveMean = firstDetailedAxisCoordinateGraphicHelper.getDetailedGraphic().getValue() > mediumLine;
 	    boolean isBelowMean = firstDetailedAxisCoordinateGraphicHelper.getDetailedGraphic().getValue() < mediumLine;
 	    
-	    for (int i = 1; i < detailedGraphic.size(); i++) {
-	    	DetailedAxisCoordinateGraphicHelper detailedAxisCoordinateGraphicHelper = detailedGraphic.get(0);
+	    for (int i = 0; i < detailedGraphic.size(); i++) {
+	    	DetailedAxisCoordinateGraphicHelper detailedAxisCoordinateGraphicHelper = detailedGraphic.get(i);
 	    	
 	    	double value = detailedAxisCoordinateGraphicHelper.getDetailedGraphic().getValue();
 	    	
@@ -698,8 +698,8 @@ public class GraphicServiceImpl implements GraphicService {
 		
 		int consecutivePointsCount = 0;
 		
-		for (int i = 1; i < detailedFmGraphicHelperList.size(); i++) {
-	    	DetailedFmGraphicHelper detailedFmGraphicHelper = detailedFmGraphicHelperList.get(0);
+		for (int i = 0; i < detailedFmGraphicHelperList.size(); i++) {
+	    	DetailedFmGraphicHelper detailedFmGraphicHelper = detailedFmGraphicHelperList.get(i);
 	    	
 	    	double value = detailedFmGraphicHelper.getDetailedFmGraphic().getValue();
 	    	
@@ -710,7 +710,7 @@ public class GraphicServiceImpl implements GraphicService {
 	        }
 	        
 	        if (consecutivePointsCount >= 8) { 
-	        	detailedFmGraphicHelper.getDetailedFmGraphic().getStatisticCriteriaList().add(StatisticCriteria.EIGHT_CONSECURTIVE_POINTS_OUT_OF_ZONE_A);
+	        	detailedFmGraphicHelper.getDetailedFmGraphic().getStatisticCriteriaList().add(StatisticCriteria.FOUR_OUT_OF_FIVE_CONSECUTIVE_POINTS_OUTSIDE_ZONE_C);
 	        }
 	        
 		}
@@ -722,8 +722,8 @@ public class GraphicServiceImpl implements GraphicService {
 		
 		int consecutivePointsCount = 0;
 		
-		for (int i = 1; i < detailedGraphic.size(); i++) {
-			DetailedAxisCoordinateGraphicHelper detailedAxisCoordinateGraphicHelper = detailedGraphic.get(0);
+		for (int i = 0; i < detailedGraphic.size(); i++) {
+			DetailedAxisCoordinateGraphicHelper detailedAxisCoordinateGraphicHelper = detailedGraphic.get(i);
 	    	
 	    	double value = detailedAxisCoordinateGraphicHelper.getDetailedGraphic().getValue();
 	    	
@@ -734,7 +734,7 @@ public class GraphicServiceImpl implements GraphicService {
 	        }
 	        
 	        if (consecutivePointsCount >= 8) { 
-	        	detailedAxisCoordinateGraphicHelper.getDetailedGraphic().getStatisticCriteriaList().add(StatisticCriteria.EIGHT_CONSECURTIVE_POINTS_OUT_OF_ZONE_A);
+	        	detailedAxisCoordinateGraphicHelper.getDetailedGraphic().getStatisticCriteriaList().add(StatisticCriteria.FOUR_OUT_OF_FIVE_CONSECUTIVE_POINTS_OUTSIDE_ZONE_C);
 	        }
 	        
 		}

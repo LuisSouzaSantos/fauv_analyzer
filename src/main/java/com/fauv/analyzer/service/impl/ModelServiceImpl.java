@@ -263,6 +263,11 @@ public class ModelServiceImpl implements ModelService {
 	public Set<Model> getAllModelsByUnitId(Long unitId) {
 		return modelRepository.findAllPartNumbersByUnitId(unitId);
 	}
+	
+	@Override
+	public List<NominalFm> getNominalFmListRelatedToANominalPmp(Long nominalPmpId) {
+		return modelRepository.findNominalFmListRelatedToANominalPmp(nominalPmpId);
+	}
 
 	private ModelPreview createModelPreviewUsignSampleHelperAsReference(SampleHelper sampleHelper, Set<FmImpactHelper> extractedFmImpactList) {
 		ModelPreview modelForm = new ModelPreview();

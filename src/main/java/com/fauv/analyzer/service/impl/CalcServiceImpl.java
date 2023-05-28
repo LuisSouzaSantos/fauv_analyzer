@@ -28,11 +28,11 @@ import com.fauv.analyzer.service.CalcService;
 public class CalcServiceImpl implements CalcService {
 
 	private static final double BK_PERCENT = 0.75;
-	private static final double MAX_CP_VALUE = 1.0;
-	private static final double MAX_CPK_VALUE = 1.0;
+	private static final double MAX_CP_VALUE = 2.0;
+	private static final double MAX_CPK_VALUE = 2.0;
 	private static final double MAX_SIGMA_LEVEL_VALUE = 6.0;
-	private static final double MAX_PP_VALUE = 1.0;
-	private static final double MAX_PPK_VALUE = 1.0;
+	private static final double MAX_PP_VALUE = 2.0;
+	private static final double MAX_PPK_VALUE = 2.0;
 	
 	@Override
 	public FmIndicator calcFmIndicatorUsingDTO(Collection<MeasurementFmDTO> fmMeasurementDTOList) {
@@ -256,13 +256,15 @@ public class CalcServiceImpl implements CalcService {
 	}
 	
 	public double calcLsc(double avgMat, double avgMovelRange, int numberOfSamples) {
-		double d2Constant = D.D2.getConstant(numberOfSamples);
+		// Using 2 samples as default 
+		double d2Constant = D.D2.getConstant(2);
 		
 		return avgMat+3*(avgMovelRange/d2Constant);	
 	}
 	
 	public double calcLic(double avgMat, double avgMovelRange, int numberOfSamples) {		
-		double d2Constant = D.D2.getConstant(numberOfSamples);
+		// Using 2 samples as default 
+		double d2Constant = D.D2.getConstant(2);
 		
 		return avgMat-3*(avgMovelRange/d2Constant);	
 	}
@@ -299,8 +301,8 @@ public class CalcServiceImpl implements CalcService {
 	}
 	
 	public double calcCpk(double lsc, double lic, double avgMat, double avgMovelRange, double d2) {
-		double cpi = (avgMat-lic)/(3*(avgMovelRange*d2));
-		double cps = (lsc-avgMat)/(3*(avgMovelRange*d2));
+		double cpi = (avgMat-lic)/(3*(avgMovelRange/d2));
+		double cps = (lsc-avgMat)/(3*(avgMovelRange/d2));
 		
 		double cpk = Double.min(cpi, cps);
 		
