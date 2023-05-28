@@ -710,7 +710,7 @@ public class GraphicServiceImpl implements GraphicService {
 	        }
 	        
 	        if (consecutivePointsCount >= 8) { 
-	        	detailedFmGraphicHelper.getDetailedFmGraphic().getStatisticCriteriaList().add(StatisticCriteria.FOUR_OUT_OF_FIVE_CONSECUTIVE_POINTS_OUTSIDE_ZONE_C);
+	        	detailedFmGraphicHelper.getDetailedFmGraphic().getStatisticCriteriaList().add(StatisticCriteria.EIGHT_CONSECURTIVE_POINTS_OUT_OF_ZONE_C);
 	        }
 	        
 		}
@@ -734,7 +734,7 @@ public class GraphicServiceImpl implements GraphicService {
 	        }
 	        
 	        if (consecutivePointsCount >= 8) { 
-	        	detailedAxisCoordinateGraphicHelper.getDetailedGraphic().getStatisticCriteriaList().add(StatisticCriteria.FOUR_OUT_OF_FIVE_CONSECUTIVE_POINTS_OUTSIDE_ZONE_C);
+	        	detailedAxisCoordinateGraphicHelper.getDetailedGraphic().getStatisticCriteriaList().add(StatisticCriteria.EIGHT_CONSECURTIVE_POINTS_OUT_OF_ZONE_C);
 	        }
 	        
 		}
