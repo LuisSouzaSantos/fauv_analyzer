@@ -15,12 +15,13 @@ import com.fauv.analyzer.entity.dto.SampleOverview;
 import com.fauv.analyzer.entity.dto.SampleStatisticsLoadingDTO;
 import com.fauv.analyzer.exception.EquipmentException;
 import com.fauv.analyzer.exception.ModelException;
+import com.fauv.analyzer.exception.ParserException;
 import com.fauv.analyzer.exception.SampleException;
 import com.fauv.analyzer.exception.UnitException;
 
 public interface SampleService {
 
-	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException;
+	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException, ParserException;
 	
 	public void delete(Long id);
 	

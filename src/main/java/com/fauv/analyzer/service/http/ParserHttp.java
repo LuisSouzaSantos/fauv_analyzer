@@ -16,6 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fauv.analyzer.configuration.Properties;
 import com.fauv.analyzer.entity.helper.SampleHelper;
+import com.fauv.analyzer.exception.ApiResponseError;
+import com.fauv.analyzer.exception.ParserException;
+import com.fauv.analyzer.utils.Utils;
 
 @Service
 public class ParserHttp {
@@ -23,7 +26,7 @@ public class ParserHttp {
 	@Autowired
 	private Properties properties;
 	
-	public SampleHelper readDmoFileAndBuildASample(MultipartFile dmoFile) {
+	public SampleHelper readDmoFileAndBuildASample(MultipartFile dmoFile) throws ParserException {
         RestTemplate restTemplate = new RestTemplate();
         SampleHelper response = null;
         
@@ -40,7 +43,9 @@ public class ParserHttp {
 	        
 	        response = restTemplate.postForObject(parseUrl, requestEntity, SampleHelper.class);
         }catch (HttpStatusCodeException e) {
-        	System.out.println(e);
+        	ApiResponseError apiResponseError = Utils.stringToJson(e.getResponseBodyAsString(), ApiResponseError.class);
+        	
+        	throw new ParserException(apiResponseError != null ? apiResponseError.getMessage() : null, apiResponseError == null);
         } catch (Exception e) {
         	System.out.println(e);
         }

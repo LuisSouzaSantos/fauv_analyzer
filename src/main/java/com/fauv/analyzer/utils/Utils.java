@@ -3,6 +3,9 @@ package com.fauv.analyzer.utils;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Utils {
 	
 	private static final DecimalFormat DF_FORMAT = new DecimalFormat("#.###");
@@ -50,6 +53,16 @@ public class Utils {
 	
 	public static double sumDoubleValueList(List<Double> fmListValues) {
 		return fmListValues.stream().reduce(0.0, (currentSum, currentValue) -> currentSum + currentValue);
+	}
+	
+	public static <T> T stringToJson(String json, Class<T> clazz) {
+	    ObjectMapper objectMapper = new ObjectMapper();
+	    
+	    try {
+			return objectMapper.readValue(json, clazz);
+		} catch (JsonProcessingException e) {
+			return null;
+		}
 	}
 	
 }

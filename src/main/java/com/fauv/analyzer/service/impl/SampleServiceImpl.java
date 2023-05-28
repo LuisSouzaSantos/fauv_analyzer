@@ -47,6 +47,7 @@ import com.fauv.analyzer.enums.ToleranceType;
 import com.fauv.analyzer.enums.ToleranceTypeStatus;
 import com.fauv.analyzer.exception.EquipmentException;
 import com.fauv.analyzer.exception.ModelException;
+import com.fauv.analyzer.exception.ParserException;
 import com.fauv.analyzer.exception.SampleException;
 import com.fauv.analyzer.exception.UnitException;
 import com.fauv.analyzer.message.SampleMessage;
@@ -91,7 +92,7 @@ public class SampleServiceImpl implements SampleService {
 	private EntityManager entityManager;
 	
 	@Override
-	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException {		
+	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException, ParserException {		
 		SampleHelper sampleHelper = parserHttp.readDmoFileAndBuildASample(dmoFile);
 		
 		if (sampleHelper == null || !sampleHelper.isValid()) { throw new SampleException(SampleMessage.NOT_RECOGNIZED); }

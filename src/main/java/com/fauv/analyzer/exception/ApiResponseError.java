@@ -4,11 +4,20 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 public class ApiResponseError {
 	
 	private String message;
 	private HttpStatus code;
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	private LocalDateTime date;
+	
+	public ApiResponseError() {}
 	
 	public ApiResponseError(String message, HttpStatus code) {
 		this.message = message;
