@@ -199,8 +199,8 @@ public class StatisticServiceImpl implements StatisticService {
 			int numberOfSamples = mat.size();
 			// Using 2 samples as default 
 			double d2 = D.D2.getConstant(2);
-			double d3 = D.D3.getConstant(numberOfSamples);
-			double d4 = D.D4.getConstant(numberOfSamples);
+			double d3 = D.D3.getConstant(2);
+			double d4 = D.D4.getConstant(2);
 			
 			double sumMat = Utils.sumDoubleValueList(mat);
 			double avgMat = sumMat/numberOfSamples;
@@ -287,8 +287,8 @@ public class StatisticServiceImpl implements StatisticService {
 		int numberOfSamples = fmValues.size();
 		// Using 2 samples as default 
 		double d2 = D.D2.getConstant(2);
-		double d3 = D.D3.getConstant(numberOfSamples);
-		double d4 = D.D4.getConstant(numberOfSamples);
+		double d3 = D.D3.getConstant(2);
+		double d4 = D.D4.getConstant(2);
 				
 		List<Double> mat = mapMatUsingFmValues(fmValues, nominalFm.getDefaultValue().doubleValue());
 		
