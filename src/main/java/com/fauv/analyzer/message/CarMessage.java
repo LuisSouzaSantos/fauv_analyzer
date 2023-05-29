@@ -9,5 +9,6 @@ public class CarMessage {
 	
 	public static final String ERROR_DUPLICATE_BY_NAME = "ALREADY_EXISTS_AN_CAR_WITH_THE_SAME_NAME";
 	public static final String ERROR_NOT_FOUND = "CAR_NOT_FOUND";
+	public static final String ERROR_INACTIVE = "CAR_INACTIVE";
 	
 }

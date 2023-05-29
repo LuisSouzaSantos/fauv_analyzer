@@ -50,6 +50,8 @@ import com.fauv.analyzer.exception.ModelException;
 import com.fauv.analyzer.exception.ParserException;
 import com.fauv.analyzer.exception.SampleException;
 import com.fauv.analyzer.exception.UnitException;
+import com.fauv.analyzer.message.CarMessage;
+import com.fauv.analyzer.message.EquipmentMessage;
 import com.fauv.analyzer.message.SampleMessage;
 import com.fauv.analyzer.repository.SampleRepository;
 import com.fauv.analyzer.service.CalcService;
@@ -93,6 +95,8 @@ public class SampleServiceImpl implements SampleService {
 	
 	@Override
 	public Sample save(MultipartFile dmoFile, Long unitId) throws UnitException, EquipmentException, ModelException, SampleException, ParserException {		
+		if (dmoFile == null) { throw new SampleException(SampleMessage.NOT_RECOGNIZED); }
+		
 		SampleHelper sampleHelper = parserHttp.readDmoFileAndBuildASample(dmoFile);
 		
 		if (sampleHelper == null || !sampleHelper.isValid()) { throw new SampleException(SampleMessage.NOT_RECOGNIZED); }
@@ -100,6 +104,9 @@ public class SampleServiceImpl implements SampleService {
 		Unit unit = unitService.getByIdValidateIt(unitId);
 		Equipment equipment = equipmentService.getByNameAndUnitValidateIt(sampleHelper.getHeader().getEquipmentName(), unit);
 		Model model = modelService.getByPartNumberAndUnitValidateIt(sampleHelper.getHeader().getPartNumber(), unit);
+		
+		if (!equipment.isActive()) { throw new SampleException(EquipmentMessage.EQUIPMENT_INACTIVE); }
+		if (!model.getCar().isActive()) { throw new SampleException(CarMessage.ERROR_INACTIVE); }
 		
 		Sample duplicateSample = getByPinAndModel(sampleHelper.getHeader().getSampleId(), model);
 		

@@ -9,6 +9,7 @@ public class EquipmentMessage {
 	
 	public static final String ERROR_DUPLICATE_BY_NAME = "ALREADY_EXISTS_AN_UNIT_WITH_THE_SAME_NAME";
 	public static final String ERROR_NOT_FOUND = "EQUIPMENT_NOT_FOUND";
+	public static final String EQUIPMENT_INACTIVE = "EQUIPMENT_INACTIVE";
 
 
 }
