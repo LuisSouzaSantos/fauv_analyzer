@@ -30,6 +30,7 @@ import com.fauv.analyzer.entity.helper.SampleHelper;
 import com.fauv.analyzer.exception.CarException;
 import com.fauv.analyzer.exception.EntityValidatorException;
 import com.fauv.analyzer.exception.ModelException;
+import com.fauv.analyzer.message.CarMessage;
 import com.fauv.analyzer.message.ModelMessage;
 import com.fauv.analyzer.repository.ModelRepository;
 import com.fauv.analyzer.service.CarService;
@@ -76,12 +77,13 @@ public class ModelServiceImpl implements ModelService {
 		
 		Car car = carService.getByIdValidateIt(form.getCar().getId());
 		
+		if (!car.isActive()) { throw new ModelException(CarMessage.ERROR_INACTIVE); }
+		if (getByPartNumberAndCar(form.getPartNumber(), car) != null) { throw new ModelException(ModelMessage.DUPLICATE); }
+		
 		Model model = new Model();
 		model.setPartNumber(form.getPartNumber());
 		model.setStepDescription(form.getStepDescription());
 		model.setCar(car);
-		
-		if (getByPartNumberAndCar(model.getPartNumber(), car) != null) { throw new ModelException(ModelMessage.DUPLICATE); }
 		
 		for (PmpForm pmpForm : form.getPmpList()) {
 			NominalPmp nominalPmp = NominalPmp.buildNominalPmp(pmpForm);
@@ -135,6 +137,7 @@ public class ModelServiceImpl implements ModelService {
 		if (duplicateModel != null && !modelById.getId().equals(duplicateModel.getId())) { throw new ModelException(ModelMessage.DUPLICATE); }
 		
 		List<NominalPmp> deletedPmps = getDeletedNominalPmp(modelById.getPmpList(), model.getPmpList());
+		//List<NominalAxisCoordinate> deletedAxisCoordinates = getDeletedNominalAxisCoordinate(modelById.getPmpList(), model.getPmpList());
 		List<NominalFm> deletedFms = getDeletedNominalFm(modelById.getFmList(), model.getFmList());
 		
 		checkDeletedNominalPmp(deletedPmps);
@@ -215,7 +218,7 @@ public class ModelServiceImpl implements ModelService {
 		
 		return modelRepository.save(modelById);
 	}
-
+	
 	@Override
 	public Model getById(Long id) {
 		return modelRepository.findById(id).orElse(null);
@@ -380,6 +383,28 @@ public class ModelServiceImpl implements ModelService {
 		return deletedNominalFmList;
 	}
 	
+//	private List<NominalAxisCoordinate> getDeletedNominalAxisCoordinate(List<NominalPmp> previousNominalPmpList,
+//			List<NominalPmp> newNominalPmpList) {
+//		List<NominalAxisCoordinate> deletedNominalAxisCoordinateList = new ArrayList<>();
+//		
+//		List<NominalAxisCoordinate> newNominalAxisCoordinate = newNominalPmpList.stream().map(nominalPmp ->  {
+//			return nominalPmp.getAxisCoordinateList();
+//		}).collect(Collectors.toList());
+//		
+//		for (NominalPmp previousPmp : previousNominalPmpList) {
+//			for (NominalAxisCoordinate nominalAxisCoordinate : previousPmp.getAxisCoordinateList()) {
+//				if (newNominalPmpList.stream().filter(null))
+//				
+//				
+//			}
+//			
+//			deletedNominalPmpList.add(previousPmp);
+//		}
+//		
+//		
+//		return null;
+//	}
+	
 	private void checkDeletedNominalPmp(List<NominalPmp> nominalPmpList) throws ModelException {
 		for (NominalPmp nominalPmp : nominalPmpList) {
 			if (!nominalPmp.hasMeasurementPmps()) { continue; }
@@ -395,5 +420,7 @@ public class ModelServiceImpl implements ModelService {
 			throw new ModelException(ModelMessage.NOMINAL_FM_HAS_ASSOCIATION);
 		}
 	}
+	
+	
 		
 }
